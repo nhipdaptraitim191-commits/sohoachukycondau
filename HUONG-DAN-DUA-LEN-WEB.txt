@@ -1,0 +1,35 @@
+PHẦN MỀM SỐ HÓA CHỮ KÝ & TÁCH NỀN CON DẤU - GÓI ĐƯA LÊN WEB
+Phần mềm được viết bởi Võ Hữu Ngợi - 0917010170
+
+Vì sao cần gói này: iPad, iPhone không chạy được file .html mở từ ứng dụng Tệp, Zalo hay email
+(chỉ xem trước). Phải mở phần mềm bằng một đường link https trong Safari.
+
+CÁC FILE TRONG GÓI (đưa lên web đủ cả 8 file, giữ nguyên tên, để chung một thư mục):
+  index.html, sw.js, manifest.webmanifest, icon-180.png, icon-192.png, icon-512.png,
+  icon-maskable-512.png, favicon.png
+  (file HUONG-DAN-DUA-LEN-WEB.txt này không cần đưa lên)
+
+CÁCH 1 - MÁY CHỦ WEB CỦA ĐƠN VỊ (khuyến nghị)
+  1. Tạo một thư mục trên máy chủ web, ví dụ /so-hoa-chu-ky/
+  2. Chép 8 file vào thư mục đó.
+  3. Bảo đảm trang chạy bằng https (bắt buộc để dùng được khi mất mạng).
+  4. Đường link: https://<ten-mien-don-vi>/so-hoa-chu-ky/
+
+CÁCH 2 - GITHUB PAGES (miễn phí, cần tài khoản GitHub)
+  1. Vào github.com, đăng ký hoặc đăng nhập.
+  2. Bấm New repository: đặt tên so-hoa-chu-ky, chọn Public, bấm Create repository.
+  3. Bấm "uploading an existing file", kéo thả 8 file vào, bấm Commit changes.
+  4. Vào Settings > Pages: Source chọn "Deploy from a branch", Branch chọn main và / (root), bấm Save.
+  5. Đợi 1-2 phút, đường link là: https://<ten-tai-khoan>.github.io/so-hoa-chu-ky/
+  Cập nhật phiên bản mới: tải các file mới lên đè file cũ (Add file > Upload files).
+
+DÙNG TRÊN IPAD / IPHONE
+  1. Mở đường link bằng Safari.
+  2. Bấm nút Chia sẻ > Thêm vào MH chính > Thêm.
+  3. Từ đó mở phần mềm bằng biểu tượng trên màn hình chính, dùng được cả khi không có mạng.
+  4. Lưu file: mở từ màn hình chính thì bảng Chia sẻ hiện ra, chọn Lưu vào Tệp hoặc Lưu hình ảnh;
+     mở trong Safari thì chọn Tải về, file nằm ở Tệp > Tải về.
+
+AN TOÀN DỮ LIỆU
+  Máy chủ chỉ phát file phần mềm. Chữ ký, con dấu, bản scan đều được xử lý ngay trên máy người dùng,
+  không gửi lên máy chủ.
