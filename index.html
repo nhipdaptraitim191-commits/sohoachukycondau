@@ -295,6 +295,8 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .tab[aria-selected="true"]{background:var(--surface); color:var(--accent); box-shadow:var(--shadow-sm)}
 .tab-count{min-width:22px; height:22px; padding:0 6px; border-radius:11px; background:var(--accent); color:var(--accent-fg); font-size:12px; display:inline-flex; align-items:center; justify-content:center}
 .view[hidden]{display:none!important}
+/* the page also runs as a plain .html file, with no host reset: anything marked hidden stays hidden */
+[hidden]:not([hidden=until-found i]){display:none!important}
 .lbl{white-space:nowrap}
 
 /* ===== side panel: steps that scroll, actions that stay ===== */
@@ -323,6 +325,30 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .read-chips{display:flex; flex-wrap:wrap; gap:6px}
 .read-chips .chip{min-height:34px; height:auto; padding:6px 12px; border-radius:12px; text-align:left; white-space:normal; line-height:1.3; max-width:100%}
 .ai-note{color:var(--warn)}
+.ai-steps{display:flex; flex-direction:column; gap:8px}
+.ai-step{display:flex; align-items:flex-start; gap:12px; width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--fg); font:inherit; text-align:left; cursor:pointer}
+.ai-step:hover:not(:disabled){border-color:var(--accent)}
+.ai-step:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.ai-step:disabled{cursor:default; opacity:.55}
+.ai-step[aria-checked="true"]{border-color:var(--accent); background:var(--accent-soft)}
+.ai-step .sw{flex:none; position:relative; width:40px; height:24px; margin-top:1px; border-radius:999px; background:var(--line); transition:background .15s}
+.ai-step .sw::after{content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:var(--shadow-sm); transition:transform .15s}
+.ai-step[aria-checked="true"] .sw{background:var(--accent)}
+.ai-step[aria-checked="true"] .sw::after{transform:translateX(16px)}
+.ai-step-text{display:flex; flex-direction:column; gap:2px; min-width:0}
+.ai-step-text b{font-size:14px; font-weight:600}
+.ai-step-sub{font-size:12.5px; color:var(--muted); line-height:1.4}
+.ai-res{font-size:12.5px; line-height:1.4; color:var(--ok); font-weight:500}
+.ai-res:empty{display:none}
+.ai-res.off{color:var(--muted); font-weight:400}
+.ai-res.busy{color:var(--accent)}
+.ai-law{padding:8px 10px; border-left:3px solid var(--accent); background:var(--surface-2); border-radius:0 8px 8px 0}
+.seal-busy{position:absolute; left:50%; bottom:14px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:999px; background:var(--surface); box-shadow:var(--shadow); font-size:13.5px; font-weight:600; color:var(--fg); white-space:nowrap}
+.seal-busy .spin{width:20px; height:20px}
+.seal-cmp{position:absolute; top:12px; right:12px; z-index:1}
+.seal-cmp[aria-pressed="true"]{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
+#sealClear .lbl{display:none}
+@media (prefers-reduced-motion: reduce){.ai-step .sw,.ai-step .sw::after{transition:none}}
 .lock-check{min-height:0; font-size:12.5px; color:var(--muted)}
 .lock-check b{color:var(--fg); font-weight:600}
 .pw-body{display:flex; flex-direction:column; gap:10px}
@@ -501,6 +527,68 @@ textarea{font-family:inherit}
   .brand p{display:none}
   .toolbar .sep{display:none}
   .top-actions .btn svg{display:none}
+}
+/* ===== touch tablets (S Pen, Apple Pencil, finger), upright or turned sideways: larger targets and text ===== */
+@media (pointer: coarse) and (min-width: 700px){
+  .panel-body{gap:22px}
+  .group{gap:14px}
+  .group h2{font-size:14px}
+  .n{width:28px; height:28px; font-size:14.5px}
+  .field{gap:6px}
+  .field-head,.field-head output,.unit,.seal-color-out{font-size:15.5px}
+  .chips-label{font-size:14px}
+  .small,.spec,.fname,.preview .empty{font-size:14.5px; line-height:1.45}
+  .status{font-size:14.5px}
+  .chips{gap:8px}
+  .chip{min-height:46px; padding:0 15px; font-size:15.5px}
+  .read-chips .chip{min-height:46px; font-size:15.5px}
+  .seg button{min-height:50px; font-size:15.5px}
+  .check{min-height:48px; gap:12px; font-size:15px}
+  .check-top{font-size:15px}
+  .lock-check{font-size:14.5px}
+  .check input{width:28px; height:28px}
+  .check-top input{margin-top:0}
+  .btn{font-size:15.5px}
+  .btn-sm{min-height:46px; font-size:15px}
+  .ai-tag{font-size:12.5px}
+  .panel .btn{min-height:50px}
+  .btn-row2 .btn,.btn-row3 .btn{min-height:52px; font-size:15px}
+  .panel-foot .btn-primary{min-height:60px; font-size:18px}
+  .opts summary{min-height:58px; font-size:14px}
+  .opts-sum{font-size:14.5px}
+  .opts-body{gap:16px}
+  .panel .swatch{width:46px; height:46px}
+  .text{min-height:54px; font-size:18px}
+  .text-sm{min-height:50px; font-size:16px}
+  .num{min-height:54px; font-size:22px}
+  .area{font-size:16.5px}
+  input[type="range"]{height:44px}
+  .qcheck h4{font-size:15px}
+  .qcheck li{font-size:14.5px}
+  .rot-chips .btn{min-height:46px; font-size:15px}
+  .ai-step{padding:12px 14px; min-height:64px}
+  .ai-step-text b{font-size:16px}
+  .ai-step-sub,.ai-res{font-size:14px}
+  .ai-step .sw{width:48px; height:28px}
+  .ai-step .sw::after{width:22px; height:22px}
+  .ai-step[aria-checked="true"] .sw::after{transform:translateX(20px)}
+}
+/* sideways: a wider side panel (the 3:2 paper is limited by height, so it keeps its size) */
+@media (pointer: coarse) and (min-width: 900px){
+  .app{grid-template-columns:minmax(0,1fr) clamp(370px,31vw,450px)}
+  .thick input{width:130px}
+}
+/* sideways on a short screen: the whole side panel scrolls as one, with the main download button kept in view at its foot */
+@media (pointer: coarse) and (min-width: 900px) and (max-height: 940px){
+  .brand p{display:none}
+  .panel{overflow-y:auto; overscroll-behavior:contain}
+  .panel-body{flex:none; overflow:visible}
+  .panel-foot{display:contents}
+  .panel-foot > *{margin:0 16px 10px}
+  .panel-foot > :last-child{margin-bottom:18px}
+  .panel-foot .btn-primary{position:sticky; bottom:14px; z-index:5; flex:none; width:auto; box-shadow:0 0 0 14px var(--surface), 0 -18px 18px 8px var(--surface)}
+  /* a pinned button must stay opaque: a disabled one gets a pale fill instead of transparency */
+  .panel-foot .btn-primary:disabled{opacity:1; background:#9AA8EE; background:color-mix(in srgb, var(--accent) 42%, var(--surface)); color:var(--accent-fg)}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
 </style>
@@ -770,17 +858,9 @@ textarea{font-family:inherit}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
           Chụp bằng camera
         </button>
-        <button class="btn btn-soft" id="sealFixBtn" type="button" disabled aria-pressed="false" title="AI sửa các lỗi rõ ràng khi đóng dấu: vết nứt, vết mẻ trên nét, chỗ nét đứt, chỗ hở trên viền dấu. Phần còn lại giữ nguyên. Bấm lần nữa để bỏ sửa.">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l10-10M14 10l2 2M15 4v3M18.5 5.5l-2 2M20 9h-3M9 4.5l.6 1.4 1.4.6-1.4.6L9 8.5l-.6-1.4L7 6.5l1.4-.6zM19 14.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/></svg>
-          <span id="sealFixLbl">AI sửa khuyết điểm</span>
-        </button>
         <button class="btn btn-soft" id="sealMergeBtn" type="button" disabled title="Chọn bản scan hoặc ảnh chụp một lần đóng dấu khác của cùng con dấu: AI căn khớp rồi lấy nét rõ ở lần đóng đó bù vào chỗ mờ, đứt, lóa của con dấu đang có. Ghép được tối đa 3 lần đóng dấu.">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></svg>
           <span id="sealMergeLbl">Ghép thêm lần đóng dấu</span> <span class="ai-tag">AI</span>
-        </button>
-        <button class="btn btn-soft" id="sealColorAI" type="button" disabled aria-pressed="false" title="AI đo màu mực trên bản scan, bỏ ám màu của giấy và máy scan, rồi chọn màu đỏ mực dấu tươi, đều mà vẫn giữ sắc riêng của con dấu.">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.5" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>
-          AI chỉnh màu
         </button>
         <button class="btn" id="sealClear" type="button" aria-label="Xóa con dấu" title="Xóa con dấu" disabled>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
@@ -795,6 +875,8 @@ textarea{font-family:inherit}
             <span>Đóng dấu rõ lên một tờ giấy trắng trơn riêng, scan màu 300 – 600 dpi, rồi bấm <b>Tách con dấu từ bản scan</b>. Phần mềm tách nền giấy, lấy riêng mực đỏ và xuất ảnh PNG vuông nền trong suốt.</span>
           </div>
           <img id="sealImg" alt="Xem trước con dấu sẽ xuất" hidden>
+          <button class="btn btn-soft btn-sm seal-cmp" id="sealCmpBtn" type="button" aria-pressed="false" hidden title="Xem con dấu như lúc tách từ bản scan, chưa qua các bước AI, để đối chiếu: chữ, hình, kích thước phải giữ nguyên">Xem bản tách gốc</button>
+          <div class="seal-busy" id="sealBusy" role="status" hidden><span class="spin" aria-hidden="true"></span><span>AI đang làm đẹp con dấu…</span></div>
         </div>
       </div>
       <div class="rotbar" id="sealRotBar" hidden>
@@ -813,8 +895,42 @@ textarea{font-family:inherit}
 
     <aside class="panel" id="sealGroup" aria-label="Cơ quan, kiểm tra và tải con dấu">
       <div class="panel-body">
+        <section class="group" id="sealAiGroup">
+          <h2><span class="n">1</span>AI làm đẹp con dấu</h2>
+          <div class="ai-steps" role="group" aria-label="Các bước AI làm đẹp con dấu">
+            <button class="ai-step" type="button" id="sealFixBtn" role="switch" aria-checked="true" disabled>
+              <span class="sw" aria-hidden="true"></span>
+              <span class="ai-step-text"><b>Sửa khuyết điểm</b><span class="ai-step-sub">Nối nét đứt, lấp lỗ mực khô, vết nứt, vết mẻ trên nét</span><span class="ai-res" id="sealFixRes"></span></span>
+            </button>
+            <button class="ai-step" type="button" id="sealRingBtn" role="switch" aria-checked="true" disabled>
+              <span class="sw" aria-hidden="true"></span>
+              <span class="ai-step-text"><b>Chuẩn hóa viền</b><span class="ai-step-sub">Dấu tròn: viền ngoài, viền mảnh, viền trong tròn đều, sắc nét; khe giữa các viền sạch</span><span class="ai-res" id="sealRingRes"></span></span>
+            </button>
+            <button class="ai-step" type="button" id="sealSmoothBtn" role="switch" aria-checked="true" disabled>
+              <span class="sw" aria-hidden="true"></span>
+              <span class="ai-step-text"><b>Làm mịn nét, xóa răng cưa</b><span class="ai-step-sub">Chữ và hình trơn, mịn, sắc nét; phóng to không vỡ ảnh</span><span class="ai-res" id="sealSmoothRes"></span></span>
+            </button>
+          </div>
+          <span class="small">Con dấu mới tách được AI làm đủ 3 bước, theo thứ tự trên, từ bản tách gốc. Tắt bước nào thì con dấu bỏ đúng bước đó.</span>
+          <span class="small ai-law">AI chỉ làm sạch, làm rõ hình ảnh từ chính lần đóng dấu: không thêm nét, không đổi chữ, hình, bố cục, kích thước của mẫu con dấu đã đăng ký (Điều 6 Nghị định 99/2016/NĐ-CP). Bấm <b>Xem bản tách gốc</b> trên khung con dấu để đối chiếu; thấy khác mẫu dấu thì tắt bước AI đó.</span>
+        </section>
+        <section class="group" id="sealColorGroup">
+          <h2><span class="n">2</span>Màu con dấu</h2>
+          <div class="field">
+            <span class="field-head">Màu mực<output class="seal-color-out">Đỏ tươi · #FF0000</output></span>
+            <div class="swatches" role="group" aria-label="Màu mực con dấu">
+              <button class="swatch" type="button" data-seal-color="#FF0000" style="--sw:#FF0000" aria-label="Đỏ tươi, mặc định" title="Đỏ tươi (mặc định)" aria-pressed="true"></button>
+              <button class="swatch" type="button" data-seal-color="#ED1C24" style="--sw:#ED1C24" aria-label="Đỏ chuẩn" title="Đỏ chuẩn" aria-pressed="false"></button>
+              <button class="swatch" type="button" data-seal-color="#FF3B3B" style="--sw:#FF3B3B" aria-label="Đỏ sáng" title="Đỏ sáng" aria-pressed="false"></button>
+              <button class="swatch" type="button" data-seal-color="#C8102E" style="--sw:#C8102E" aria-label="Đỏ đậm" title="Đỏ đậm" aria-pressed="false"></button>
+              <label class="swatch swatch-custom seal-custom" title="Màu khác"><input type="color" class="seal-custom-in" value="#FF0000" aria-label="Chọn màu con dấu khác"></label>
+            </div>
+            <button class="btn btn-soft btn-sm read-btn" type="button" id="sealColorAI" disabled aria-pressed="false" title="AI đo màu mực trên bản scan, bỏ ám màu của giấy và máy scan, rồi chọn màu đỏ mực dấu tươi, đều mà vẫn giữ sắc riêng của con dấu.">AI chỉnh màu theo mực trên bản scan <span class="ai-tag">AI</span></button>
+            <label class="check"><input type="checkbox" class="seal-keep" id="panelSealKeepChk"> Giữ màu mực như trên bản scan</label>
+          </div>
+        </section>
         <section class="group">
-          <h2><span class="n">1</span>Cơ quan</h2>
+          <h2><span class="n">3</span>Cơ quan</h2>
           <div class="field">
             <label class="field-head" for="orgName">Tên cơ quan trên con dấu (dùng để đặt tên file)</label>
             <input class="text" type="text" id="orgName" maxlength="80" autocomplete="organization" spellcheck="false" placeholder="Ví dụ: Đảng ủy phường Hòa Bình">
@@ -839,7 +955,7 @@ textarea{font-family:inherit}
           </div>
         </section>
         <section class="group">
-          <h2><span class="n">2</span>Kiểm tra</h2>
+          <h2><span class="n">4</span>Kiểm tra</h2>
           <span class="small" id="sealInfo">Chưa có con dấu.</span>
           <div class="status" id="sealStatus" role="status">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
@@ -856,7 +972,7 @@ textarea{font-family:inherit}
         </section>
         <section class="group">
           <details class="opts" id="sealOpts">
-            <summary><span class="n">3</span><span class="opts-title">Tùy chọn file</span><span class="opts-sum" id="sealOptsSum">2400 × 2400 · Đỏ chuẩn</span></summary>
+            <summary><span class="n">5</span><span class="opts-title">Tùy chọn file</span><span class="opts-sum" id="sealOptsSum">2400 × 2400 · lề 0%</span></summary>
             <div class="opts-body seal-ctl" id="sealCtl">
               <div class="field">
                 <span class="field-head"><label for="sealSizeNum">Kích thước, khung vuông 1 : 1</label></span>
@@ -876,18 +992,6 @@ textarea{font-family:inherit}
               <div class="field">
                 <span class="field-head"><label for="sealMargin">Lề quanh con dấu (0% = cắt sát mép dấu, mặc định)</label><output id="sealMarginOut" for="sealMargin">0%</output></span>
                 <input type="range" id="sealMargin" min="0" max="10" step="0.5" value="0">
-              </div>
-              <div class="field">
-                <span class="field-head">Màu con dấu<output class="seal-color-out">Đỏ chuẩn · #ED1C24</output></span>
-                <div class="swatches" role="group" aria-label="Màu mực con dấu">
-                  <button class="swatch" type="button" data-seal-color="#ED1C24" style="--sw:#ED1C24" aria-label="Đỏ chuẩn, mặc định" title="Đỏ chuẩn (mặc định)" aria-pressed="true"></button>
-                  <button class="swatch" type="button" data-seal-color="#FF3B3B" style="--sw:#FF3B3B" aria-label="Đỏ sáng" title="Đỏ sáng" aria-pressed="false"></button>
-                  <button class="swatch" type="button" data-seal-color="#FF0000" style="--sw:#FF0000" aria-label="Đỏ tươi" title="Đỏ tươi" aria-pressed="false"></button>
-                  <button class="swatch" type="button" data-seal-color="#C8102E" style="--sw:#C8102E" aria-label="Đỏ đậm" title="Đỏ đậm" aria-pressed="false"></button>
-                  <label class="swatch swatch-custom seal-custom" title="Màu khác"><input type="color" class="seal-custom-in" value="#ED1C24" aria-label="Chọn màu con dấu khác"></label>
-                </div>
-                <label class="check"><input type="checkbox" class="seal-keep" id="panelSealKeepChk"> Giữ màu mực như trên bản scan</label>
-                <button class="btn btn-soft btn-sm" type="button" id="sealColorAI2" disabled>AI chỉnh màu <span class="ai-tag">AI</span></button>
               </div>
             </div>
           </details>
@@ -1092,7 +1196,7 @@ textarea{font-family:inherit}
       <section id="g-seal">
         <h3>5. Thẻ Con dấu</h3>
         <p>Tách con dấu của cơ quan thành ảnh PNG vuông, màu đỏ đồng đều, nền trong suốt, bằng kích thước thực tế của con dấu, để dùng với chữ ký số của cơ quan.</p>
-        <p class="callout"><b>Theo quy định:</b> Hướng dẫn 05-HD/VPTW ngày 27/5/2026 của Văn phòng Trung ương Đảng (thay Hướng dẫn 36-HD/VPTW) quy định trên văn bản điện tử của Đảng: chữ ký số của cơ quan, tổ chức là hình ảnh con dấu <b>màu đỏ, kích thước bằng kích thước thực tế của con dấu, định dạng PNG nền trong suốt</b>; hình ảnh chữ ký của người ký <b>màu xanh, PNG nền trong suốt</b>. Văn bản hành chính theo Nghị định 30/2020/NĐ-CP cũng yêu cầu hình ảnh con dấu màu đỏ, bằng kích thước thực tế, PNG nền trong suốt. Phần mềm đáp ứng các yêu cầu này: con dấu màu đỏ, nền trong suốt, cỡ thật ghi sẵn trong file (Bước ①); chữ ký mặc định mực xanh.</p>
+        <p class="callout"><b>Theo quy định:</b> Hướng dẫn 05-HD/VPTW ngày 27/5/2026 của Văn phòng Trung ương Đảng (thay Hướng dẫn 36-HD/VPTW) quy định trên văn bản điện tử của Đảng: chữ ký số của cơ quan, tổ chức là hình ảnh con dấu <b>màu đỏ, kích thước bằng kích thước thực tế của con dấu, định dạng PNG nền trong suốt</b>; hình ảnh chữ ký của người ký <b>màu xanh, PNG nền trong suốt</b>. Văn bản hành chính theo Nghị định 30/2020/NĐ-CP cũng yêu cầu hình ảnh con dấu màu đỏ, bằng kích thước thực tế, PNG nền trong suốt. Phần mềm đáp ứng các yêu cầu này: con dấu màu đỏ, nền trong suốt, cỡ thật ghi sẵn trong file (Bước ③); chữ ký mặc định mực xanh.</p>
         <p class="callout">Chữ ký và con dấu là hai phần riêng, được số hóa, lưu và xác thực riêng (chữ ký với chữ ký số của người ký, con dấu với chữ ký số của cơ quan). Tách chung hay ghép chữ ký với con dấu, hoặc để dấu đè lên chữ ký trước khi từng phần được xác thực, là sai quy định. Vì vậy phần mềm tách từng phần riêng và không tạo ảnh ghép.</p>
         <h4>Chuẩn bị bản scan con dấu</h4>
         <ul>
@@ -1106,20 +1210,36 @@ textarea{font-family:inherit}
         <ol>
           <li>Chọn thẻ <b>Con dấu</b>, bấm <b>Tách con dấu từ bản scan</b> và chọn file. (Ở thẻ Chữ ký, nếu trang chỉ có con dấu, phần mềm cũng tự chuyển sang tách con dấu.)</li>
           <li>Phần mềm tự khoanh con dấu bằng khung đỏ và chỉ lấy mực đỏ. Chỉnh vùng chọn nếu cần, xem phần AI kiểm tra bản scan, rồi bấm <b>Dùng con dấu này</b>.</li>
-          <li><b>AI làm đều nét</b> (mặc định): AI đo độ đậm của mực ở từng vùng con dấu, nên chỗ đóng nhẹ tay, mực nhạt hay chữ nhỏ vẫn giữ đủ nét; nét đứt ngắn được nối lại, lỗ mực khô được lấp, đường viền tròn bị hở được vẽ lại theo đúng đường tròn; mực ra đều một màu, viền gọn. Muốn giữ y như bản scan thì chọn <b>Giữ như bản scan</b>.</li>
-          <li><b>AI chỉnh màu</b> (nút riêng trên khung con dấu và trong Tùy chọn file): AI đo màu mực trên bản scan, bỏ ám màu của giấy và đèn máy scan, rồi chọn màu đỏ mực dấu tươi, đều; dấu mực nhạt hồng, ngả nâu hay đỏ sẫm đều ra màu đỏ đẹp mà vẫn giữ sắc riêng của con dấu. Bấm Hoàn tác để về màu trước; vẫn chọn tay được các màu Đỏ chuẩn, Đỏ sáng, Đỏ tươi, Đỏ đậm.</li>
-          <li><b>AI sửa khuyết điểm</b> (nút riêng trên khung con dấu, chỉ chạy khi bấm): AI chỉ sửa những lỗi rõ ràng khi đóng dấu: vết nứt, vết mẻ cắt ngang nét; chỗ nét bị đứt mà hai đầu còn hướng vào nhau và còn vết mực mờ; chỗ hở trên viền dấu. Phần còn lại giữ nguyên như lúc tách. Không thấy lỗi nào thì AI để nguyên và báo cho bạn biết. Bấm lại nút (hoặc Hoàn tác) để trở về con dấu như lúc tách.</li>
+          <li><b>AI làm đều nét</b> (mặc định): AI đo độ đậm của mực ở từng vùng con dấu, nên chỗ đóng nhẹ tay, mực nhạt hay chữ nhỏ vẫn giữ đủ nét; nét đứt ngắn được nối lại, lỗ mực khô được lấp, đường viền tròn bị hở được nối liền theo đúng đường tròn; mực ra đều một màu, viền gọn. Muốn giữ y như bản scan thì chọn <b>Giữ như bản scan</b>.</li>
+          <li><b>Bước ① AI làm đẹp con dấu</b> (ba công tắc ở khung bên phải): con dấu mới tách được bật sẵn cả ba bước. AI làm lần lượt theo đúng thứ tự dưới đây, luôn từ bản tách gốc; tắt bước nào thì con dấu bỏ đúng bước đó (các bước còn lại giữ nguyên), bật lại là có ngay. Dưới mỗi công tắc có dòng cho biết AI đã làm gì. AI không thêm nét nào ngoài nét của con dấu.
+            <ul>
+              <li><b>Sửa khuyết điểm:</b> AI chỉ sửa những lỗi rõ ràng khi đóng dấu: vết nứt, vết mẻ cắt ngang nét; chỗ nét bị đứt mà hai đầu còn hướng vào nhau và còn vết mực mờ; chỗ hở trên viền dấu. Phần còn lại giữ nguyên. Không thấy lỗi nào thì AI để nguyên và ghi rõ dưới công tắc.</li>
+              <li><b>Chuẩn hóa viền</b> (dấu tròn): AI đo từng viền tròn của con dấu (viền ngoài dày, viền mảnh ngay bên trong, viền trong quanh chữ ở giữa) ở hàng nghìn điểm quanh vòng, rồi chuẩn hóa mỗi viền thành đường tròn đều nét, sắc nét, mịn, đúng độ dày đo được và cùng một tâm. Mực lem lấp vào khe hẹp giữa viền ngoài và viền mảnh, mực loang bám dọc mép viền được làm sạch; chỗ viền bị đứt, mòn, rỗ được chuẩn hóa liền nét. Chữ, ngôi sao, hình ở giữa giữ nguyên; chữ chạm vào viền vẫn liền với viền; dấu thanh, chấm nhỏ của chữ nằm sát viền được giữ nguyên. Viền ngoài có răng cưa thì giữ nguyên viền ngoài. Con dấu chụp hơi nghiêng (hơi bầu dục) được chuẩn hóa theo đúng dáng con dấu; dấu bầu dục, dấu vuông không áp dụng. Khi đã có cỡ thật, dòng kết quả ghi độ dày từng viền (mm).</li>
+              <li><b>Làm mịn nét, xóa răng cưa:</b> AI dò theo mép từng nét chữ, hình và viền, rồi làm trơn những chỗ răng cưa, gồ ghề, vỡ ảnh do bản scan độ phân giải thấp hoặc ảnh JPEG. Nét không mảnh đi, chữ không đổi cỡ, góc chữ vẫn sắc; đốm mực li ti nhỏ hơn dấu thanh được bỏ. Mép nét được giữ dạng đường nét, nên file 2400 px (hoặc lớn hơn) vẫn sắc nét, không vỡ ảnh, kể cả khi bản scan nhỏ.</li>
+            </ul>
+          </li>
+          <li><b>Bước ② Màu con dấu:</b> mặc định <b>Đỏ tươi</b> (#FF0000); chọn được Đỏ chuẩn, Đỏ sáng, Đỏ đậm, màu tùy chọn, hoặc giữ màu mực như trên bản scan. Nút <b>AI chỉnh màu theo mực trên bản scan</b>: AI đo màu mực, bỏ ám màu của giấy và đèn máy scan, rồi chọn màu đỏ mực dấu tươi, đều; dấu mực nhạt hồng, ngả nâu hay đỏ sẫm đều ra màu đỏ đẹp mà vẫn giữ sắc riêng của con dấu. Bấm Hoàn tác để về màu trước.</li>
           <li><b>AI tự xoay thẳng và đúng chiều:</b> AI đọc dòng chữ ở giữa con dấu: các dấu tiếng Việt (sắc, huyền, hỏi, ngã, mũ, móc) nằm phía trên chữ, nên AI biết con dấu đang thẳng, nghiêng, xoay ngang hay bị ngược. Việc này làm ngay trên khung bản scan: con dấu bị ngược hoặc xoay ngang thì AI xoay luôn trang scan cho con dấu đúng chiều, còn chỗ nghiêng lệch nhỏ thì khung <b>Kết quả sau khi tách nền</b> hiện sẵn con dấu đã xoay thẳng, bấm Dùng là con dấu vào bảng đã đúng chiều. Với ảnh tải lên trực tiếp, khi chắc chắn AI cũng tự xoay lại cho chữ đúng chiều (kể cả 90° hoặc 180°) và báo góc đã xoay; bấm Hoàn tác nếu chưa đúng. Con dấu không có chữ ở giữa thì AI chỉ tự xoay thẳng khi nghiêng ít (đến 30°); trường hợp khác bấm <b>Tự xoay thẳng (AI)</b>, hoặc dùng thanh <b>Xoay con dấu cho thẳng</b> và các nút −90°, 0°, +90°, 180°.</li>
-          <li><b>Ghép thêm lần đóng dấu</b> (nút riêng trên khung con dấu, có thể ghép tối đa 3 lần đóng): khi con dấu bị mất chữ, mờ hoặc đứt nét ở vài chỗ, hãy đóng dấu thêm 1 – 2 lần lên giấy trắng khác, scan (hoặc chụp), bấm nút rồi chọn file đó và bấm <b>Ghép vào con dấu đang có</b>. AI căn khớp các lần đóng dấu cho trùng khít (kể cả khi đóng lệch góc hoặc scan khác độ phân giải), rồi lấy chỗ nét rõ của lần đóng mới bù vào chỗ mờ, đứt, lóa của con dấu đang có. Nét viền mỏng do mực loang khác nhau giữa các lần đóng được bỏ qua nên nét không bị dày lên. Mọi nét đều lấy từ các lần đóng dấu thật, AI không vẽ thêm. Lần đóng của một con dấu khác thì phần mềm nhận ra và không ghép. Bấm Hoàn tác để bỏ ghép.</li>
-          <li><b>AI đọc tên trên con dấu</b> (bước ①): khi ô tên cơ quan còn trống, AI tự đọc chữ trên con dấu ngay sau khi bấm Dùng con dấu này (bấm nút <b>AI đọc tên trên con dấu</b> để đọc lại bất cứ lúc nào). AI trải vòng chữ cong thành dòng thẳng để đọc, tự nhận ra chữ vòng trên đọc xuôi và chữ vòng dưới đọc ngược chiều, đọc cả các dòng chữ ở giữa, rồi sửa các dấu tiếng Việt hay đọc nhầm theo từ ngữ thường có trên con dấu (ĐẢNG ỦY, ỦY BAN NHÂN DÂN, CÔNG ĐOÀN, THÀNH PHỐ…). Theo cách bố trí thông thường, tên cơ quan sử dụng con dấu nằm ở giữa, vòng ngoài là tên cơ quan cấp trên; nếu ở giữa không có chữ thì tên lấy từ vòng ngoài. AI điền sẵn tên hợp lý nhất và liệt kê các dòng đọc được để bạn chọn. Việc đọc chạy ngay trên máy bằng bộ đọc chữ Tesseract, không gửi con dấu đi đâu. <b>Luôn rà lại tên</b> với con dấu thật: chữ quá nhỏ, mờ, kiểu chữ lạ có thể đọc sai một vài dấu.</li>
-          <li><b>Bước ① Cơ quan:</b> nhập tên cơ quan để đặt tên file, và <b>Cỡ thật của con dấu</b> (mm): đường kính ngoài của dấu tròn, đo bằng thước trên dấu đóng ra giấy (dấu không tròn: cạnh dài nhất). Với bản scan PDF, hoặc ảnh scan có ghi độ phân giải, AI đo sẵn cỡ này; hãy đo lại bằng thước cho chắc. Cỡ thật được ghi vào file PNG, nên khi chèn vào Word hoặc phần mềm ký số đọc thông tin này, con dấu ra đúng kích thước thực tế. Tên file có cả cỡ thật, ví dụ “Đảng ủy phường Hòa Bình”, 35 mm thành <i>con-dau-dang-uy-phuong-hoa-binh-35mm-2400x2400.png</i>. File PNG còn ghi thông tin nguồn gốc (tên cơ quan, màu, cỡ thật, ngày tạo) để dễ kiểm tra về sau.</li>
-          <li><b>Bước ② Kiểm tra:</b> xem dòng trạng thái (nền vàng nhắc khi chưa có cỡ thật); bấm <b>Xem cỡ con dấu trên văn bản mẫu</b> để xem con dấu trên giấy theo cỡ thật đã nhập. Bấm <b>Tải bản in kiểm tra cỡ thật (PDF)</b> để có trang A4 gồm con dấu đúng cỡ thật, thước đo mm, đoạn 100 mm và một vòng tròn trống: in với tỉ lệ 100% (không chọn Vừa trang), đóng con dấu thật vào vòng tròn trống rồi so với hình bên cạnh, đo đoạn 100 mm để chắc máy in không co giãn.</li>
-          <li><b>Bước ③ Tùy chọn file:</b> kích thước (mặc định 2400 × 2400; nút chọn nhanh 2000, 1500, 1000, 600, 300 hoặc gõ số từ 90 đến 4000), lề quanh dấu (mặc định 0%: cắt sát mép dấu, không chừa khoảng trắng), màu (Đỏ chuẩn mặc định, Đỏ sáng, Đỏ tươi, Đỏ đậm, màu tùy chọn, hoặc giữ màu bản scan).</li>
+          <li><b>Ghép thêm lần đóng dấu</b> (nút riêng trên khung con dấu, có thể ghép tối đa 3 lần đóng): khi con dấu bị mất chữ, mờ hoặc đứt nét ở vài chỗ, hãy đóng dấu thêm 1 – 2 lần lên giấy trắng khác, scan (hoặc chụp), bấm nút rồi chọn file đó và bấm <b>Ghép vào con dấu đang có</b>. AI căn khớp các lần đóng dấu cho trùng khít (kể cả khi đóng lệch góc hoặc scan khác độ phân giải), rồi lấy chỗ nét rõ của lần đóng mới bù vào chỗ mờ, đứt, lóa của con dấu đang có. Nét viền mỏng do mực loang khác nhau giữa các lần đóng được bỏ qua nên nét không bị dày lên. Mọi nét đều lấy từ các lần đóng dấu thật, AI không thêm nét nào. Ghép xong, các bước AI làm đẹp đang bật được làm lại trên con dấu đã ghép. Lần đóng của một con dấu khác thì phần mềm nhận ra và không ghép. Bấm Hoàn tác để bỏ ghép.</li>
+          <li><b>AI đọc tên trên con dấu</b> (bước ③): khi ô tên cơ quan còn trống, AI tự đọc chữ trên con dấu ngay sau khi bấm Dùng con dấu này (bấm nút <b>AI đọc tên trên con dấu</b> để đọc lại bất cứ lúc nào). AI trải vòng chữ cong thành dòng thẳng để đọc, tự nhận ra chữ vòng trên đọc xuôi và chữ vòng dưới đọc ngược chiều, đọc cả các dòng chữ ở giữa, rồi sửa các dấu tiếng Việt hay đọc nhầm theo từ ngữ thường có trên con dấu (ĐẢNG ỦY, ỦY BAN NHÂN DÂN, CÔNG ĐOÀN, THÀNH PHỐ…). Theo cách bố trí thông thường, tên cơ quan sử dụng con dấu nằm ở giữa, vòng ngoài là tên cơ quan cấp trên; nếu ở giữa không có chữ thì tên lấy từ vòng ngoài. AI điền sẵn tên hợp lý nhất và liệt kê các dòng đọc được để bạn chọn. Việc đọc chạy ngay trên máy bằng bộ đọc chữ Tesseract, không gửi con dấu đi đâu. <b>Luôn rà lại tên</b> với con dấu thật: chữ quá nhỏ, mờ, kiểu chữ lạ có thể đọc sai một vài dấu.</li>
+          <li><b>Bước ③ Cơ quan:</b> nhập tên cơ quan để đặt tên file, và <b>Cỡ thật của con dấu</b> (mm): đường kính ngoài của dấu tròn, đo bằng thước trên dấu đóng ra giấy (dấu không tròn: cạnh dài nhất). Với bản scan PDF, hoặc ảnh scan có ghi độ phân giải, AI đo sẵn cỡ này; hãy đo lại bằng thước cho chắc. Cỡ thật được ghi vào file PNG, nên khi chèn vào Word hoặc phần mềm ký số đọc thông tin này, con dấu ra đúng kích thước thực tế. Tên file có cả cỡ thật, ví dụ “Đảng ủy phường Hòa Bình”, 35 mm thành <i>con-dau-dang-uy-phuong-hoa-binh-35mm-2400x2400.png</i>. File PNG còn ghi thông tin nguồn gốc (tên cơ quan, màu, cỡ thật, ngày tạo) để dễ kiểm tra về sau.</li>
+          <li><b>Bước ④ Kiểm tra:</b> xem dòng trạng thái (nền vàng nhắc khi chưa có cỡ thật); bấm <b>Xem cỡ con dấu trên văn bản mẫu</b> để xem con dấu trên giấy theo cỡ thật đã nhập. Bấm <b>Tải bản in kiểm tra cỡ thật (PDF)</b> để có trang A4 gồm con dấu đúng cỡ thật, thước đo mm, đoạn 100 mm và một vòng tròn trống: in với tỉ lệ 100% (không chọn Vừa trang), đóng con dấu thật vào vòng tròn trống rồi so với hình bên cạnh, đo đoạn 100 mm để chắc máy in không co giãn.</li>
+          <li><b>Bước ⑤ Tùy chọn file:</b> kích thước (mặc định 2400 × 2400; nút chọn nhanh 2000, 1500, 1000, 600, 300 hoặc gõ số từ 90 đến 4000) và lề quanh dấu (mặc định 0%: cắt sát mép dấu, không chừa khoảng trắng).</li>
           <li>Bấm <b>Tải PNG con dấu</b>, hoặc <b>Trọn bộ .zip</b> (PNG 2400 px, PNG 1000 px, JSON và hướng dẫn).</li>
           <li><b>Khóa file tải về bằng mật khẩu</b> (ô đánh dấu trên các nút tải): khi bật, mọi file con dấu tải về (PNG, Trọn bộ, JSON) đều nằm trong file .zip mã hóa AES-256, tên file có đuôi <i>-khoa.zip</i>. Lần tải đầu tiên phần mềm hỏi mật khẩu (8 – 64 ký tự, chữ không dấu, chữ số, ký hiệu), các lần tải sau trong cùng lần làm việc dùng lại mật khẩu đó; mật khẩu chỉ giữ trong bộ nhớ, tải lại trang hoặc bỏ đánh dấu là quên. Mở file bằng WinRAR, 7-Zip, hoặc nút <b>Mở JSON</b> của phần mềm (Windows không tự mở được file .zip mã hóa AES). Mất mật khẩu thì không ai mở lại được file.</li>
         </ol>
-        <p class="callout">AI sửa khuyết điểm chỉ dựa vào chính con dấu: vết mực còn trên bản scan, hai đầu nét đứt hướng vào nhau, độ dày nét ở hai bên chỗ mòn. AI không tự viết thêm chữ không có trên bản scan. Chữ bị mất hẳn (không còn vết mực) thì đóng dấu thêm lần nữa, scan rồi bấm <b>Ghép thêm lần đóng dấu</b>. Sau khi sửa, hãy đối chiếu với con dấu thật trước khi dùng.</p>
+        <p class="callout">Các bước AI làm đẹp chỉ dựa vào chính con dấu: vết mực còn trên bản scan, hai đầu nét đứt hướng vào nhau, độ dày nét ở hai bên chỗ mòn. AI không tự viết thêm chữ không có trên bản scan. Chữ bị mất hẳn (không còn vết mực) thì đóng dấu thêm lần nữa, scan rồi bấm <b>Ghép thêm lần đóng dấu</b>. Sau khi sửa, hãy đối chiếu với con dấu thật trước khi dùng.</p>
         <p class="callout">Chỉ số hóa con dấu của cơ quan, đơn vị mà bạn được giao quản lý, và chỉ sử dụng ảnh con dấu đúng thẩm quyền theo quy định về quản lý, sử dụng con dấu. Giữ file con dấu cẩn thận như giữ con dấu thật.</p>
+        <h4>Tuân thủ các hành vi bị nghiêm cấm về con dấu</h4>
+        <p>Điều 6 Nghị định 99/2016/NĐ-CP về quản lý và sử dụng con dấu (sửa đổi, bổ sung bởi Nghị định 56/2023/NĐ-CP) quy định 13 nhóm hành vi bị nghiêm cấm. Phần mềm được làm để không dẫn tới các hành vi này; người dùng cũng phải tự tuân thủ:</p>
+        <ul>
+          <li><b>Khoản 1 – làm giả con dấu, sử dụng con dấu giả:</b> phần mềm không có chức năng tạo, vẽ hay thiết kế con dấu; chỉ số hóa hình ảnh từ lần đóng dấu thật của con dấu thật. Các bước AI không thêm nét nào ngoài nét của chính con dấu đó.</li>
+          <li><b>Khoản 4 – cố ý làm biến dạng, sửa chữa nội dung mẫu con dấu đã đăng ký:</b> các bước AI làm đẹp không đổi chữ, hình, bố cục, kích thước của con dấu. Sửa khuyết điểm chỉ nối nét theo vết mực còn trên bản scan; Chuẩn hóa viền giữ đúng kích thước viền đo được, không xóa dấu thanh hay chấm nhỏ nằm sát viền; Làm mịn nét giữ mép nét trong phạm vi 1 điểm ảnh của bản scan. Bấm <b>Xem bản tách gốc</b> để đối chiếu; gói Trọn bộ .zip kèm bản tách gốc cùng khung, cùng cỡ. Luôn đối chiếu với mẫu con dấu đã đăng ký trước khi dùng; thấy khác thì tắt bước AI đó.</li>
+          <li><b>Khoản 3 và 8 – sử dụng con dấu hết giá trị sử dụng, con dấu chưa đăng ký mẫu:</b> chỉ số hóa con dấu còn giá trị sử dụng và đã đăng ký mẫu. Không số hóa, không dùng hình ảnh con dấu của đơn vị đã giải thể, sáp nhập, đổi tên hoặc con dấu đã nộp lại.</li>
+          <li><b>Khoản 6 – mượn, cho mượn con dấu; sử dụng con dấu của cơ quan, tổ chức khác:</b> chỉ số hóa con dấu của cơ quan mình được giao quản lý; không gửi, cho mượn file con dấu.</li>
+          <li><b>Khoản 7 – chiếm giữ trái phép, chiếm đoạt con dấu:</b> giữ file con dấu như giữ con dấu thật; bật <b>Khóa file tải về bằng mật khẩu</b>.</li>
+          <li><b>Khoản 10 – đóng dấu lên chữ ký của người không có thẩm quyền:</b> phần mềm tách riêng chữ ký và con dấu, không tạo ảnh ghép; hình ảnh con dấu chỉ dùng trên văn bản đúng thẩm quyền, kèm chữ ký số của cơ quan.</li>
+        </ul>
       </section>
 
       <section id="g-form">
@@ -1213,9 +1333,9 @@ textarea{font-family:inherit}
       <section id="g-quality">
         <h3>12. Vì sao chữ ký luôn sắc nét</h3>
         <ul>
-          <li>Nét ký được lưu dạng tọa độ (vector), không phải ảnh chụp, nên xuất ở cỡ nào cũng được vẽ lại sắc nét. Chữ ký từ bản scan cũng được chuyển thành đường viền vector.</li>
+          <li>Nét ký được lưu dạng tọa độ (vector), không phải ảnh chụp, nên xuất ở cỡ nào cũng sắc nét. Chữ ký từ bản scan cũng được chuyển thành đường viền vector.</li>
           <li>Độ mượt nét làm trơn đường ký mà không làm bút bị trễ khi đang ký.</li>
-          <li>File PNG được vẽ ở độ phân giải gấp 6 lần rồi thu về đúng kích thước (khử răng cưa), nên mép nét mịn kể cả khi xuất cỡ nhỏ. Trên iPad là gấp 5 lần, mức cao nhất Safari cho phép.</li>
+          <li>File PNG được xử lý ở độ phân giải gấp 6 lần rồi thu về đúng kích thước (khử răng cưa), nên mép nét mịn kể cả khi xuất cỡ nhỏ. Trên iPad là gấp 5 lần, mức cao nhất Safari cho phép.</li>
           <li>File PNG giữ nguyên màu mực ở mọi điểm ảnh, chỉ độ trong suốt tạo nên nét ký, giống cách lưu của các file chữ ký mà hệ thống đã nhận.</li>
         </ul>
       </section>
@@ -1273,7 +1393,7 @@ textarea{font-family:inherit}
       <section id="g-spec">
         <h3>15. Yêu cầu file của hệ thống</h3>
         <p>Chữ ký: PNG, chiều rộng từ 90 đến 1000 px, khuyến khích tỉ lệ 3 : 2. Mỗi lần mở, phần mềm đặt sẵn <b>1000 × 667 px</b>, nền trong suốt, chất lượng cao nhất. Các cỡ lớn hơn 1000 px và tỉ lệ khác dùng cho mục đích khác như in ấn; khi đó dòng trạng thái chuyển sang nền vàng để nhắc.</p>
-        <p>Con dấu: PNG vuông 1 : 1, mặc định 2400 × 2400 px, nền trong suốt, màu đỏ đồng đều ở mọi điểm ảnh, con dấu căn theo tâm và gần kín khung, kích thước thực tế (mm) ghi trong file theo Hướng dẫn 05-HD/VPTW. Nếu hệ thống yêu cầu cỡ khác, chọn hoặc gõ kích thước ở bước ③ của thẻ Con dấu.</p>
+        <p>Con dấu: PNG vuông 1 : 1, mặc định 2400 × 2400 px, nền trong suốt, màu đỏ đồng đều ở mọi điểm ảnh, con dấu căn theo tâm và gần kín khung, kích thước thực tế (mm) ghi trong file theo Hướng dẫn 05-HD/VPTW. Nếu hệ thống yêu cầu cỡ khác, chọn hoặc gõ kích thước ở bước ⑤ Tùy chọn file của thẻ Con dấu.</p>
       </section>
     </div>
     <div class="guide-foot">
@@ -1412,20 +1532,20 @@ textarea{font-family:inherit}
           </div>
         </div>
         <div class="field" id="fSealInk" hidden>
-          <span class="field-head">Màu con dấu<output class="seal-color-out">Đỏ chuẩn · #ED1C24</output></span>
+          <span class="field-head">Màu con dấu<output class="seal-color-out">Đỏ tươi · #FF0000</output></span>
           <div class="swatches" role="group" aria-label="Màu mực con dấu">
-              <button class="swatch" type="button" data-seal-color="#ED1C24" style="--sw:#ED1C24" aria-label="Đỏ chuẩn, mặc định" title="Đỏ chuẩn (mặc định)" aria-pressed="true"></button>
+              <button class="swatch" type="button" data-seal-color="#FF0000" style="--sw:#FF0000" aria-label="Đỏ tươi, mặc định" title="Đỏ tươi (mặc định)" aria-pressed="true"></button>
+              <button class="swatch" type="button" data-seal-color="#ED1C24" style="--sw:#ED1C24" aria-label="Đỏ chuẩn" title="Đỏ chuẩn" aria-pressed="false"></button>
               <button class="swatch" type="button" data-seal-color="#FF3B3B" style="--sw:#FF3B3B" aria-label="Đỏ sáng" title="Đỏ sáng" aria-pressed="false"></button>
-              <button class="swatch" type="button" data-seal-color="#FF0000" style="--sw:#FF0000" aria-label="Đỏ tươi" title="Đỏ tươi" aria-pressed="false"></button>
               <button class="swatch" type="button" data-seal-color="#C8102E" style="--sw:#C8102E" aria-label="Đỏ đậm" title="Đỏ đậm" aria-pressed="false"></button>
-              <label class="swatch swatch-custom seal-custom" title="Màu khác"><input type="color" class="seal-custom-in" value="#ED1C24" aria-label="Chọn màu con dấu khác"></label>
+              <label class="swatch swatch-custom seal-custom" title="Màu khác"><input type="color" class="seal-custom-in" value="#FF0000" aria-label="Chọn màu con dấu khác"></label>
             </div>
             <label class="check"><input type="checkbox" class="seal-keep" id="scanSealKeepChk"> Giữ màu mực như trên bản scan</label>
         </div>
       </div>
     </div>
     <div class="scan-foot">
-      <p class="small" id="scanFootNote">Chỉ dùng để số hóa chữ ký của chính bạn (hoặc của người đã đồng ý số hóa) và con dấu của cơ quan bạn được giao quản lý. Chữ ký từ bản scan được chuyển thành nét vector: đổi màu, độ dày nét trên thanh công cụ vẫn áp dụng được.</p>
+      <p class="small" id="scanFootNote">Chỉ dùng để số hóa chữ ký của chính bạn (hoặc của người đã đồng ý số hóa) và con dấu còn giá trị sử dụng, đã đăng ký mẫu, của cơ quan bạn được giao quản lý. Chữ ký từ bản scan được chuyển thành nét vector: đổi màu, độ dày nét trên thanh công cụ vẫn áp dụng được.</p>
       <button class="btn btn-primary" type="button" id="scanUse" disabled>Dùng chữ ký này</button>
     </div>
   </div>
@@ -1625,7 +1745,7 @@ textarea{font-family:inherit}
   const $ = (id) => document.getElementById(id);
 
   const DEFAULTS = { color: '#1937E1', ink5: true, thick: 7, smooth: 50, sens: 70, taper: true, input: 'all', inputManual: false,
-    width: 1000, frame: '3:2', fit: true, margin: 6, bg: 'clear', sealSize: 2400, sealMargin: 0, sealM0: true, sealColor: '#ED1C24', sealKeep: false, sealLock: false, sigLock: false, batchLock: false };
+    width: 1000, frame: '3:2', fit: true, margin: 6, bg: 'clear', sealSize: 2400, sealMargin: 0, sealM0: true, sealColor: '#FF0000', sealKeep: false, sealLock: false, sigLock: false, batchLock: false };
   // width ÷ height for each frame; 'trim' fits the signature itself
   const RATIOS = { '3:2': 1.5, '4:3': 4 / 3, '16:9': 16 / 9, '2:1': 2, '3:1': 3, '1:1': 1 };
   const SYS_MAX_W = 1000, MAX_W = 4000;
@@ -1636,7 +1756,7 @@ textarea{font-family:inherit}
     if (saved && saved.ink5 !== true) { cfg.color = DEFAULTS.color; cfg.ink5 = true; }
     cfg.width = DEFAULTS.width; // always open at 1000 px, 3:2: the widest file the system accepts
     cfg.frame = DEFAULTS.frame;
-    cfg.sealSize = DEFAULTS.sealSize; // seal always opens at 2400 × 2400, standard red
+    cfg.sealSize = DEFAULTS.sealSize; // seal always opens at 2400 × 2400, bright red (Đỏ tươi)
     cfg.sealColor = DEFAULTS.sealColor; cfg.sealKeep = DEFAULTS.sealKeep;
     if (saved && saved.sealM0 !== true) { cfg.sealMargin = 0; cfg.sealM0 = true; }   // the seal is now cut close to its edge by default
   } catch (e) { /* storage unavailable */ }
@@ -2666,9 +2786,10 @@ textarea{font-family:inherit}
   /* ---------- seal export: square PNG, constant red, the seal nearly filling the frame ---------- */
   const SEAL_RED = '#ED1C24';
   const toHex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase();
-  const SEAL_COLORS = { '#ED1C24': 'Đỏ chuẩn', '#FF3B3B': 'Đỏ sáng', '#FF0000': 'Đỏ tươi', '#C8102E': 'Đỏ đậm' };
+  const SEAL_COLORS = { '#FF0000': 'Đỏ tươi', '#ED1C24': 'Đỏ chuẩn', '#FF3B3B': 'Đỏ sáng', '#C8102E': 'Đỏ đậm' };
+  const SEAL_DEFAULT = '#FF0000';   // Đỏ tươi: the colour a seal starts with
   const isHex = (v) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
-  const sealHex = (sl) => (cfg.sealKeep && sl && sl.color ? toHex(sl.color) : isHex(cfg.sealColor) ? cfg.sealColor.toUpperCase() : SEAL_RED);
+  const sealHex = (sl) => (cfg.sealKeep && sl && sl.color ? toHex(sl.color) : isHex(cfg.sealColor) ? cfg.sealColor.toUpperCase() : SEAL_DEFAULT);
   const sealColorName = (sl) => (cfg.sealKeep && sl && sl.color ? 'Màu bản scan' : SEAL_COLORS[sealHex(sl)] || (sl && sl.aiColor === sealHex(sl) ? 'Màu AI' : 'Màu tự chọn')) + ' · ' + sealHex(sl);
   /* ---------- AI chỉnh màu con dấu ----------
      The ink colour measured on the scan is first freed from the scanner's light (divided by the paper's own colour),
@@ -2691,12 +2812,12 @@ textarea{font-family:inherit}
     return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * q, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * q, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * q];
   }
   function aiSealColor(sl) {
-    if (!sl || !sl.color) return { hex: SEAL_RED, note: 'chưa có màu mực đo được, dùng Đỏ chuẩn' };
+    if (!sl || !sl.color) return { hex: SEAL_DEFAULT, note: 'chưa có màu mực đo được, dùng Đỏ tươi' };
     const paper = sl.paper && Math.min(...sl.paper) > 90 ? sl.paper : null;
     const ink = sl.color.map((v, i) => clamp(paper ? v * 245 / paper[i] : v, 0, 255));   // the scanner's light taken out
     let [L, C, h] = toOklch(ink);
     if (h > 300) h -= 360;
-    if (C < 0.045 || h < -45 || h > 70) return { hex: SEAL_RED, note: 'màu trên bản scan không ra màu mực đỏ (scan đen trắng hoặc mực khác màu), dùng Đỏ chuẩn' };
+    if (C < 0.045 || h < -45 || h > 70) return { hex: SEAL_DEFAULT, note: 'màu trên bản scan không ra màu mực đỏ (scan đen trắng hoặc mực khác màu), dùng Đỏ tươi' };
     const hh = 27 + 0.5 * (clamp(h, 19, 35) - 27), LL = clamp(0.58 + 0.45 * (L - 0.6), 0.53, 0.63);   // around the hue of standard seal red
     let lo = 0, hi = 0.4;
     for (let k = 0; k < 24; k++) { const mid = (lo + hi) / 2, v = fromOklch(LL, mid, hh); if (v.every((c) => c >= -1e-4 && c <= 1.0001)) lo = mid; else hi = mid; }
@@ -2780,8 +2901,8 @@ textarea{font-family:inherit}
     return { cx: (b.x0 + b.x1 + 1) / 2, cy: (b.y0 + b.y1 + 1) / 2, ext, ext50: Math.min(ext, rx(b.sx1 - b.sx0 + 1, b.sy1 - b.sy0 + 1)) };
   }
   // draw the seal rotated about its centre, at about its own resolution, then average down to S × S
-  function renderSealAlpha(sl, S, maxSS = 4) {
-    const e = sealExtent(sl), k = S * (1 - 2 * cfg.sealMargin / 100) / e.ext;
+  function renderSealAlpha(sl, S, maxSS = 4, ext = null) {
+    const e = ext || sealExtent(sl), k = S * (1 - 2 * cfg.sealMargin / 100) / e.ext;
     let SS = clamp(Math.floor(1 / k), 1, maxSS);
     while (SS > 1 && S * S * SS * SS > MAX_AREA) SS--;
     for (;;) {
@@ -2791,8 +2912,8 @@ textarea{font-family:inherit}
         if (!ctx) throw new Error('canvas too large');
         ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, w);
         ctx.translate(w / 2, w / 2); ctx.rotate(sl.rot * Math.PI / 180); ctx.scale(k * SS, k * SS); ctx.translate(-e.cx, -e.cy);
-        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(sl.mask, 0, 0);
+        if (sl.paths) { ctx.fillStyle = '#000'; ctx.fill(sl.paths); }   // AI làm mịn nét: the outlines, sharp at any size
+        else { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(sl.mask, 0, 0); }
         const src = ctx.getImageData(0, 0, w, w).data;
         c.width = c.height = 1;
         return alphaDown(src, w, S, S, SS);
@@ -2803,12 +2924,16 @@ textarea{font-family:inherit}
       }
     }
   }
-  async function makeSealPNG(S, maxSS, plain) {
+  async function makeSealPNG(S, maxSS, plain, sl = seal, ext = null) {
     S = clampS(S || cfg.sealSize);
-    const A = renderSealAlpha(seal, S, maxSS);
-    const blob = await toPNG(S, S, buildRGBA({ W: S, H: S }, A, sealHex(seal), 'clear'));
-    return { S, blob: plain ? blob : await pngWithMeta(blob, sealMeta(S)) };
+    const A = renderSealAlpha(sl, S, maxSS, ext);
+    const blob = await toPNG(S, S, buildRGBA({ W: S, H: S }, A, sealHex(sl), 'clear'));
+    return { S, blob: plain ? blob : await pngWithMeta(blob, sealMeta(S, sl !== seal)) };
   }
+  // the seal as extracted, before the AI steps (framed like the finished seal, so the two lie on each other)
+  const sealOrigView = (sl) => Object.assign({}, sl, { mask: sl.base, paths: null });
+  const sealAIChanged = (sl) => !!(sl && sl.base && sl.base !== sl.mask);
+  let cmpOrig = false;   // the preview shows the seal as extracted, to check it against the finished one
   /* The seal's real size (Hướng dẫn 05-HD/VPTW: the seal picture is as large as the seal itself): the outer diameter of a
      round seal, or the longest side of another seal, in mm. The PNG's side is that size plus the chosen margin; it is
      written into the file (pHYs), so Word and digital-signing tools insert the picture at the seal's real size. */
@@ -2816,14 +2941,23 @@ textarea{font-family:inherit}
   const fmtMm = (v) => (Math.round(v * 10) / 10).toLocaleString('vi-VN', { maximumFractionDigits: 1 });
   // the PNG's side on paper: the measured edge is the real size; the faint rim of ink beyond it and the margin are added
   const sealSideMm = (sl) => { const mm = realMmOf(sl); if (!mm) return 0; const e = sealExtent(sl); return mm * (e.ext / (e.ext50 || e.ext)) / (1 - 2 * cfg.sealMargin / 100); };
-  function sealMeta(S) {
-    const mm = realMmOf(seal), side = sealSideMm(seal), name = org.trim();
+  // the AI steps a seal has had, in words (for the file's own record and the pack's notes)
+  function sealAIWords(sl) {
+    const ar = (sl && sl.aiRes) || {}, did = [];
+    if (ar.f && !ar.f.none) did.push('sửa khuyết điểm');
+    if (ar.r && ((ar.r.rings || []).some((g) => !g.kept) || ar.r.gaps)) did.push('chuẩn hóa viền');
+    if (ar.s) did.push('làm mịn nét');
+    return did;
+  }
+  function sealMeta(S, orig = false) {
+    const mm = realMmOf(seal), side = sealSideMm(seal), name = org.trim(), did = sealAIWords(seal);
     return {
       ppm: side ? S / (side / 1000) : 0,
       text: {
-        Title: 'Con dấu' + (name ? ' – ' + name : ''),
-        Description: 'Hình ảnh con dấu số hóa: PNG nền trong suốt, màu ' + sealHex(seal) +
-          (mm ? ', kích thước bằng kích thước thực tế của con dấu (' + fmtMm(mm) + ' mm)' : '') + '. Dùng kèm chữ ký số của cơ quan, tổ chức.',
+        Title: 'Con dấu' + (name ? ' – ' + name : '') + (orig ? ' (bản tách gốc)' : ''),
+        Description: (orig ? 'Bản tách gốc của con dấu, chưa qua các bước AI làm đẹp, dùng để đối chiếu' : 'Hình ảnh con dấu số hóa') + ': PNG nền trong suốt, màu ' + sealHex(seal) +
+          (mm ? ', kích thước bằng kích thước thực tế của con dấu (' + fmtMm(mm) + ' mm)' : '') + '. Dùng kèm chữ ký số của cơ quan, tổ chức.' +
+          (!orig && did.length ? ' Xử lý: tách nền giấy; AI ' + did.join(', ') + ' từ chính lần đóng dấu, không thay đổi chữ, hình, kích thước của mẫu con dấu.' : ''),
         Software: 'Phần mềm số hóa chữ ký & tách nền con dấu',
         'Creation Time': new Date().toISOString()
       }
@@ -2838,7 +2972,16 @@ textarea{font-family:inherit}
       files.push({ name, data: await blobBytes(blob) });
       lines.push(name + ': ' + (S === 2400 ? 'cỡ mặc định 2400 × 2400 px' : S === 1000 ? 'cỡ 1000 × 1000 px' : 'cỡ đang chọn ' + S + ' × ' + S + ' px') + ', nền trong suốt, ' + sealColorName(seal) + '.');
     }
+    // the seal as extracted, beside the finished one: same frame and size, to check that nothing of the seal's
+    // own content, shape or size was changed by the AI steps
+    if (sealAIChanged(seal)) {
+      const { blob } = await makeSealPNG(2400, undefined, false, sealOrigView(seal), sealExtent(seal));
+      const name = base + mmTag(seal) + '-ban-tach-goc-2400x2400.png';
+      files.push({ name, data: await blobBytes(blob) });
+      lines.push(name + ': bản tách gốc (chưa qua các bước AI ' + sealAIWords(seal).join(', ') + '), cùng khung và cỡ với file chính, chỉ để đối chiếu; không dùng thay file chính.');
+    }
     files.push({ name: base + '.json', data: utf8(buildJSON('seal')) }); lines.push(base + '.json: bản gốc con dấu; mở lại bằng nút Mở JSON.');
+    lines.push('Lưu ý (Điều 6 Nghị định 99/2016/NĐ-CP): chỉ dùng con dấu còn giá trị sử dụng, đã đăng ký mẫu, của cơ quan được giao quản lý; không làm biến dạng, sửa chữa nội dung mẫu con dấu; không đóng dấu lên chữ ký của người không có thẩm quyền. Đối chiếu với mẫu con dấu đã đăng ký trước khi dùng.');
     lines.push(mm ? 'Kích thước thực tế của con dấu: ' + fmtMm(mm) + ' mm, đã ghi vào các file PNG (Hướng dẫn 05-HD/VPTW: hình ảnh con dấu màu đỏ, bằng kích thước thực tế, PNG nền trong suốt). Chèn vào Word sẽ ra đúng cỡ này.'
       : 'Chưa nhập cỡ thật của con dấu: các file PNG chưa mang kích thước thực tế. Nhập Cỡ thật (mm) trong phần mềm rồi tải lại.');
     files.push({ name: 'HUONG-DAN.txt', data: readmeOf('Bộ file con dấu' + (org.trim() ? ' của ' + org.trim() : ''), lines) });
@@ -2851,7 +2994,8 @@ textarea{font-family:inherit}
   const r2 = (v) => Math.round(v * 100) / 100, r3 = (v) => Math.round(v * 1000) / 1000;
   function sealJSON() {
     return {
-      org: org.trim(), png: seal.mask.toDataURL('image/png'), color: seal.color, paper: seal.paper || null, rot: seal.rot, mm: seal.mm, realMm: realMmOf(seal), merged: seal.merged || 1, aiFixed: !!seal.orig,
+      org: org.trim(), png: seal.mask.toDataURL('image/png'), color: seal.color, paper: seal.paper || null, rot: seal.rot, mm: seal.mm, realMm: realMmOf(seal), merged: seal.merged || 1,
+      base: seal.base && seal.base !== seal.mask ? seal.base.toDataURL('image/png') : null, ai: Object.assign({}, seal.ai), aiDone: seal.aiKey || '', up: r2(seal.up || 0),
       circle: seal.circle ? { cx: r2(seal.circle.cx), cy: r2(seal.circle.cy), r: r2(seal.circle.r) } : null
     };
   }
@@ -2889,7 +3033,9 @@ textarea{font-family:inherit}
       realMm: Number.isFinite(+o.realMm) && +o.realMm >= 10 && +o.realMm <= 120 ? Math.round(+o.realMm * 10) / 10 : null,
       merged: Number.isFinite(+o.merged) ? clamp(Math.round(+o.merged), 1, 3) : 1,
       color: Array.isArray(o.color) && o.color.length === 3 && o.color.every((v) => Number.isFinite(+v)) ? o.color.map((v) => clamp(+v, 0, 255)) : null,
-      paper: Array.isArray(o.paper) && o.paper.length === 3 && o.paper.every((v) => Number.isFinite(+v)) ? o.paper.map((v) => clamp(+v, 0, 255)) : null
+      paper: Array.isArray(o.paper) && o.paper.length === 3 && o.paper.every((v) => Number.isFinite(+v)) ? o.paper.map((v) => clamp(+v, 0, 255)) : null,
+      base: isPngUrl(o.base) ? o.base : null, up: Number.isFinite(+o.up) && +o.up > 0 && +o.up < 50 ? +o.up : 0,
+      ai: o.ai && typeof o.ai === 'object' ? { fix: o.ai.fix !== false, ring: o.ai.ring !== false, smooth: o.ai.smooth !== false } : null
     };
   }
   function parseSignature(text) {
@@ -2967,7 +3113,10 @@ textarea{font-family:inherit}
   }
   async function hydrateSeal(d) {
     const mask = await pngToMask(d.png);
-    return { mask, iw: mask.width, ih: mask.height, color: d.color || [237, 28, 36], paper: d.paper || null, circle: d.circle, rot: d.rot, mm: d.mm,
+    // the seal as extracted (saved beside the finished one), so the AI steps can be switched again after opening
+    let base = d.base ? await pngToMask(d.base).catch(() => null) : null;
+    if (base && (base.width !== mask.width || base.height !== mask.height)) base = null;
+    return { mask, base: base || mask, ai: d.ai || null, up: d.up || 0, iw: mask.width, ih: mask.height, color: d.color || [237, 28, 36], paper: d.paper || null, circle: d.circle, rot: d.rot, mm: d.mm,
       realMm: d.realMm, realSrc: d.realMm ? 'json' : '', merged: d.merged || 1 };
   }
   // the JSON inside a .zip (the pack of files, or a file locked with a password); null when the user cancels
@@ -3114,12 +3263,14 @@ textarea{font-family:inherit}
     const gen = ++spGen;
     if (!seal) { setImg('sealImg', 'seal', null); return; }
     try {
-      const { blob } = await makeSealPNG(Math.min(cfg.sealSize, 900), 2, true);   // the preview is drawn smaller; the file uses the full size
+      const orig = cmpOrig && sealAIChanged(seal);
+      const { blob } = await makeSealPNG(Math.min(cfg.sealSize, 900), 2, true, orig ? sealOrigView(seal) : seal, orig ? sealExtent(seal) : null);   // the preview is drawn smaller; the file uses the full size
       if (gen !== spGen || !seal) return;
       setImg('sealImg', 'seal', blob);
     } catch (e) { /* the next change redraws */ }
   }
-  let fixBusy = false;   // AI sửa khuyết điểm is running
+  const AI_STEPS = { fix: true, ring: true, smooth: true };   // AI làm đẹp con dấu: a new seal gets all three steps
+  let aiBusy = false, lastRing = null, lastSmooth = null;   // the steps are being worked out; the last results (for checks)
   let readJob = null, orgFromAI = false;   // AI đọc tên trên con dấu: the reading under way; the name came from it
   function syncSeal() {
     const has = !!seal, S = cfg.sealSize;
@@ -3128,12 +3279,23 @@ textarea{font-family:inherit}
     $('sealRotBar').hidden = !has;
     $('sealScanLbl').textContent = has ? 'Tách lại từ bản scan khác' : 'Tách con dấu từ bản scan';
     $('sealClear').disabled = !has; $('docSealBtn').disabled = !has; $('sizePdfBtn').disabled = !has || !realMmOf(seal) || saving;
-    $('sealFixBtn').disabled = !has || fixBusy; setPressed('sealFixBtn', !!(seal && seal.orig));
+    // AI làm đẹp con dấu: the three switches, and what each step did
+    const notes = has ? aiStepNotes(seal) : null;
+    for (const [id, rid, k] of [['sealFixBtn', 'sealFixRes', 'fix'], ['sealRingBtn', 'sealRingRes', 'ring'], ['sealSmoothBtn', 'sealSmoothRes', 'smooth']]) {
+      const b = $(id), r = $(rid), usable = has && (k !== 'ring' || !!seal.circle);
+      b.disabled = !usable;
+      b.setAttribute('aria-checked', usable && seal.ai[k] ? 'true' : 'false');
+      r.className = 'ai-res' + (notes && notes[k][0] ? ' ' + notes[k][0] : '');
+      r.textContent = notes ? notes[k][1] : '';
+    }
+    $('sealBusy').hidden = !(has && seal.aiRun);
+    if (!sealAIChanged(seal)) cmpOrig = false;
+    $('sealCmpBtn').hidden = !sealAIChanged(seal); setPressed('sealCmpBtn', cmpOrig);
+    $('sealCmpBtn').textContent = cmpOrig ? 'Đang xem bản tách gốc · bấm để xem bản đã làm đẹp' : 'Xem bản tách gốc';
     const aiOn = !!(seal && seal.aiColor && !cfg.sealKeep && sealHex(seal) === seal.aiColor);
-    for (const id of ['sealColorAI', 'sealColorAI2']) { $(id).disabled = !has; setPressed(id, aiOn); }
-    $('sealFixLbl').textContent = fixBusy ? 'AI đang sửa…' : seal && seal.orig ? 'Bỏ sửa khuyết điểm' : 'AI sửa khuyết điểm';
+    $('sealColorAI').disabled = !has; setPressed('sealColorAI', aiOn);
     const mg = seal ? seal.merged || 1 : 1;
-    $('sealMergeBtn').disabled = !has || fixBusy || mg >= 3;
+    $('sealMergeBtn').disabled = !has || aiBusy || mg >= 3;
     $('sealMergeLbl').textContent = mg >= 3 ? 'Đã ghép 3 lần đóng dấu' : mg === 2 ? 'Ghép thêm lần đóng thứ 3' : 'Ghép thêm lần đóng dấu';
     $('sealDlLabel').textContent = 'Tải PNG con dấu ' + S + ' × ' + S;
     $('sealSizeOut').textContent = S;
@@ -3151,7 +3313,7 @@ textarea{font-family:inherit}
     rin.classList.toggle('bad', !!(seal && seal.realBad)); rin.setAttribute('aria-invalid', seal && seal.realBad ? 'true' : 'false');
     $('sealRealSrc').textContent = !rmm ? '' : seal.realSrc === 'scan' ? 'AI đo trên bản scan · nên đo lại bằng thước' : seal.realSrc === 'json' ? 'theo file đã lưu' : seal.realSrc === 'merge' ? 'giữ theo lần đóng dấu đầu' : 'đã nhập';
     $('sealDl').disabled = !has || saving; $('sealJsonBtn').disabled = !has || saving; $('sealZipBtn').disabled = !has || saving;
-    $('sealOptsSum').textContent = S + ' × ' + S + ' · ' + (cfg.sealKeep ? 'màu bản scan' : (SEAL_COLORS[sealHex(null)] || 'màu tự chọn'));
+    $('sealOptsSum').textContent = S + ' × ' + S + ' · lề ' + String(cfg.sealMargin).replace('.', ',') + '%';
     const st = $('sealStatus'), txt = $('sealStatusText');
     st.classList.remove('ok', 'warn');
     if (!has) { $('sealInfo').textContent = 'Chưa có con dấu.'; txt.textContent = 'Chưa có con dấu. Bấm Tách con dấu từ bản scan.'; return; }
@@ -3160,12 +3322,16 @@ textarea{font-family:inherit}
     if (realMmOf(seal)) bits.push('cỡ thật ' + fmtMm(realMmOf(seal)) + ' mm, đã ghi vào file PNG');
     else if (seal.mm) bits.push('đường kính trên bản scan ≈ ' + seal.mm.toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + ' mm');
     if (seal.merged > 1) bits.push('ghép từ ' + seal.merged + ' lần đóng dấu');
-    if (seal.orig) bits.push('đã sửa khuyết điểm bằng AI');
+    const ar = seal.aiRes || {}, did = [];
+    if (ar.f && !ar.f.none) did.push('sửa khuyết điểm');
+    if (ar.r && ((ar.r.rings || []).some((g) => !g.kept) || ar.r.gaps)) did.push('chuẩn hóa viền');
+    if (ar.s) did.push('làm mịn nét');
+    if (did.length) bits.push('AI đã ' + did.join(', '));
     $('sealInfo').textContent = 'PNG ' + S + ' × ' + S + ' px, nền trong suốt · ' + bits.join(' · ') + '.';
     if (S < 600) { st.classList.add('warn'); txt.textContent = 'Ảnh ' + S + ' × ' + S + ' px khá nhỏ: chữ trên con dấu có thể không rõ. Nên dùng 1000 px trở lên, trừ khi hệ thống yêu cầu cỡ này.'; }
     else if (seal.realBad) { st.classList.add('warn'); txt.textContent = 'Cỡ thật của con dấu phải từ 10 đến 120 mm (ví dụ 35 hoặc 35,5).'; }
-    else if (!realMmOf(seal)) { st.classList.add('warn'); txt.textContent = 'Chưa có cỡ thật: nhập đường kính thật của con dấu (mm) ở bước 1 để ảnh con dấu bằng kích thước thực tế theo Hướng dẫn 05-HD/VPTW.'; }
-    else if (!slugName(org)) { st.classList.add('warn'); txt.textContent = 'Nên nhập tên cơ quan ở bước 1 để đặt tên file rõ ràng (không bắt buộc).'; }
+    else if (!realMmOf(seal)) { st.classList.add('warn'); txt.textContent = 'Chưa có cỡ thật: nhập đường kính thật của con dấu (mm) ở mục 3 để ảnh con dấu bằng kích thước thực tế theo Hướng dẫn 05-HD/VPTW.'; }
+    else if (!slugName(org)) { st.classList.add('warn'); txt.textContent = 'Nên nhập tên cơ quan ở mục 3 để đặt tên file rõ ràng (không bắt buộc).'; }
     else { st.classList.add('ok'); txt.textContent = 'Đạt: PNG vuông ' + S + ' × ' + S + ' px, nền trong suốt, màu đồng đều, bằng kích thước thực tế ' + fmtMm(realMmOf(seal)) + ' mm' + (seal.circle ? ', con dấu căn giữa.' : '.'); }
   }
   // the real size measured on the scan: the seal's outer edge, at the scan's known scale (checked by the user with a ruler)
@@ -3175,10 +3341,11 @@ textarea{font-family:inherit}
     if (v >= 10 && v <= 120) { sl.realMm = Math.round(v * 10) / 10; sl.realSrc = 'scan'; }
   }
   function setSeal(sl) {
-    seal = sl;
+    seal = sl ? prepSeal(sl) : null;
     initRealMm(seal);
     if (!seal) setImg('sealImg', 'seal', null);
     syncButtons(); scheduleSealPreview(0);
+    ensureSealAI(seal);
   }
 
   /* ---------- saving files ---------- */
@@ -3321,17 +3488,25 @@ textarea{font-family:inherit}
       await offerSig(name, [{ name, data: d }], new Blob([d], { type: 'application/pdf' }));
     });
   });
+  // a file of the seal waits for the AI steps still being worked out, so it holds the finished seal
+  async function sealReady() {
+    const sl = seal;
+    if (!sl || !sl.aiRun) return;
+    toast('Chờ AI làm đẹp con dấu xong rồi tải…');
+    while (sl.aiRun) await sl.aiRun;
+  }
   $('sealJsonBtn').addEventListener('click', () => {
     if (!seal) return;
-    busy(async () => { const name = sealBase() + '.json', j = buildJSON('seal'); await offerSeal(cfg.sealLock ? sealBase() + '-json.json' : name, [{ name, data: utf8(j) }], j); });
+    busy(async () => { await sealReady(); const name = sealBase() + '.json', j = buildJSON('seal'); await offerSeal(cfg.sealLock ? sealBase() + '-json.json' : name, [{ name, data: utf8(j) }], j); });
   });
   $('sealDl').addEventListener('click', () => {
     if (!seal) return;
-    busy(async () => { const { S, blob } = await makeSealPNG(cfg.sealSize), name = sealFileName(S); await offerSeal(name, [{ name, data: await blobBytes(blob) }], blob); });
+    busy(async () => { await sealReady(); const { S, blob } = await makeSealPNG(cfg.sealSize), name = sealFileName(S); await offerSeal(name, [{ name, data: await blobBytes(blob) }], blob); });
   });
   $('sealZipBtn').addEventListener('click', () => {
     if (!seal) return;
     busy(async () => {
+      await sealReady();
       toast('Đang đóng gói trọn bộ con dấu…');
       const name = sealBase() + '.zip';
       if (!cfg.sealLock) { await offerFile(name, await sealBundle()); return; }
@@ -3463,7 +3638,7 @@ textarea{font-family:inherit}
   $('sealAuto').addEventListener('click', () => autoStraighten(true));
   // seal ink: standard red by default; brighter and deeper reds, any colour, or the scan's own colour
   function syncSealColor() {
-    const hex = isHex(cfg.sealColor) ? cfg.sealColor.toUpperCase() : SEAL_RED, preset = !!SEAL_COLORS[hex];
+    const hex = isHex(cfg.sealColor) ? cfg.sealColor.toUpperCase() : SEAL_DEFAULT, preset = !!SEAL_COLORS[hex];
     document.querySelectorAll('[data-seal-color]').forEach((b) => b.setAttribute('aria-pressed', !cfg.sealKeep && b.dataset.sealColor === hex ? 'true' : 'false'));
     document.querySelectorAll('.seal-custom').forEach((l) => { l.style.boxShadow = !cfg.sealKeep && !preset ? '0 0 0 2px var(--accent)' : ''; });
     document.querySelectorAll('.seal-custom-in').forEach((i) => { i.value = hex.toLowerCase(); });
@@ -3492,46 +3667,134 @@ textarea{font-family:inherit}
     toast('AI đã chỉnh màu con dấu: ' + r.hex + ' (' + r.note + '). Bấm Hoàn tác để về màu trước.', () => { setSealColor(before); syncSeal(); });
   }
   $('sealColorAI').addEventListener('click', aiColorPress);
-  $('sealColorAI2').addEventListener('click', aiColorPress);
-  // AI sửa khuyết điểm: a separate step, only when pressed; pressed again it goes back to the seal as extracted
-  $('sealFixBtn').addEventListener('click', async () => {
-    if (!seal || fixBusy) return;
-    const sl = seal;
-    if (sl.orig) {
-      sl.mask = sl.orig; delete sl.orig;
-      syncSeal(); scheduleSealPreview(0);
-      toast('Đã bỏ phần AI sửa: con dấu trở về như lúc tách từ bản scan.');
-      return;
-    }
-    fixBusy = true; syncSeal();
-    let res = null;
-    try {
-      const w = sl.iw, h = sl.ih, d = sl.mask.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data, A = new Uint8ClampedArray(w * h);
-      for (let i = 0; i < A.length; i++) A[i] = d[i * 4 + 3];
-      res = await fixAsync(A, sl.ev, w, h, sl.circle);
-    } catch (e) { res = null; }
-    fixBusy = false;
-    if (seal !== sl) { syncSeal(); return; }   // another seal came in meanwhile
-    if (!res) { syncSeal(); toast('Máy không đủ bộ nhớ để AI sửa con dấu này. Hãy thử lại sau khi đóng bớt thẻ trình duyệt.'); return; }
-    const c = document.createElement('canvas'); c.width = sl.iw; c.height = sl.ih;
-    const img = new ImageData(sl.iw, sl.ih), px = img.data;
-    for (let i = 0; i < res.A.length; i++) px[i * 4 + 3] = res.A[i];
+  /* ---------- AI làm đẹp con dấu: three steps, always worked out from the seal as it was extracted ----------
+     1. Sửa khuyết điểm, 2. Chuẩn hóa viền (round seals), 3. Làm mịn nét, xóa răng cưa: in that order, each one on or
+     off. A new seal gets all three. Switching one off gives the seal without that step: the others are worked out
+     again from the seal as extracted (never from an earlier result), so there is no order of presses to keep track
+     of and nothing to undo step by step. Results are kept, so switching back is at once. */
+  const alphaOf = (c) => {
+    const w = c.width, h = c.height, d = c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data, A = new Uint8ClampedArray(w * h);
+    for (let i = 0; i < A.length; i++) A[i] = d[i * 4 + 3];
+    return A;
+  };
+  const maskOfAlpha = (A, w, h) => {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const img = new ImageData(w, h), px = img.data;
+    for (let i = 0; i < A.length; i++) px[i * 4 + 3] = A[i];
     c.getContext('2d').putImageData(img, 0, 0);
-    sl.orig = sl.mask; sl.mask = c;
-    syncSeal(); scheduleSealPreview(0);
-    const st = res.st || {}, did = [];
-    if (st.thin) did.push('làm đầy ' + st.thin + ' chỗ nét mòn, nứt');
-    if (st.bridges) did.push('nối ' + st.bridges + ' chỗ nét đứt');
-    if (st.ring) did.push('nối chỗ hở trên viền dấu');
-    if (!did.length) {
-      sl.mask = sl.orig; delete sl.orig; syncSeal(); scheduleSealPreview(0);
-      toast('AI không thấy khuyết điểm nào cần sửa: con dấu giữ nguyên như lúc tách.');
-      return;
+    return c;
+  };
+  // the smoothed outlines as a shape: filled at any size they give clean, sharp edges (the file at 2400 px and more)
+  function pathOfLoops(loops) {
+    const P = new Path2D();
+    for (const p of loops) {
+      const n = p.length >> 1; if (n < 3) continue;
+      P.moveTo(p[0], p[1]); for (let i = 1; i < n; i++) P.lineTo(p[2 * i], p[2 * i + 1]); P.closePath();
     }
-    toast('AI đã sửa: ' + did.join(', ') + '. Bấm Hoàn tác hoặc Bỏ sửa khuyết điểm để quay lại.', () => {
-      if (seal === sl && sl.orig) { sl.mask = sl.orig; delete sl.orig; syncSeal(); scheduleSealPreview(0); }
+    return P;
+  }
+  // the steps the seal should have now (Chuẩn hóa viền only on a round seal)
+  const aiWant = (sl) => (sl.ai.fix ? 'f' : '') + (sl.ai.ring && sl.circle ? 'r' : '') + (sl.ai.smooth ? 's' : '');
+  // a seal that has just come in: its pixels as extracted are kept apart; the steps start out all on
+  function prepSeal(sl) {
+    if (!sl.base) sl.base = sl.mask;
+    if (!sl.ai) sl.ai = Object.assign({}, AI_STEPS);
+    if (!sl.cache) { sl.cache = {}; sl.aiRes = {}; sl.aiKey = ''; sl.paths = null; }
+    return sl;
+  }
+  function runSealAI(sl) {
+    if (sl.aiRun) { sl.aiAgain = true; return sl.aiRun; }
+    sl.aiRun = (async () => {
+      await null;   // (from here on sl.aiRun is set, even when every step is already worked out)
+      if (seal === sl) { aiBusy = true; syncSeal(); }
+      let fail = false;
+      try {
+        for (;;) {
+          sl.aiAgain = false;
+          const want = aiWant(sl), w = sl.iw, h = sl.ih, res = {};
+          let A = null, key = '', loops = null;
+          for (const k of want) {
+            key += k;
+            let r = sl.cache[key];
+            if (!r) {
+              const src = A || alphaOf(sl.base);
+              if (k === 'f') {
+                r = await fixAsync(src, sl.ev, w, h, sl.circle);
+                if (r && !(r.st && (r.st.thin || r.st.bridges || r.st.ring))) r = { A: src, st: Object.assign({}, r.st, { none: true }) };   // nothing to repair: as it was
+              } else if (k === 'r') r = await ringAsync(src, w, h, sl.circle);
+              else r = await smoothAsync(src, w, h, sl.up || 0, sl.circle ? sl.circle.r : 0);
+              if (!r) { fail = true; break; }
+              sl.cache[key] = r;
+            }
+            A = r.A; res[k] = r.st || {};
+            if (k === 's') loops = r.loops;
+          }
+          if (!fail && sl.aiAgain) continue;   // switched again meanwhile: once more (from the kept results where it can)
+          if (!fail) {
+            sl.mask = A ? maskOfAlpha(A, w, h) : sl.base;
+            sl.paths = loops && loops.length ? pathOfLoops(loops) : null;
+            sl.aiRes = res; sl.aiKey = key;
+            if (res.r) lastRing = { rings: res.r.rings, gaps: res.r.gaps, gapAt: res.r.gapAt, toothed: res.r.toothed, oval: res.r.oval, changed: res.r.changed, R: res.r.R };
+            if (res.s) lastSmooth = Object.assign({}, res.s);
+          }
+          break;
+        }
+      } catch (e) { fail = true; }
+      sl.aiRun = null;
+      if (seal === sl) {
+        aiBusy = false; syncSeal(); scheduleSealPreview(0);
+        if (fail) toast('Máy không đủ bộ nhớ để AI làm đẹp con dấu này. Hãy đóng bớt thẻ trình duyệt rồi bật lại bước AI.');
+      }
+    })();
+    return sl.aiRun;
+  }
+  // a seal on screen: its AI steps worked out if they are not already
+  function ensureSealAI(sl) { if (sl && aiWant(sl) !== sl.aiKey && !sl.aiRun) runSealAI(sl); }
+  $('sealCmpBtn').addEventListener('click', () => { cmpOrig = !cmpOrig; scheduleSealPreview(0); });
+  for (const [id, k] of [['sealFixBtn', 'fix'], ['sealRingBtn', 'ring'], ['sealSmoothBtn', 'smooth']]) {
+    $(id).addEventListener('click', () => {
+      if (!seal || (k === 'ring' && !seal.circle)) return;
+      seal.ai[k] = !seal.ai[k];
+      syncSeal();
+      runSealAI(seal);
     });
-  });
+  }
+  function ringSummary(sl, st) {
+    const rs = st.rings || [], n = rs.length, mmPx = realMmOf(sl) && st.R ? realMmOf(sl) / (2 * st.R) : 0;
+    // which ring is which, by where it lies: the outer ring makes the seal's edge; the thin ring sits just inside it
+    // across a narrow gap; the others lie further in
+    const gapAt = st.gapAt || [], atEdge = (g) => g.ro >= st.R - Math.max(2, 0.015 * st.R);
+    const kind = rs.map((g, i) => i === 0 && atEdge(g) ? 'out' : i === 1 && atEdge(rs[0]) && gapAt.includes(0) ? 'thin' : 'in');
+    const ins = kind.map((k, i) => k === 'in' ? i : -1).filter((i) => i >= 0);
+    const name = (i) => kind[i] === 'out' ? 'viền ngoài' : kind[i] === 'thin' ? 'viền mảnh' : ins.length === 1 ? 'viền trong' : i === ins[ins.length - 1] ? 'viền trong cùng' : 'viền giữa';
+    const mm = (v) => (Math.round(v * mmPx * 100) / 100).toLocaleString('vi-VN') + ' mm';
+    const drawn = rs.map((g, i) => ({ g, i })).filter((o) => !o.g.kept);
+    let msg = 'Đã chuẩn hóa xong ' + (drawn.length === 1 ? 'viền' : drawn.length + ' viền') + ': ' +
+      drawn.map((o) => name(o.i) + (mmPx ? ' dày ' + mm(o.g.width) : '')).join(', ');
+    if (st.gaps) msg += '; ' + (gapAt.length === st.gaps ? gapAt.map((i) => 'khe giữa ' + name(i) + ' và ' + name(i + 1)).join(', ') : st.gaps + ' khe giữa các viền') + ' đã sạch';
+    if (rs.some((g) => g.kept)) msg += '. Viền ngoài răng cưa: giữ nguyên';
+    if (st.oval > 1.002) msg += '. Dấu hơi bầu dục: chuẩn hóa theo đúng dáng dấu';
+    return msg + '.';
+  }
+  // what each step did, under its switch
+  function aiStepNotes(sl) {
+    const on = sl.ai, res = sl.aiRes || {}, done = sl.aiKey || '', busy = !!sl.aiRun, out = {};
+    const fx = res.f;
+    out.fix = !on.fix ? ['off', 'Đang tắt: giữ nét như lúc tách.'] : busy && !done.includes('f') ? ['busy', 'AI đang sửa…'] : !fx ? ['', ''] :
+      fx.none ? ['', 'Không thấy khuyết điểm cần sửa.'] :
+      ['', 'Đã sửa: ' + [fx.thin ? 'làm đầy ' + fx.thin + ' chỗ nét mòn, nứt' : '', fx.bridges ? 'nối ' + fx.bridges + ' chỗ nét đứt' : '', fx.ring ? 'nối chỗ hở trên viền dấu' : ''].filter(Boolean).join(', ') + '.'];
+    const rg = res.r;
+    out.ring = !sl.circle ? ['off', 'Chỉ dùng cho dấu tròn.'] : !on.ring ? ['off', 'Đang tắt: giữ viền như lúc tách.'] : busy && !done.includes('r') ? ['busy', 'AI đang chuẩn hóa…'] : !rg ? ['', ''] :
+      (rg.rings || []).some((g) => !g.kept) || rg.gaps ? ['', ringSummary(sl, rg)] :
+      ['', rg.oval > 1.1 ? 'Con dấu không tròn (dấu bầu dục): giữ nguyên viền.' : 'Không thấy viền tròn đủ rõ để chuẩn hóa: giữ nguyên.'];
+    const sm = res.s;
+    // how far an edge moved, in mm when the seal's size is known (never more than one pixel of the scan)
+    const mmpp = realMmOf(sl) ? realMmOf(sl) / (sealExtent(Object.assign({}, sl, { mask: sl.base })).ext50 || 1) : sl.mmPx || 0;
+    const mv = sm && sm.maxMove ? (mmpp ? 'mép nét lệch tối đa ' + (Math.max(0.01, Math.round(sm.maxMove * mmpp * 100) / 100)).toLocaleString('vi-VN') + ' mm so với bản tách gốc' : 'mép nét lệch không quá 1 điểm ảnh của bản scan') : '';
+    out.smooth = !on.smooth ? ['off', 'Đang tắt: giữ mép nét như lúc tách.'] : busy && !done.includes('s') ? ['busy', 'AI đang làm mịn…'] : !sm ? ['', ''] :
+      ['', 'Đã làm mịn nét: mép chữ và hình trơn, sắc nét' + (sm.dropped ? ', bỏ ' + sm.dropped + ' đốm mực li ti' : '') + (mv ? '; ' + mv : '') + '.'];
+    return out;
+  }
 
   /* ---------- AI đọc tên trên con dấu ----------
      The seal's lettering is read offline by the Tesseract OCR engine (tesseract.js-core, Apache License 2.0) with its
@@ -3984,7 +4247,8 @@ self.onmessage = async (e) => {
   const erodeBin = (b, w, h, r) => boxBin(b, w, h, r, (c) => c >= (2 * r + 1) * (2 * r + 1));
   const dilateBin = (b, w, h, r) => boxBin(b, w, h, r, (c) => c > 0);
   async function mergeSeal(hi, tilt, mmPx) {
-    const A = seal, base = A.orig || A.mask;
+    // the seal as extracted, before the AI steps (they are worked out again on the merged seal)
+    const A = seal, base = A.base || A.mask;
     const Aw = Object.assign({}, A, { mask: base });
     const B = { mask: hi.mask, iw: hi.w, ih: hi.h, circle: hi.circle, rot: normRot(tilt || 0) };
     // 1. the match, from small to large: any turn first (the two may have been turned differently), then exact
@@ -4057,8 +4321,7 @@ self.onmessage = async (e) => {
       return false;
     }
     const merged = (prev.merged || 1) + 1;
-    const next = Object.assign({}, prev, { mask: r.mask, merged, ev: null });
-    delete next.orig;
+    const next = Object.assign({}, prev, { mask: r.mask, base: r.mask, merged, ev: null, ai: Object.assign({}, prev.ai), cache: null, aiRes: null, aiKey: '', paths: null, aiRun: null, aiAgain: false });
     if (!realMmOf(next) && r.mmPx) { const v = sealExtent(r.B).ext50 * r.mmPx; if (v >= 10 && v <= 120) { next.realMm = Math.round(v * 10) / 10; next.realSrc = 'scan'; } }
     setSeal(next);
     const pct = Math.round(r.added * 1000) / 10;
@@ -5504,6 +5767,700 @@ self.onmessage = async (e) => {
     }
     return st;
   }
+  /* ---------- AI chuẩn hóa viền con dấu (a separate step, only when the button is pressed) ----------
+     The printed circles of a round seal (outer ring, the thin ring just inside it, the inner ring around the middle)
+     are true, even circles on the stamp itself; the scan makes them ragged, uneven, smudged into the narrow gap between
+     the outer ring and the thin ring, or broken. Each ring is measured all the way round (its inner and outer edge, as
+     circles fitted to hundreds of edge points; edges hidden by smudges or touching letters are left out of the fit),
+     then drawn back as a sharp anti-aliased ring of that measured size about the seal's one centre, and the narrow gap
+     between two rings is cleared. Lettering, stars and the emblem stay exactly as they are. An outer ring with teeth
+     (a serrated edge) is left as it is. A seal photographed a little askew (slightly oval) is measured and redrawn oval. */
+  // least-squares circle through points (x, y) (Kåsa), worked out about their mean for accuracy
+  function circleFit(X, Y, n) {
+    if (n < 8) return null;
+    let mx = 0, my = 0;
+    for (let i = 0; i < n; i++) { mx += X[i]; my += Y[i]; }
+    mx /= n; my /= n;
+    let suu = 0, svv = 0, suv = 0, suuu = 0, svvv = 0, suvv = 0, svuu = 0;
+    for (let i = 0; i < n; i++) {
+      const u = X[i] - mx, v = Y[i] - my, uu = u * u, vv = v * v;
+      suu += uu; svv += vv; suv += u * v; suuu += uu * u; svvv += vv * v; suvv += u * vv; svuu += v * uu;
+    }
+    const det = suu * svv - suv * suv;
+    if (!(Math.abs(det) > 1e-9)) return null;
+    const b1 = 0.5 * (suuu + suvv), b2 = 0.5 * (svvv + svuu);
+    const uc = (b1 * svv - b2 * suv) / det, vc = (suu * b2 - suv * b1) / det;
+    return { cx: uc + mx, cy: vc + my, r: Math.sqrt(uc * uc + vc * vc + (suu + svv) / n) };
+  }
+  // the same, with stray points (a smudge, a letter touching the line) dropped round by round
+  function circleFitRobust(X, Y, n, cap) {
+    let f = circleFit(X, Y, n);
+    const x = Float64Array.from(X.slice(0, n)), y = Float64Array.from(Y.slice(0, n)), res = new Float64Array(n);
+    let m = n;
+    for (let it = 0; it < 6 && f; it++) {
+      for (let i = 0; i < m; i++) res[i] = Math.abs(Math.hypot(x[i] - f.cx, y[i] - f.cy) - f.r);
+      const s = Array.from(res.subarray(0, m)).sort((a, b) => a - b), mad = s[m >> 1];
+      const lim = Math.max(0.5, Math.min(3 * 1.4826 * mad, cap || Infinity));
+      let k = 0;
+      for (let i = 0; i < m; i++) if (res[i] <= lim) { x[k] = x[i]; y[k] = y[i]; k++; }
+      if (k === m || k < 8) break;
+      m = k; f = circleFit(x, y, m);
+    }
+    if (!f) return null;
+    let ss = 0;
+    for (let i = 0; i < m; i++) { const e = Math.hypot(x[i] - f.cx, y[i] - f.cy) - f.r; ss += e * e; }
+    f.rms = Math.sqrt(ss / m); f.n = m; f.x = x.subarray(0, m); f.y = y.subarray(0, m);
+    // the dropped points: scattered (smudges, touching letters) or a second circle of their own (two lines read as one)
+    const lim = Math.max(1, 3 * f.rms), out = [];
+    for (let i = 0; i < n; i++) { const e = Math.hypot(X[i] - f.cx, Y[i] - f.cy) - f.r; if (Math.abs(e) > lim) out.push(e); }
+    f.second = 0; f.secondAt = 0;
+    if (out.length >= 0.12 * n) {
+      const H = new Map();
+      for (const e of out) { const b = Math.round(e); H.set(b, (H.get(b) || 0) + 1); }
+      for (const [b, c] of H) { const v = c + (H.get(b - 1) || 0) + (H.get(b + 1) || 0); if (v > f.second) { f.second = v; f.secondAt = b; } }
+      f.second /= n;
+    }
+    return f;
+  }
+  // least-squares ellipse through points: centre, half axes a >= b, angle of the long axis
+  function ellipseFit(X, Y, n) {
+    if (n < 12) return null;
+    let mx = 0, my = 0, s = 0;
+    for (let i = 0; i < n; i++) { mx += X[i]; my += Y[i]; }
+    mx /= n; my /= n;
+    for (let i = 0; i < n; i++) s += Math.hypot(X[i] - mx, Y[i] - my);
+    s /= n;
+    if (!(s > 0)) return null;
+    const M = Array.from({ length: 5 }, () => new Float64Array(6));
+    for (let i = 0; i < n; i++) {
+      const u = (X[i] - mx) / s, v = (Y[i] - my) / s, r = [u * u, u * v, v * v, u, v];
+      for (let p = 0; p < 5; p++) { for (let q = 0; q < 5; q++) M[p][q] += r[p] * r[q]; M[p][5] += r[p]; }
+    }
+    for (let c = 0; c < 5; c++) {   // Gauss–Jordan with partial pivoting
+      let pr = c; for (let r = c + 1; r < 5; r++) if (Math.abs(M[r][c]) > Math.abs(M[pr][c])) pr = r;
+      [M[c], M[pr]] = [M[pr], M[c]];
+      if (!(Math.abs(M[c][c]) > 1e-12)) return null;
+      for (let r = 0; r < 5; r++) { if (r === c) continue; const f = M[r][c] / M[c][c]; for (let q = c; q < 6; q++) M[r][q] -= f * M[c][q]; }
+    }
+    const [A, B, C, D, E] = M.map((row, i) => row[5] / row[i]);
+    const det = 4 * A * C - B * B;
+    if (!(det > 0)) return null;
+    const u0 = (B * E - 2 * C * D) / det, v0 = (B * D - 2 * A * E) / det;
+    const F0 = A * u0 * u0 + B * u0 * v0 + C * v0 * v0 + D * u0 + E * v0 - 1;
+    const tr = A + C, df = Math.sqrt((A - C) * (A - C) + B * B), l1 = (tr + df) / 2, l2 = (tr - df) / 2;
+    if (!(-F0 / l1 > 0 && -F0 / l2 > 0)) return null;
+    let ex = B / 2, ey = l2 - A;
+    if (Math.hypot(ex, ey) < 1e-9) { ex = l2 - C; ey = B / 2; }
+    if (Math.hypot(ex, ey) < 1e-9) { ex = 1; ey = 0; }
+    return { cx: mx + u0 * s, cy: my + v0 * s, a: Math.sqrt(-F0 / l2) * s, b: Math.sqrt(-F0 / l1) * s, phi: Math.atan2(ey, ex) };
+  }
+  function ringNormalize(A, w, h, circ) {
+    const st = { rings: [], gaps: 0, gapAt: [], toothed: false, oval: 0, changed: 0, R: 0 };
+    if (!circ || !(circ.r > 24)) return st;
+    const smpI = (X, Y) => {   // alpha at a point of the picture (pixel centres at +0.5), bilinear
+      const u = X - 0.5, v = Y - 0.5, x0 = Math.floor(u), y0 = Math.floor(v), fx = u - x0, fy = v - y0;
+      const g = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h) ? 0 : A[yy * w + xx];
+      return (g(x0, y0) * (1 - fx) + g(x0 + 1, y0) * fx) * (1 - fy) + (g(x0, y0 + 1) * (1 - fx) + g(x0 + 1, y0 + 1) * fx) * fy;
+    };
+    // the work is done in "round" space: a slightly oval seal is stretched along its short axis into a circle
+    let ecx = 0, ecy = 0, cu = 1, su = 0, kq = 1;
+    const fwd = (x, y) => { if (kq === 1) return [x, y]; const dx = x - ecx, dy = y - ecy, du = dx * cu + dy * su, dv = (-dx * su + dy * cu) * kq; return [ecx + du * cu - dv * su, ecy + du * su + dv * cu]; };
+    const inv = (x, y) => { if (kq === 1) return [x, y]; const dx = x - ecx, dy = y - ecy, du = dx * cu + dy * su, dv = (-dx * su + dy * cu) / kq; return [ecx + du * cu - dv * su, ecy + du * su + dv * cu]; };
+    const smp = (X, Y) => { if (kq === 1) return smpI(X, Y); const p = inv(X, Y); return smpI(p[0], p[1]); };
+    const K = 1440, CT = new Float64Array(K), SN = new Float64Array(K);
+    for (let k = 0; k < K; k++) { CT[k] = Math.cos(2 * Math.PI * k / K); SN[k] = Math.sin(2 * Math.PI * k / K); }
+    const PX = new Float64Array(K), PY = new Float64Array(K);
+    let cx = circ.cx, cy = circ.cy, R = circ.r;
+    const oRho = new Float64Array(K), oOk = new Uint8Array(K);
+    // the outer edge of the seal, found inward along each ray from (cx, cy)
+    const outerEdge = () => {
+      let n = 0; oOk.fill(0);
+      const step = 0.25, r0 = 1.12 * R, r1 = 0.7 * R;
+      for (let k = 0; k < K; k++) {
+        let prev = smp(cx + CT[k] * r0, cy + SN[k] * r0);
+        for (let rho = r0 - step; rho >= r1; rho -= step) {
+          const s = smp(cx + CT[k] * rho, cy + SN[k] * rho);
+          if (s >= 127.5 && prev < 127.5) {
+            const e = rho + step * (s - 127.5) / Math.max(1e-6, s - prev);
+            PX[n] = cx + CT[k] * e; PY[n] = cy + SN[k] * e; oRho[k] = e; oOk[k] = 1; n++; break;
+          }
+          prev = s;
+        }
+      }
+      return n;
+    };
+    // 1. the outer edge fitted as a circle (twice: the centre settles), then checked for a slight oval
+    let outer = null;
+    for (let pass = 0; pass < 2; pass++) {
+      const n = outerEdge(), f = circleFitRobust(PX, PY, n);
+      if (!f || n < 0.5 * K) return st;
+      outer = f; cx = f.cx; cy = f.cy; R = f.r;
+    }
+    const el = ellipseFit(outer.x, outer.y, outer.n);
+    if (el && el.a / el.b > 1 / 0.9) { st.oval = el.a / el.b; return st; }   // clearly oval by design: not a round seal
+    if (el && el.a / el.b > 1.002) {
+      ecx = el.cx; ecy = el.cy; cu = Math.cos(el.phi); su = Math.sin(el.phi); kq = el.a / el.b; st.oval = kq;
+      cx = ecx; cy = ecy; R = el.a;
+      const n = outerEdge(), f = circleFitRobust(PX, PY, n);
+      if (!f || n < 0.5 * K) return st;
+      cx = f.cx; cy = f.cy; R = f.r;
+    }
+    st.R = R;
+    // 2. a serrated outer edge (teeth all the way round) is the stamp's own design: that ring is left untouched
+    {
+      const n = outerEdge(), res = [], idx = [];
+      for (let k = 0; k < K; k++) if (oOk[k]) { res.push(oRho[k] - R); idx.push(k); }
+      const m = res.length, mean = m ? res.reduce((a, b) => a + b, 0) / m : 0;
+      let sd = 0; for (const v of res) sd += (v - mean) * (v - mean); sd = Math.sqrt(sd / Math.max(1, m));
+      if (n > 0.8 * K && sd > Math.max(1.2, 0.006 * R)) {
+        // teeth repeat at a steady pace: past its first dip, the self-similarity of the edge climbs back to a clear peak
+        // (16 to 240 teeth round) and again at twice that turn (a slow wobble is not teeth)
+        const z = new Float64Array(K); for (let i = 0; i < m; i++) z[idx[i]] = res[i] - mean;
+        let c0 = 0; for (let k = 0; k < K; k++) c0 += z[k] * z[k];
+        const ac = (L) => { let c = 0; for (let k = 0; k < K; k++) c += z[k] * z[(k + L) % K]; return c / c0; };
+        let Ld = 0, best = 0, Lp = 0;
+        for (let L = 1; L <= Math.ceil(K / 32); L++) if (ac(L) < 0.1) { Ld = L; break; }
+        if (Ld) for (let L = Math.max(Ld + 1, Math.floor(K / 240)); L <= Math.ceil(K / 16); L++) { const v = ac(L); if (v > best) { best = v; Lp = L; } }
+        if (best > 0.45 && ac(2 * Lp) > 0.3) st.toothed = true;
+      }
+    }
+    // 3. ink round the circle at each distance from the centre: printed circles stand out as bands of near-full cover
+    const K2 = 720, dr = 0.5, rA = 0.18 * R, rB = 1.06 * R, NB = Math.ceil((rB - rA) / dr) + 1, cov = new Float64Array(NB);
+    for (let j = 0; j < NB; j++) {
+      const rho = rA + j * dr; let c = 0;
+      for (let k = 0; k < K2; k++) if (smp(cx + CT[2 * k] * rho, cy + SN[2 * k] * rho) >= 127.5) c++;
+      cov[j] = c / K2;
+    }
+    const cs = new Float64Array(NB);
+    for (let j = 0; j < NB; j++) { let s = 0, c = 0; for (let d = -1; d <= 1; d++) if (j + d >= 0 && j + d < NB) { s += cov[j + d]; c++; } cs[j] = s / c; }
+    let bands = [];
+    for (let j = 0; j < NB; j++) {
+      if (cs[j] < 0.55) continue;
+      let j1 = j; while (j1 + 1 < NB && cs[j1 + 1] >= 0.55) j1++;
+      bands.push([j, j1]); j = j1;
+    }
+    // a narrow gap between two printed circles that the ink has partly filled: still a dip in the cover, split there
+    const split = [];
+    for (const [a, b] of bands) {
+      let cuts = [];
+      for (let j = a + 2; j <= b - 2; j++) {
+        if (!(cs[j] <= cs[j - 1] && cs[j] <= cs[j + 1])) continue;
+        let ml = 0, mr = 0; for (let t = a; t < j; t++) ml = Math.max(ml, cs[t]); for (let t = j + 1; t <= b; t++) mr = Math.max(mr, cs[t]);
+        if (ml >= 0.9 && mr >= 0.9 && cs[j] <= 0.86 * Math.min(ml, mr)) cuts.push(j);
+      }
+      cuts = cuts.filter((j, i) => !i || j - cuts[i - 1] > 2);
+      let s0 = a;
+      for (const j of cuts) { if (j - 1 >= s0) split.push([s0, j - 1]); s0 = j + 1; }
+      if (b >= s0) split.push([s0, b]);
+    }
+    bands = split.filter(([a, b]) => b > a);
+    // 4. each band measured ray by ray: where its ink run starts and ends. A run that goes on past the band (into
+    // lettering, or a smudge into the next ring) gives no edge on that side
+    const rings = [];
+    const RX = new Float64Array(K), RY = new Float64Array(K), QX = new Float64Array(K), QY = new Float64Array(K);
+    for (let bi = 0; bi < bands.length; bi++) {
+      const [a, b] = bands[bi];
+      const ra = rA + a * dr, rb = rA + b * dr, wb = rb - ra, mid = (ra + rb) / 2, m = Math.max(3, 0.6 * wb);
+      const pe = bi > 0 ? rA + bands[bi - 1][1] * dr : -Infinity, nx = bi + 1 < bands.length ? rA + bands[bi + 1][0] * dr : Infinity;
+      const lo = Math.max(1, ra - m, (pe + ra) / 2), hi = Math.min(rb + m, (rb + nx) / 2), step = 0.25;
+      const ns = Math.ceil((hi - lo) / step) + 1, S = new Float64Array(ns), tm = Math.round((mid - lo) / step);
+      let ni = 0, no = 0;
+      const W = [], MID = [];
+      for (let k = 0; k < K; k++) {
+        for (let t = 0; t < ns; t++) { const rho = lo + t * step; S[t] = smp(cx + CT[k] * rho, cy + SN[k] * rho); }
+        let t0 = -1;
+        for (let d = 0; d <= Math.ceil(0.5 * wb / step) + 1; d++) { if (tm - d >= 0 && S[tm - d] >= 127.5) { t0 = tm - d; break; } if (tm + d < ns && S[tm + d] >= 127.5) { t0 = tm + d; break; } }
+        if (t0 < 0) continue;
+        let ti = t0; while (ti > 0 && S[ti - 1] >= 127.5) ti--;
+        let to = t0; while (to < ns - 1 && S[to + 1] >= 127.5) to++;
+        let ei = -1, eo = -1;
+        if (ti > 0) ei = lo + (ti - 1) * step + step * (127.5 - S[ti - 1]) / Math.max(1e-6, S[ti] - S[ti - 1]);
+        if (to < ns - 1) eo = lo + to * step + step * (S[to] - 127.5) / Math.max(1e-6, S[to] - S[to + 1]);
+        if (ei > 0) { RX[ni] = cx + CT[k] * ei; RY[ni] = cy + SN[k] * ei; ni++; }
+        if (eo > 0) { QX[no] = cx + CT[k] * eo; QY[no] = cy + SN[k] * eo; no++; }
+        if (ei > 0 && eo > 0) { W.push(eo - ei); MID.push((ei + eo) / 2); }
+      }
+      // (an edge hidden under a smudge for much of the way round still counts: it is measured where it shows)
+      // the outer ring of a serrated seal: its toothed outside is not measured (it is left as it is)
+      const teeth = st.toothed && rb >= 0.97 * R;
+      if (W.length < 0.25 * K || ni < 0.25 * K || (!teeth && no < 0.25 * K)) continue;
+      const q = (arr, f) => arr[Math.min(arr.length - 1, Math.floor(f * arr.length))];
+      W.sort((p, r) => p - r); MID.sort((p, r) => p - r);
+      const wm = q(W, 0.5), wiqr = q(W, 0.75) - q(W, 0.25), miqr = q(MID, 0.75) - q(MID, 0.25), wlo = wm - q(W, 0.1);
+      // one line all the way round: its middle keeps one distance from the centre (lettering does not); its width is even where it is clean (ink spread onto it only ever widens it)
+      if (!(wm > 0.8) || miqr > Math.max(2, 0.35 * wm) || (wiqr > Math.max(4, 0.8 * wm) && wlo > Math.max(2, 0.25 * q(W, 0.25)))) continue;
+      const cap = Math.max(1.5, 0.3 * wm), fi = circleFitRobust(RX, RY, ni, cap);
+      const fo = teeth ? { cx, cy, r: R, n: 0, rms: 0, second: 0, x: [], y: [] } : circleFitRobust(QX, QY, no, cap);
+      if (!fi || !fo || fi.n < 0.25 * K || (!teeth && fo.n < 0.25 * K)) continue;
+      if (fi.n < 0.55 * ni || (!teeth && fo.n < 0.55 * no)) continue;
+      // the edge points fall in two circles, the second one inside the band itself: two lines run together
+      const twin = (f) => f.second > 0.12 && Math.abs(f.secondAt) >= Math.max(2, 0.3 * wm) && f.r + f.secondAt >= ra - 1 && f.r + f.secondAt <= rb + 1;
+      if (twin(fi) || twin(fo)) continue;
+      if (fi.rms > Math.max(1.8, 0.35 * wm) || fo.rms > Math.max(1.8, 0.35 * wm)) continue;
+      if (!(fo.r - fi.r > 0.6)) continue;
+      rings.push({ fi, fo, cover: W.length / K, teeth });
+    }
+    if (!rings.length) return st;
+    rings.sort((p, r) => r.fo.r - p.fo.r);
+    // 5. the circles of one seal share one centre (a seal pressed harder on one side shifts its edges both ways:
+    // the centre is the average of all edges); each edge then keeps its own measured distance from it
+    let sx = 0, sy = 0, sw = 0;
+    rings.forEach((g) => { for (const f of [g.fi, g.fo]) { sx += f.cx * f.n; sy += f.cy * f.n; sw += f.n; } });
+    const C0 = { cx: sx / sw, cy: sy / sw };
+    const radius = (f, c) => { if (!f.n) return f.r; const d = Array.from(f.x, (x, i) => Math.hypot(x - c.cx, f.y[i] - c.cy)).sort((p, r) => p - r); return d[d.length >> 1]; };
+    for (const g of rings) {
+      const own = { cx: (g.fi.cx + g.fo.cx) / 2, cy: (g.fi.cy + g.fo.cy) / 2 };
+      g.c = Math.hypot(own.cx - C0.cx, own.cy - C0.cy) <= 0.02 * R ? C0 : own;   // a ring off the common centre by design keeps its own
+      g.ri = radius(g.fi, g.c); g.ro = radius(g.fo, g.c);
+    }
+    for (let i = 1; i < rings.length; i++) if (rings[i].ro >= rings[i - 1].ri - 0.5 || !(rings[i].ro - rings[i].ri > 0.6)) { rings.splice(i, 1); i--; }
+    // 6. the narrow gap between two neighbouring circles holds no lettering: it is cleared of smudges
+    const gaps = [];
+    for (let i = 0; i + 1 < rings.length; i++) {
+      const g0 = rings[i].ri, g1 = rings[i + 1].ro, gw = g0 - g1;
+      if (!(gw > 0.5) || gw > 0.12 * R) continue;
+      let s = 0, c = 0;
+      for (let j = 0; j < NB; j++) { const rho = rA + j * dr; if (rho > g1 + 1 && rho < g0 - 1) { s += cov[j]; c++; } }
+      if (gw > 0.04 * R && c && s / c > 0.3) continue;   // wider: only when it is nearly empty (lettering is not); under 4 % of the radius it is too narrow for any lettering and always cleared
+      gaps.push({ a: rings[i + 1], b: rings[i] });
+    }
+    st.gaps = gaps.length; st.gapAt = gaps.map((p) => rings.indexOf(p.b));   // gap k lies between ring gapAt[k] and the next one in
+    // 7. drawn back: each ring replaces the ink within its band (a little to either side, where the smudge and the
+    // ragged edge were); the gaps are cleared; outside the outer ring nothing is left
+    const draw = rings.filter((g) => !g.teeth);
+    for (const g of draw) g.pad = Math.min(3, Math.max(1, 0.3 * (g.ro - g.ri)));
+    if (draw.length || gaps.length) {
+      // the seal's own outer ring (its outer edge is the seal's edge): beyond it nothing of the seal is left
+      const outerMost = draw.length && draw[0] === rings[0] && rings[0].ro >= R - Math.max(2, 0.015 * R) ? rings[0] : null;
+      const rMax = (outerMost ? 1.06 * R + 3 : rings[0].ro + 3) * kq;
+      const X0 = Math.max(0, Math.floor(cx - rMax)), X1 = Math.min(w - 1, Math.ceil(cx + rMax));
+      const Y0 = Math.max(0, Math.floor(cy - rMax)), Y1 = Math.min(h - 1, Math.ceil(cy + rMax));
+      // ink that the stamp squeezed out along a ring's edge on the lettering side: a thin crescent hugging the ring,
+      // ending a few pixels off it, along a long stretch of the ring. Letters (and their accent marks) are short
+      // along the ring or reach far from it, and are left alone
+      const A0 = A.slice();
+      for (const g of draw) {
+        const wd = g.ro - g.ri, D = Math.min(Math.max(2.5, 0.7 * wd), Math.max(2.5, 0.02 * R)) + g.pad;   // (never as deep as a letter reaches)
+        for (const side of [-1, 1]) {
+          if (side > 0 && g === outerMost) continue;
+          if (gaps.some((p) => (side < 0 ? p.b : p.a) === g)) continue;   // that side is a cleared gap
+          const edge = side < 0 ? g.ri : g.ro, th = new Float32Array(K);
+          let lim = D;
+          for (const o of rings) { if (o === g) continue; const e = side < 0 ? (o.ro < g.ri ? g.ri - o.ro : Infinity) : (o.ri > g.ro ? o.ri - g.ro : Infinity); lim = Math.min(lim, e - 1); }
+          for (let k = 0; k < K; k++) {
+            let end = -1;
+            for (let t = 0.25; t <= lim + 0.5; t += 0.25) {
+              const rho = edge + side * t, pp = inv(g.c.cx + CT[k] * rho, g.c.cy + SN[k] * rho), u = pp[0] - 0.5, v = pp[1] - 0.5;
+              const x0 = Math.floor(u), y0 = Math.floor(v), fx = u - x0, fy = v - y0;
+              const gg = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h) ? 0 : A0[yy * w + xx];
+              const sv = (gg(x0, y0) * (1 - fx) + gg(x0 + 1, y0) * fx) * (1 - fy) + (gg(x0, y0 + 1) * (1 - fx) + gg(x0 + 1, y0 + 1) * fx) * fy;
+              if (sv < 127.5) { end = t; break; }
+            }
+            th[k] = end > g.pad ? end : 0;
+          }
+          const minLen = Math.ceil((4 * D) / (2 * Math.PI * edge) * K), keep = new Float32Array(K);
+          let s0 = 0; while (s0 < K && th[s0]) s0++;
+          if (s0 < K) for (let u = 0; u < K;) {
+            const k = (s0 + u) % K; if (!th[k]) { u++; continue; }
+            let e = u; while (e < K && th[(s0 + e) % K]) e++;
+            if (e - u >= minLen) for (let z = u; z < e; z++) keep[(s0 + z) % K] = th[(s0 + z) % K];
+            u = e;
+          }
+          if (side < 0) { g.shIn = keep; g.joinIn = lim > g.pad + 2; } else { g.shOut = keep; g.joinOut = lim > g.pad + 2; }
+        }
+      }
+      // a blob of ink stuck on a ring's lettering side that never reaches further from the ring than a smudge does
+      // (a letter always does): it goes, and the ring's edge runs clean past it
+      const zone = (x, y) => {   // 1: the ring bands, the gaps and the outside (all redrawn); 2: near a ring on a lettering side; 0: elsewhere
+        const q = fwd(x + 0.5, y + 0.5); let z = 0, zg = null, zs = 0;
+        for (const g of draw) {
+          const d = Math.hypot(q[0] - g.c.cx, q[1] - g.c.cy), D = Math.max(2.5, 0.7 * (g.ro - g.ri), 0.035 * R) + g.pad;
+          if ((d >= g.ri - g.pad && d <= g.ro + g.pad) || (g === outerMost && d > g.ro)) return [1];
+          if (!z && d < g.ri - g.pad && d >= g.ri - D && !gaps.some((pp) => pp.b === g)) { z = 2; zg = g; zs = -1; }
+          if (!z && d > g.ro + g.pad && d <= g.ro + D && g !== outerMost && !gaps.some((pp) => pp.a === g)) { z = 2; zg = g; zs = 1; }
+        }
+        for (const pp of gaps) {
+          const da = Math.hypot(q[0] - pp.a.c.cx, q[1] - pp.a.c.cy), db = Math.hypot(q[0] - pp.b.c.cx, q[1] - pp.b.c.cy);
+          if (da >= pp.a.ro && db <= pp.b.ri) return [1];
+        }
+        return z ? [2, zg, zs, q] : [0];
+      };
+      {
+        const seen = new Uint8Array(w * h), comp = [], stk = [];
+        for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+          const i0 = y * w + x;
+          if (seen[i0] || A0[i0] < 64) continue;
+          const z0 = zone(x, y);
+          if (z0[0] !== 2) continue;
+          const g0 = z0[1], d0 = Math.hypot(z0[3][0] - g0.c.cx, z0[3][1] - g0.c.cy);
+          if ((z0[2] < 0 ? g0.ri - d0 : d0 - g0.ro) > g0.pad + 1.5) continue;   // starts right by the ring only
+          comp.length = 0; stk.length = 0; comp.push([i0, z0]); stk.push(i0); seen[i0] = 1;
+          let far = false;
+          while (stk.length && !far) {
+            const pp = stk.pop(), px = pp % w, py = (pp - px) / w;
+            for (let dy = -1; dy <= 1 && !far; dy++) for (let dx = -1; dx <= 1; dx++) {
+              const xx = px + dx, yy = py + dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) { far = true; break; }
+              const qi = yy * w + xx; if (A0[qi] < 64) continue;
+              if (seen[qi] === 2) { far = true; break; }   // part of a piece already found to reach far
+              if (seen[qi]) continue;
+              const zq = zone(xx, yy);
+              if (zq[0] === 1) continue;
+              if (zq[0] === 0) { far = true; break; }
+              seen[qi] = 1; comp.push([qi, zq]); stk.push(qi);
+            }
+          }
+          if (far) { for (const c of comp) seen[c[0]] = 2; continue; }
+          // a smudge is ink squeezed out along the ring: it lies on the ring along all its width and is much wider
+          // than deep. A mark of the seal's own (an accent, a dot of the lettering) that touches the ring is as deep
+          // as it is wide, or touches only with its tip: it is the seal's content and stays exactly as it is
+          const all = new Set(), touch = new Set();
+          let depth = 0, rEdge = 0;
+          for (const [, zq] of comp) {
+            const g = zq[1], t = zq[3], d = Math.hypot(t[0] - g.c.cx, t[1] - g.c.cy), out = zq[2] < 0 ? g.ri - d : d - g.ro;
+            let an = Math.atan2(t[1] - g.c.cy, t[0] - g.c.cx); if (an < 0) an += 2 * Math.PI;
+            const k = Math.round(an * K / (2 * Math.PI)) % K;
+            all.add(k); if (out <= g.pad + 1.5) touch.add(k);
+            if (out > depth) depth = out;
+            rEdge = zq[2] < 0 ? g.ri : g.ro;
+          }
+          const width = all.size * 2 * Math.PI * rEdge / K;
+          if (touch.size < 0.6 * all.size || width < 2 * depth) continue;
+          for (const c of comp) A[c[0]] = 0;
+        }
+      }
+      const A1 = A.slice();   // (the seal with those blobs gone: what a letter joined to a ring is told by)
+      const smp1 = (X, Y) => { const u = X - 0.5, v = Y - 0.5, x0 = Math.floor(u), y0 = Math.floor(v), fx = u - x0, fy = v - y0;
+        const gg = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h) ? 0 : A1[yy * w + xx];
+        return (gg(x0, y0) * (1 - fx) + gg(x0 + 1, y0) * fx) * (1 - fy) + (gg(x0, y0 + 1) * (1 - fx) + gg(x0 + 1, y0 + 1) * fx) * fy; };
+      const rIn = Math.min(...draw.map((g) => g.ri - g.pad - (g.shIn ? Math.max(...g.shIn) : 0) - 2), ...gaps.map((p) => p.a.ro - 2), Infinity);
+      for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+        const q = fwd(x + 0.5, y + 0.5), px = q[0], py = q[1];
+        if (Math.hypot(px - cx, py - cy) < rIn) continue;
+        let v = 0, touch = false, join = false;
+        for (const g of draw) {
+          const d = Math.hypot(px - g.c.cx, py - g.c.cy);
+          const c = Math.min(1, Math.max(0, d - g.ri + 0.5)) * Math.min(1, Math.max(0, g.ro - d + 0.5));
+          if (c > v) v = c;
+          if (d >= g.ri - g.pad && (d <= g.ro + g.pad || g === outerMost)) {
+            touch = true;
+            // where a letter joins the ring (its ink goes on just past the ring's edge), it stays joined
+            const inner = d < g.ri + 0.5 && d < (g.ri + g.ro) / 2;   // (the soft edge of the ring too: no seam where the letter meets it)
+            if ((inner && g.joinIn) || (!inner && d > g.ro - 0.5 && g.joinOut && g !== outerMost)) {
+              const t = inner ? g.ri - g.pad - 0.75 : g.ro + g.pad + 0.75, sp = inv(g.c.cx + (px - g.c.cx) * t / d, g.c.cy + (py - g.c.cy) * t / d);
+              if (smp1(sp[0], sp[1]) >= 127.5) {
+                let an = Math.atan2(py - g.c.cy, px - g.c.cx); if (an < 0) an += 2 * Math.PI;
+                const k = Math.round(an * K / (2 * Math.PI)) % K, sh = inner ? g.shIn : g.shOut;
+                if (!(sh && sh[k])) join = true;   // (a smudged crescent along the ring is not a letter: it goes)
+              }
+            }
+          }
+          else if ((g.shIn && d < g.ri) || (g.shOut && d > g.ro)) {
+            let an = Math.atan2(py - g.c.cy, px - g.c.cx); if (an < 0) an += 2 * Math.PI;
+            const k = Math.round(an * K / (2 * Math.PI)) % K;
+            if (d < g.ri && g.shIn && g.shIn[k] && d >= g.ri - g.shIn[k] - 0.5) touch = true;
+            if (d > g.ro && g.shOut && g.shOut[k] && d <= g.ro + g.shOut[k] + 0.5) touch = true;
+          }
+        }
+        if (!touch) for (const p of gaps) {
+          const da = Math.hypot(px - p.a.c.cx, py - p.a.c.cy), db = Math.hypot(px - p.b.c.cx, py - p.b.c.cy);
+          if (da >= p.a.ro && db <= p.b.ri - (draw.includes(p.b) ? 0 : 0.7)) { touch = true; break; }
+        }
+        if (!touch) continue;
+        const i = y * w + x;
+        if (join) v = Math.max(v, A1[i] / 255);
+        const nv = Math.round(v * 255);
+        if (Math.abs(nv - A[i]) >= 64) st.changed++;
+        A[i] = nv;
+      }
+      // faint specks left by the soft edge of a smudge that was cleared beside a ring: alone, with no solid ink within
+      // two pixels (the soft edge of a letter always borders the letter's solid ink, so letters keep theirs)
+      const reach = (g) => Math.max(2.5, 0.7 * (g.ro - g.ri)) + g.pad + 4 + Math.max(0, ...(g.shIn || []), ...(g.shOut || []));
+      for (const g of draw) g.reach = reach(g);
+      // tiny dots of ink there too (a speck far smaller than any accent mark): gone
+      const cap = Math.max(4, Math.round((0.004 * R) * (0.004 * R))), mark = new Uint8Array(w * h), comp = [], stk = [];
+      const inBand = (x, y) => { const q = fwd(x + 0.5, y + 0.5); for (const g of draw) { const d = Math.hypot(q[0] - g.c.cx, q[1] - g.c.cy); if (d > g.ri - g.reach && d < g.ro + g.reach) return true; } return false; };
+      for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+        const i0 = y * w + x;
+        if (A[i0] < 64 || mark[i0] || !inBand(x, y)) continue;
+        comp.length = 0; stk.length = 0; comp.push(i0); stk.push(i0); mark[i0] = 1;
+        let big = false;
+        while (stk.length && !big) {
+          const p = stk.pop(), px = p % w, py = (p - px) / w;
+          for (let dy = -1; dy <= 1 && !big; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const xx = px + dx, yy = py + dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+            const qi = yy * w + xx; if (A[qi] < 64) continue;
+            if (mark[qi] === 2) { big = true; break; }
+            if (!mark[qi]) { mark[qi] = 1; comp.push(qi); stk.push(qi); if (comp.length > cap) { big = true; break; } }
+          }
+        }
+        if (big) for (const c of comp) mark[c] = 2;
+        else for (const c of comp) { A[c] = 0; mark[c] = 3; }
+      }
+      const solid = (x, y) => { for (let yy = Math.max(0, y - 2); yy <= Math.min(h - 1, y + 2); yy++) for (let xx = Math.max(0, x - 2); xx <= Math.min(w - 1, x + 2); xx++) if (A[yy * w + xx] >= 128) return true; return false; };
+      for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+        const i = y * w + x;
+        if (!A[i] || A[i] >= 128) continue;
+        const q = fwd(x + 0.5, y + 0.5);
+        let near = false;
+        for (const g of draw) { const d = Math.hypot(q[0] - g.c.cx, q[1] - g.c.cy); if (d > g.ri - g.reach && d < g.ro + g.reach) { near = true; break; } }
+        if (near && !solid(x, y)) A[i] = 0;
+      }
+    }
+    for (const g of rings) st.rings.push({ ri: g.ri, ro: g.ro, width: g.ro - g.ri, cover: g.cover, kept: !!g.teeth });
+    return st;
+  }
+  // END ringNormalize
+  /* ---------- AI làm mịn nét (a separate step of AI làm đẹp con dấu) ----------
+     A scan at low resolution, or a JPEG, leaves the seal's lettering and lines with stepped, lumpy, crumbly edges
+     ("răng cưa", "vỡ ảnh"). The outline of every stroke is followed at half ink (between pixels, by interpolation),
+     then evened out along its own length at the scale of those steps: the steps and lumps go, the shapes stay (the
+     filter keeps a stroke's width and a letter's size; it does not shrink round dots or thin lines). The outlines are
+     kept as the seal's shape: filled at any size they give clean, sharp, smooth edges, so a seal from a small scan
+     is exported at 2400 px without blur or steps. Specks far smaller than any accent mark are dropped. Nothing is
+     added: every outline is the seal's own. */
+  // outlines of an alpha mask at half ink: closed loops (x, y in mask px), each turned so that the ink lies on its left
+  function smoothLoops(A, w, h) {
+    const T = 127.5, W = w + 2;
+    const val = (x, y) => (x <= 0 || y <= 0 || x > w || y > h) ? 0 : A[(y - 1) * w + x - 1];
+    const pos = new Map(), adj = new Map();
+    const ptH = (x, y, a, b) => { const id = 2 * (y * W + x); if (!pos.has(id)) pos.set(id, [x - 0.5 + (T - a) / (b - a), y - 0.5]); return id; };
+    const ptV = (x, y, a, b) => { const id = 2 * (y * W + x) + 1; if (!pos.has(id)) pos.set(id, [x - 0.5, y - 0.5 + (T - a) / (b - a)]); return id; };
+    const link = (e1, e2) => {
+      const a = adj.get(e1); if (a) a.push(e2); else adj.set(e1, [e2]);
+      const b = adj.get(e2); if (b) b.push(e1); else adj.set(e2, [e1]);
+    };
+    for (let y = 0; y <= h; y++) for (let x = 0; x <= w; x++) {
+      const tl = val(x, y), tr = val(x + 1, y), br = val(x + 1, y + 1), bl = val(x, y + 1);
+      const c = (tl >= T ? 8 : 0) | (tr >= T ? 4 : 0) | (br >= T ? 2 : 0) | (bl >= T ? 1 : 0);
+      if (c === 0 || c === 15) continue;
+      const top = () => ptH(x, y, tl, tr), bottom = () => ptH(x, y + 1, bl, br), left = () => ptV(x, y, tl, bl), right = () => ptV(x + 1, y, tr, br);
+      switch (c) {
+        case 1: case 14: link(left(), bottom()); break;
+        case 2: case 13: link(bottom(), right()); break;
+        case 3: case 12: link(left(), right()); break;
+        case 4: case 11: link(top(), right()); break;
+        case 6: case 9: link(top(), bottom()); break;
+        case 7: case 8: link(left(), top()); break;
+        case 5: case 10: {
+          const mid = (tl + tr + br + bl) / 4 >= T;
+          if ((c === 5) === mid) { link(left(), top()); link(bottom(), right()); } else { link(top(), right()); link(left(), bottom()); }
+          break;
+        }
+      }
+    }
+    const smp = (X, Y) => {
+      const u = X - 0.5, v = Y - 0.5, x0 = Math.floor(u), y0 = Math.floor(v), fx = u - x0, fy = v - y0;
+      const g = (xx, yy) => (xx < 0 || yy < 0 || xx >= w || yy >= h) ? 0 : A[yy * w + xx];
+      return (g(x0, y0) * (1 - fx) + g(x0 + 1, y0) * fx) * (1 - fy) + (g(x0, y0 + 1) * (1 - fx) + g(x0 + 1, y0 + 1) * fx) * fy;
+    };
+    const seen = new Set(), loops = [];
+    for (const start of adj.keys()) {
+      if (seen.has(start)) continue;
+      const pts = [];
+      let prev = -1, cur = start;
+      for (let guard = 0; guard < 2e7; guard++) {
+        seen.add(cur); const q = pos.get(cur); pts.push(q[0], q[1]);
+        const nb = adj.get(cur), nx = nb[0] !== prev ? nb[0] : nb[1];
+        if (nx === undefined || nx === start || seen.has(nx)) break;
+        prev = cur; cur = nx;
+      }
+      const n = pts.length >> 1; if (n < 3) continue;
+      // which side the ink is on: a vote of the steepest few points along the loop
+      let vote = 0;
+      const step = Math.max(1, Math.floor(n / 24));
+      for (let i = 0; i < n; i += step) {
+        const j = (i + 1) % n, x = (pts[2 * i] + pts[2 * j]) / 2, y = (pts[2 * i + 1] + pts[2 * j + 1]) / 2;
+        let dx = pts[2 * j] - pts[2 * i], dy = pts[2 * j + 1] - pts[2 * i + 1]; const L = Math.hypot(dx, dy); if (!(L > 1e-6)) continue;
+        dx /= L; dy /= L;
+        const left = smp(x + dy * 0.6, y - dx * 0.6), right = smp(x - dy * 0.6, y + dx * 0.6);   // (y down: (dy, -dx) is the left)
+        vote += left - right;
+      }
+      if (vote < 0) { const r = []; for (let i = n - 1; i >= 0; i--) r.push(pts[2 * i], pts[2 * i + 1]); loops.push(Float64Array.from(r)); }
+      else loops.push(Float64Array.from(pts));
+    }
+    return loops;
+  }
+  const loopArea = (p) => { let a = 0; const n = p.length >> 1; for (let i = 0; i < n; i++) { const j = (i + 1) % n; a += p[2 * i] * p[2 * j + 1] - p[2 * j] * p[2 * i + 1]; } return a / 2; };
+  // a loop resampled at an even spacing along its length
+  function resampleLoop(p, ds) {
+    const n = p.length >> 1; let L = 0;
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n; L += Math.hypot(p[2 * j] - p[2 * i], p[2 * j + 1] - p[2 * i + 1]); }
+    const m = Math.max(8, Math.round(L / ds)), d = L / m, out = new Float64Array(2 * m);
+    let i = 0, acc = 0, seg = Math.hypot(p[2] - p[0], p[3] - p[1]);
+    for (let k = 0; k < m; k++) {
+      const t = k * d;
+      while (acc + seg < t && i < n) { acc += seg; i++; const a = i % n, b = (i + 1) % n; seg = Math.hypot(p[2 * b] - p[2 * a], p[2 * b + 1] - p[2 * a + 1]); }
+      const a = i % n, b = (i + 1) % n, f = seg > 1e-9 ? (t - acc) / seg : 0;
+      out[2 * k] = p[2 * a] + (p[2 * b] - p[2 * a]) * f; out[2 * k + 1] = p[2 * a + 1] + (p[2 * b + 1] - p[2 * a + 1]) * f;
+    }
+    return { p: out, L };
+  }
+  // the loop evened out along its length: a Gaussian of width s (in points), applied as 2G - G·G, which leaves the
+  // shape's size alone (no shrinking) while the short wiggles go
+  function evenLoop(p, s) {
+    const m = p.length >> 1, R = Math.ceil(3 * s), K = new Float64Array(2 * R + 1);
+    let ks = 0; for (let t = -R; t <= R; t++) { K[t + R] = Math.exp(-t * t / (2 * s * s)); ks += K[t + R]; }
+    for (let t = 0; t < K.length; t++) K[t] /= ks;
+    const conv = (q) => {
+      const o = new Float64Array(q.length);
+      for (let k = 0; k < m; k++) {
+        let x = 0, y = 0;
+        for (let t = -R; t <= R; t++) { const j = ((k + t) % m + m) % m, c = K[t + R]; x += q[2 * j] * c; y += q[2 * j + 1] * c; }
+        o[2 * k] = x; o[2 * k + 1] = y;
+      }
+      return o;
+    };
+    const g1 = conv(p), g2 = conv(g1), out = new Float32Array(2 * m);
+    for (let i = 0; i < 2 * m; i++) out[i] = 2 * g1[i] - g2[i];
+    return out;
+  }
+  // an open run of points evened out the same way, its two ends held where they are (mirrored about them)
+  function evenRun(q, s) {
+    const m = q.length >> 1, R = Math.ceil(3 * s), K = new Float64Array(2 * R + 1);
+    let ks = 0; for (let t = -R; t <= R; t++) { K[t + R] = Math.exp(-t * t / (2 * s * s)); ks += K[t + R]; }
+    for (let t = 0; t < K.length; t++) K[t] /= ks;
+    const at = (a, j, c) => {   // point j of the run, mirrored past its ends
+      if (j < 0) return 2 * a[c] - a[2 * Math.min(m - 1, -j) + (c & 1)];
+      if (j >= m) return 2 * a[2 * (m - 1) + (c & 1)] - a[2 * Math.max(0, 2 * (m - 1) - j) + (c & 1)];
+      return a[2 * j + (c & 1)];
+    };
+    const conv = (a) => {
+      const o = new Float64Array(a.length);
+      for (let k = 0; k < m; k++) {
+        let x = 0, y = 0;
+        for (let t = -R; t <= R; t++) { const c = K[t + R]; x += at(a, k + t, 0) * c; y += at(a, k + t, 1) * c; }
+        o[2 * k] = x; o[2 * k + 1] = y;
+      }
+      o[0] = a[0]; o[1] = a[1]; o[2 * m - 2] = a[2 * m - 2]; o[2 * m - 1] = a[2 * m - 1];
+      return o;
+    };
+    const g1 = conv(q), g2 = conv(g1), out = new Float64Array(2 * m);
+    for (let i = 0; i < 2 * m; i++) out[i] = 2 * g1[i] - g2[i];
+    return out;
+  }
+  // the corners of a loop: places where it turns sharply within a short stretch (a letter's corner, a stroke's end),
+  // as against a round bend (which turns as much only over a longer stretch). s0 = light evening, in points
+  function loopCorners(p, s0) {
+    const m = p.length >> 1;
+    if (m < 16) return [];
+    const c = evenLoop(p, s0), W = Math.max(2, Math.round(2.5 * s0)), H = Math.max(1, Math.round(1.25 * s0));
+    const ph = new Float64Array(m);
+    for (let k = 0; k < m; k++) { const a = (k - 1 + m) % m, b = (k + 1) % m; ph[k] = Math.atan2(c[2 * b + 1] - c[2 * a + 1], c[2 * b] - c[2 * a]); }
+    const cum = new Float64Array(3 * m + 1);   // turning, summed along three rounds of the loop (for windows across its start)
+    for (let i = 0; i < 3 * m; i++) { let d = ph[(i + 1) % m] - ph[i % m]; if (d > Math.PI) d -= 2 * Math.PI; else if (d < -Math.PI) d += 2 * Math.PI; cum[i + 1] = cum[i] + d; }
+    const turn = (k, r) => cum[m + k + r] - cum[m + k - r];
+    const T = new Float64Array(m);
+    for (let k = 0; k < m; k++) T[k] = Math.abs(turn(k, W));
+    const out = [];
+    for (let k = 0; k < m; k++) {
+      if (T[k] < 0.75) continue;
+      let peak = true;
+      for (let d = 1; d <= W && peak; d++) { if (T[(k + d) % m] > T[k] || T[(k - d + m) % m] >= T[k]) peak = false; }
+      if (!peak) continue;
+      if (Math.abs(turn(k, H)) < 0.68 * T[k]) continue;   // spread over the whole window: a round bend, not a corner
+      out.push(k);
+    }
+    // the corner's place: on the lightly evened loop (the raw one is still stepped)
+    return out.map((k) => [k, c[2 * k], c[2 * k + 1]]);
+  }
+  // a loop evened out between its corners: each stretch on its own, the corners kept sharp
+  function evenLoopCorners(p, s, s0) {
+    const m = p.length >> 1, cs = loopCorners(p, s0);
+    if (cs.length < 1) return evenLoop(p, s);
+    const out = new Float32Array(2 * m);   // (point for point with the loop it came from)
+    for (let i = 0; i < cs.length; i++) {
+      const [k0, x0, y0] = cs[i], [k1, x1, y1] = cs[(i + 1) % cs.length];
+      const len = ((k1 - k0 + m) % m) || m, q = new Float64Array(2 * (len + 1));
+      for (let t = 0; t <= len; t++) { const j = (k0 + t) % m; q[2 * t] = p[2 * j]; q[2 * t + 1] = p[2 * j + 1]; }
+      q[0] = x0; q[1] = y0; q[2 * len] = x1; q[2 * len + 1] = y1;
+      const e = evenRun(q, Math.min(s, Math.max(0.5, len / 6)));
+      for (let t = 0; t < len; t++) { const j = (k0 + t) % m; out[2 * j] = e[2 * t]; out[2 * j + 1] = e[2 * t + 1]; }
+    }
+    return out;
+  }
+  // coverage of filled loops (nonzero winding, ink on each loop's left), exact pixel area, into an alpha array of
+  // w x h scaled by k (output px per mask px)
+  function fillLoops(loops, w, h, k) {
+    const S = w + 2, acc = new Float32Array(S * h);   // (each row has room past its right edge, so nothing spills)
+    const line = (x0, y0, x1, y1) => {
+      if (Math.abs(y0 - y1) < 1e-9) return;
+      let dir = 1;
+      if (y0 > y1) { dir = -1; let t = x0; x0 = x1; x1 = t; t = y0; y0 = y1; y1 = t; }
+      if (y1 <= 0 || y0 >= h) return;
+      const dxdy = (x1 - x0) / (y1 - y0);
+      let x = x0; if (y0 < 0) { x -= y0 * dxdy; y0 = 0; }
+      const ye = Math.min(h, Math.ceil(y1));
+      for (let y = Math.floor(y0); y < ye; y++) {
+        const ls = y * S, dy = Math.min(y + 1, y1) - Math.max(y, y0), xn = x + dxdy * dy, d = dy * dir;
+        let a = x < xn ? x : xn, b = x < xn ? xn : x;
+        // clamp to the row (ink beyond the left edge counts at the edge; beyond the right is dropped)
+        if (b <= 0) { acc[ls] += d; x = xn; continue; }
+        if (a >= w) { x = xn; continue; }
+        if (a < 0) a = 0; if (b > w) b = w;
+        const af = Math.floor(a), ai = af, bc = Math.ceil(b), bi = bc;
+        if (bi <= ai + 1) {
+          const xm = 0.5 * (a + b) - af;
+          acc[ls + ai] += d - d * xm; acc[ls + ai + 1] += d * xm;
+        } else {
+          const s = 1 / (b - a), a0f = a - af, a0 = 0.5 * s * (1 - a0f) * (1 - a0f), b1f = b - bc + 1, am = 0.5 * s * b1f * b1f;
+          acc[ls + ai] += d * a0;
+          if (bi === ai + 2) acc[ls + ai + 1] += d * (1 - a0 - am);
+          else {
+            const a1 = s * (1.5 - a0f);
+            acc[ls + ai + 1] += d * (a1 - a0);
+            for (let xi = ai + 2; xi < bi - 1; xi++) acc[ls + xi] += d * s;
+            const a2 = a1 + (bi - ai - 3) * s;
+            acc[ls + bi - 1] += d * (1 - a2 - am);
+          }
+          acc[ls + bi] += d * am;
+        }
+        x = xn;
+      }
+    };
+    for (const p of loops) {
+      const n = p.length >> 1;
+      for (let i = 0; i < n; i++) { const j = (i + 1) % n; line(p[2 * i] * k, p[2 * i + 1] * k, p[2 * j] * k, p[2 * j + 1] * k); }
+    }
+    const out = new Uint8ClampedArray(w * h);
+    let s = 0;
+    for (let y = 0; y < h; y++) {
+      s = 0;   // every loop closes, so each row sums to nothing; a fresh start per row keeps rounding from creeping
+      for (let x = 0; x < w; x++) { s += acc[y * S + x]; const v = Math.abs(s); out[y * w + x] = v >= 1 ? 255 : Math.round(v * 255); }
+    }
+    return out;
+  }
+  // AI làm mịn nét on an alpha mask: up = how many mask px one pixel of the original scan became (the size of the steps)
+  // (R = the seal's radius in mask px: the evening never reaches the size of the lettering itself)
+  function sealSmooth(A, w, h, up, R) {
+    const st = { loops: 0, dropped: 0, sigma: 0, changed: 0, limit: 0, maxMove: 0, held: 0 };
+    const u = up > 0 ? up : 3, Rs = R > 0 ? R : Math.max(w, h) / 2, ds = 0.5;
+    const sigma = Math.min(12, Math.max(1.2, 0.01 * Rs), Math.max(1.2, 2 * u));
+    st.sigma = sigma;
+    // never further than one pixel of the original scan from the seal's own edge: the evening only takes out what the
+    // scan itself is unsure of, and the shape of every letter, mark and line stays the seal's (no stretching, no
+    // reshaping of the registered design)
+    const lim = Math.max(0.75, u); st.limit = lim;
+    const raw = smoothLoops(A, w, h), dust = Math.max(4, Math.PI * (0.6 * u) * (0.6 * u)), loops = [];
+    for (const p of raw) {
+      const ar = loopArea(p);
+      if (Math.abs(ar) < dust) { st.dropped++; continue; }   // a speck (or a pinhole) far smaller than any accent mark
+      const r = resampleLoop(p, ds), req = Math.sqrt(Math.abs(ar) / Math.PI);
+      // a small round piece (a dot, a short stub) is evened out less, so it keeps its size
+      const s = Math.min(sigma, 0.45 * req) / ds;
+      const e = s >= 0.5 ? evenLoopCorners(r.p, s, Math.max(1, 0.5 * u) / ds) : Float32Array.from(r.p);
+      for (let i = 0; i < e.length; i += 2) {
+        const dx = e[i] - r.p[i], dy = e[i + 1] - r.p[i + 1], d = Math.hypot(dx, dy);
+        if (d > lim) { e[i] = r.p[i] + dx * lim / d; e[i + 1] = r.p[i + 1] + dy * lim / d; st.held++; }
+        if (Math.min(d, lim) > st.maxMove) st.maxMove = Math.min(d, lim);
+      }
+      loops.push(e);
+    }
+    st.loops = loops.length;
+    const B = fillLoops(loops, w, h, 1);
+    for (let i = 0; i < B.length; i++) { if (Math.abs(B[i] - A[i]) >= 64) st.changed++; A[i] = B[i]; }
+    return { st, loops };
+  }
+  // END sealSmooth
   // a round seal: its outer ring found as a near-square box whose edge carries ink most of the way round
   function sealCircle(A, w, h) {
     const ring = (x0, y0, x1, y1) => {
@@ -5668,8 +6625,8 @@ self.onmessage = async (e) => {
   }
   // The heavy pixel work runs in a background worker so the page stays smooth while it computes.
   const WORKER_SRC = [paperLevels, expandGrid, darkness, inv3, inkSplit, boxBlur, dilate, labelComponents, removeSpecks,
-    inkAlpha, dropPrint, dropTiny, inkLevel, maxFilter, sealAlpha, sealRepair, ringRepair, sealSpecks, edt, thin, capsule, sealFix, sealCircle, cropMask, extractCore].map(String).join('\n') +
-    '\nvar CACHE = {};\nonmessage = function (e) { var m = e.data; if (m.fix) { try { var A = new Uint8ClampedArray(m.buf); var st = sealFix(A, m.ev ? new Uint8ClampedArray(m.ev) : null, m.w, m.h, m.circle); postMessage({ id: m.id, r: { A: A, st: st } }, [A.buffer]); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } try { var r = extractCore(new Uint8ClampedArray(m.buf), m.w, m.h, m.o, CACHE); var t = [];' +
+    inkAlpha, dropPrint, dropTiny, inkLevel, maxFilter, sealAlpha, sealRepair, ringRepair, sealSpecks, edt, thin, capsule, sealFix, circleFit, circleFitRobust, ellipseFit, ringNormalize, smoothLoops, loopArea, resampleLoop, evenLoop, evenRun, loopCorners, evenLoopCorners, fillLoops, sealSmooth, sealCircle, cropMask, extractCore].map(String).join('\n') +
+    '\nvar CACHE = {};\nonmessage = function (e) { var m = e.data; if (m.smooth) { try { var A = new Uint8ClampedArray(m.buf); var r = sealSmooth(A, m.w, m.h, m.up, m.R); postMessage({ id: m.id, r: { A: A, st: r.st, loops: r.loops } }, [A.buffer].concat(r.loops.map(function (l) { return l.buffer; }))); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } if (m.ring) { try { var A = new Uint8ClampedArray(m.buf); var st = ringNormalize(A, m.w, m.h, m.circle); postMessage({ id: m.id, r: { A: A, st: st } }, [A.buffer]); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } if (m.fix) { try { var A = new Uint8ClampedArray(m.buf); var st = sealFix(A, m.ev ? new Uint8ClampedArray(m.ev) : null, m.w, m.h, m.circle); postMessage({ id: m.id, r: { A: A, st: st } }, [A.buffer]); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } try { var r = extractCore(new Uint8ClampedArray(m.buf), m.w, m.h, m.o, CACHE); var t = [];' +
     ' if (r.sig) t.push(r.sig.rgba.buffer); if (r.seal) t.push(r.seal.rgba.buffer); if (r.seal && r.seal.ev) t.push(r.seal.ev.buffer); postMessage({ id: m.id, r: r }, t); } catch (err) { CACHE = {}; postMessage({ id: m.id, error: String(err) }); } };';
   const mainCache = {};
   // two workers: 'main' answers the on-screen preview, 'bg' prepares the full-size seal in the background
@@ -5711,6 +6668,28 @@ self.onmessage = async (e) => {
       const id = ++wkSeq, buf = new Uint8ClampedArray(A).buffer, evb = ev ? new Uint8ClampedArray(ev).buffer : null;
       wkWait.set(id, { which: 'fix', done: res, fail: () => { try { res(here()); } catch (e) { res(null); } } });
       worker.postMessage({ id, fix: true, buf, ev: evb, w, h, circle: circle || null }, evb ? [buf, evb] : [buf]);
+    });
+  }
+  // AI làm mịn nét in the same background worker (the page itself if workers are unavailable)
+  function smoothAsync(A, w, h, up, R) {
+    const here = () => { const B = new Uint8ClampedArray(A), r = sealSmooth(B, w, h, up, R); return { A: B, st: r.st, loops: r.loops }; };
+    const worker = getWorker('fix');
+    if (!worker) return Promise.resolve().then(here);
+    return new Promise((res) => {
+      const id = ++wkSeq, buf = new Uint8ClampedArray(A).buffer;
+      wkWait.set(id, { which: 'fix', done: res, fail: () => { try { res(here()); } catch (e) { res(null); } } });
+      worker.postMessage({ id, smooth: true, buf, w, h, up: up || 0, R: R || 0 }, [buf]);
+    });
+  }
+  // AI chuẩn hóa viền in the same background worker (the page itself if workers are unavailable)
+  function ringAsync(A, w, h, circle) {
+    const here = () => { const B = new Uint8ClampedArray(A); return { A: B, st: ringNormalize(B, w, h, circle) }; };
+    const worker = getWorker('fix');
+    if (!worker) return Promise.resolve().then(here);
+    return new Promise((res) => {
+      const id = ++wkSeq, buf = new Uint8ClampedArray(A).buffer;
+      wkWait.set(id, { which: 'fix', done: res, fail: () => { try { res(here()); } catch (e) { res(null); } } });
+      worker.postMessage({ id, ring: true, buf, w, h, circle }, [buf]);
     });
   }
   function extractAsync(c, o, which = 'main') {
@@ -7049,7 +8028,7 @@ self.onmessage = async (e) => {
     if (!hi) return base;
     if (up.slant) hi = unslant(hi, up.slant);   // the photo's slant, as measured on the preview
     const f = res.kx / k;   // shared signature/seal space per high-resolution px
-    return Object.assign(hi, { ex: (box.x - sel.x) * res.kx + hi.x0 * f, ey: (box.y - sel.y) * res.ky + hi.y0 * f, ew: hi.w * f, eh: hi.h * f, prevPerPx: 1 / k });
+    return Object.assign(hi, { ex: (box.x - sel.x) * res.kx + hi.x0 * f, ey: (box.y - sel.y) * res.ky + hi.y0 * f, ew: hi.w * f, eh: hi.h * f, prevPerPx: 1 / k, up: upOf(s, k) });
   }
   // the signature at full size from the same crop (the preview is computed at half size)
   async function fullSig(res, opts) {
@@ -7137,7 +8116,7 @@ self.onmessage = async (e) => {
       return;
     }
     if (hi) {
-      setSeal({ mask: hi.mask, iw: hi.w, ih: hi.h, color: hi.color || [237, 28, 36], paper: hi.paper || null, circle: hi.circle, rot: normRot(sl.tilt || 0), mm,
+      setSeal({ mask: hi.mask, iw: hi.w, ih: hi.h, up: hi.up || 0, color: hi.color || [237, 28, 36], paper: hi.paper || null, circle: hi.circle, rot: normRot(sl.tilt || 0), mm,
         mmPx: mmPerPrev(res.src) * (hi.prevPerPx || 0), ev: hi.ev && hi.ev.length === hi.w * hi.h ? hi.ev : null });
       setTab('seal');
       closeScan();
@@ -7146,7 +8125,7 @@ self.onmessage = async (e) => {
         const sNow = seal;
         toast('Đã đưa con dấu vào thẻ Con dấu, AI đã xoay ' + (Math.abs(tl) > 120 ? 'lại cho đúng chiều ' : 'thẳng ') + fmtDeg(tl) + ' như trên khung bản scan. Bấm Hoàn tác nếu chưa đúng.',
           () => { if (seal && seal === sNow) { seal.rot = 0; scheduleSealPreview(0); } });
-      } else toast('Đã đưa con dấu vào thẻ Con dấu. Nhập tên cơ quan rồi bấm Tải PNG con dấu.');
+      } else toast('Đã đưa con dấu vào thẻ Con dấu. AI đang làm đẹp con dấu (3 bước bên phải); nhập tên cơ quan rồi bấm Tải PNG con dấu.');
       setTimeout(() => autoStraighten(false), 900);
       const sNew = seal;
       setTimeout(() => { if (seal === sNew && !org.trim()) runSealRead(true); }, 1400);
@@ -7539,8 +8518,9 @@ self.onmessage = async (e) => {
   }
   $('sizePdfBtn').addEventListener('click', () => {
     if (!seal) return;
-    if (!realMmOf(seal)) { toast('Nhập cỡ thật của con dấu (mm) ở bước 1 trước.'); $('sealRealMm').focus(); return; }
+    if (!realMmOf(seal)) { toast('Nhập cỡ thật của con dấu (mm) ở mục 3 Cơ quan trước.'); $('sealRealMm').focus(); return; }
     busy(async () => {
+      await sealReady();
       const name = sealBase() + '-kiem-tra-co-that-' + Math.round(realMmOf(seal) * 10) / 10 + 'mm.pdf', b = await makeSizeCheckPdf();
       await offerSeal(name, [{ name, data: await blobBytes(b) }], b);
     });
@@ -7631,7 +8611,7 @@ self.onmessage = async (e) => {
     get scanSel() { return scan.sel; }, get scanSrc() { return scan.src; }, scanEngine: () => (wks.main ? 'worker' : wkBroken ? 'page' : 'idle'),
     get seal() { return seal; }, get scanMode() { return scan.mode; }, get scanRes() { return scan.res; }, makeSealPNG, get timings() { return Object.assign({}, T); },
     get takes() { saveTake(); return takes.map((t) => t.strokes.length); }, get takeIdx() { return takeIdx; }, get tab() { return tab; },
-    setTab, sigBundle, sealBundle, drawItems, makeFormPdf, sealAngle: () => sealAngle(seal), sealUp: (a) => sealUpright(seal, a), get lastMerge() { return lastMerge; }, sealExt: () => seal && Object.assign({ mmPx: seal.mmPx, iw: seal.iw }, sealExtent(seal), inkBox(seal)), autoStraighten, vectorize, traceOutlines,
+    setTab, sigBundle, sealBundle, drawItems, makeFormPdf, sealAngle: () => sealAngle(seal), sealUp: (a) => sealUpright(seal, a), get lastMerge() { return lastMerge; }, get lastRing() { return lastRing; }, get lastSmooth() { return lastSmooth; }, aiState: () => seal && { ai: Object.assign({}, seal.ai), done: seal.aiKey, busy: !!seal.aiRun, res: seal.aiRes, paths: !!seal.paths, up: seal.up || 0 }, sealExt: () => seal && Object.assign({ mmPx: seal.mmPx, iw: seal.iw }, sealExtent(seal), inkBox(seal)), autoStraighten, vectorize, traceOutlines,
     get batch() { return batch.items.map((it) => ({ name: it.name, st: it.st, note: it.note, page: it.page, has: !!it.list, sel: it.sel, report: it.report })); },
     get batchRunning() { return batch.running; }, batchAddFiles, get report() { return Array.from(document.querySelectorAll('#scanQList li')).map((l) => l.className + ': ' + l.textContent); } };
 
