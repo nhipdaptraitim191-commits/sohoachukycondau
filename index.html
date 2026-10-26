@@ -759,7 +759,14 @@ textarea{font-family:inherit}
           <details class="opts" id="sigOpts">
             <summary><span class="n">3</span><span class="opts-title">Tùy chọn file</span><span class="opts-sum" id="sigOptsSum">1000 × 667 · 3 : 2 · nền trong suốt</span></summary>
             <div class="opts-body">
-              <p class="spec">Yêu cầu của hệ thống: <b>PNG</b>, chiều rộng <b>90 – 1000 px</b>, khuyến khích tỉ lệ <b>3 : 2</b>. Mỗi lần mở, phần mềm đặt sẵn 1000 px, tỉ lệ 3 : 2, nên thường không cần chỉnh.</p>
+              <p class="spec">Yêu cầu thường gặp của hệ thống: <b>PNG</b>, chiều rộng <b>90 – 1000 px</b>, khuyến khích tỉ lệ <b>3 : 2</b>. Mỗi lần mở, phần mềm đặt sẵn 1000 × 667 px. Hệ thống yêu cầu cỡ khác (ví dụ chữ ký <b>1300 × 640 px</b>) thì bấm nút cỡ đó, hoặc chọn <b>Cỡ tùy chỉnh</b> rồi gõ chiều rộng, chiều cao.</p>
+              <div class="field">
+                <span class="field-head">Cỡ ảnh có sẵn</span>
+                <div class="chips" role="group" aria-label="Cỡ ảnh chữ ký có sẵn">
+                  <button class="chip" type="button" data-size="1000x667">1000 × 667 · chuẩn 3 : 2</button>
+                  <button class="chip" type="button" data-size="1300x640">1300 × 640</button>
+                </div>
+              </div>
               <div class="field">
                 <span class="field-head"><label for="widthNum">Chiều rộng</label><span>Cao: <output id="heightOut">667</output> px</span></span>
                 <div class="width-row">
@@ -791,8 +798,17 @@ textarea{font-family:inherit}
                   <button class="chip" type="button" data-frame="2:1">2 : 1</button>
                   <button class="chip" type="button" data-frame="3:1">3 : 1</button>
                   <button class="chip" type="button" data-frame="1:1">1 : 1</button>
+                  <button class="chip" type="button" data-frame="custom">Cỡ tùy chỉnh</button>
                   <button class="chip" type="button" data-frame="trim">Cắt sát chữ ký</button>
                 </div>
+              </div>
+              <div class="field" id="heightField" hidden>
+                <span class="field-head"><label for="heightNum">Chiều cao (cỡ tùy chỉnh)</label></span>
+                <div class="width-row">
+                  <input class="num" type="number" id="heightNum" min="90" max="4000" step="1" value="640" inputmode="numeric">
+                  <span class="unit">px</span>
+                </div>
+                <span class="small">Chiều rộng gõ ở ô Chiều rộng phía trên. Chữ ký luôn được căn giữa, giữ đúng tỉ lệ nét, không bị kéo dãn.</span>
               </div>
               <label class="check" id="fitRow"><input type="checkbox" id="fit" checked> Tự căn giữa và phóng vừa khung</label>
               <div class="field">
@@ -975,7 +991,7 @@ textarea{font-family:inherit}
             <summary><span class="n">5</span><span class="opts-title">Tùy chọn file</span><span class="opts-sum" id="sealOptsSum">2400 × 2400 · lề 0%</span></summary>
             <div class="opts-body seal-ctl" id="sealCtl">
               <div class="field">
-                <span class="field-head"><label for="sealSizeNum">Kích thước, khung vuông 1 : 1</label></span>
+                <span class="field-head"><label for="sealSizeNum">Kích thước (khung vuông 1 : 1): bấm cỡ có sẵn hoặc gõ cỡ tùy chỉnh</label></span>
                 <div class="size-row">
                   <input class="num" type="number" id="sealSizeNum" min="90" max="4000" step="1" value="2400" inputmode="numeric" aria-label="Cạnh ảnh con dấu, đơn vị px">
                   <span class="unit">× <output id="sealSizeOut">2400</output> px</span>
@@ -985,6 +1001,7 @@ textarea{font-family:inherit}
                   <button class="chip" type="button" data-ss="2000">2000</button>
                   <button class="chip" type="button" data-ss="1500">1500</button>
                   <button class="chip" type="button" data-ss="1000">1000</button>
+                  <button class="chip" type="button" data-ss="640">640</button>
                   <button class="chip" type="button" data-ss="600">600</button>
                   <button class="chip" type="button" data-ss="300">300</button>
                 </div>
@@ -1224,7 +1241,7 @@ textarea{font-family:inherit}
           <li><b>AI đọc tên trên con dấu</b> (bước ③): khi ô tên cơ quan còn trống, AI tự đọc chữ trên con dấu ngay sau khi bấm Dùng con dấu này (bấm nút <b>AI đọc tên trên con dấu</b> để đọc lại bất cứ lúc nào). AI trải vòng chữ cong thành dòng thẳng để đọc, tự nhận ra chữ vòng trên đọc xuôi và chữ vòng dưới đọc ngược chiều, đọc cả các dòng chữ ở giữa, rồi sửa các dấu tiếng Việt hay đọc nhầm theo từ ngữ thường có trên con dấu (ĐẢNG ỦY, ỦY BAN NHÂN DÂN, CÔNG ĐOÀN, THÀNH PHỐ…). Theo cách bố trí thông thường, tên cơ quan sử dụng con dấu nằm ở giữa, vòng ngoài là tên cơ quan cấp trên; nếu ở giữa không có chữ thì tên lấy từ vòng ngoài. AI điền sẵn tên hợp lý nhất và liệt kê các dòng đọc được để bạn chọn. Việc đọc chạy ngay trên máy bằng bộ đọc chữ Tesseract, không gửi con dấu đi đâu. <b>Luôn rà lại tên</b> với con dấu thật: chữ quá nhỏ, mờ, kiểu chữ lạ có thể đọc sai một vài dấu.</li>
           <li><b>Bước ③ Cơ quan:</b> nhập tên cơ quan để đặt tên file, và <b>Cỡ thật của con dấu</b> (mm): đường kính ngoài của dấu tròn, đo bằng thước trên dấu đóng ra giấy (dấu không tròn: cạnh dài nhất). Với bản scan PDF, hoặc ảnh scan có ghi độ phân giải, AI đo sẵn cỡ này; hãy đo lại bằng thước cho chắc. Cỡ thật được ghi vào file PNG, nên khi chèn vào Word hoặc phần mềm ký số đọc thông tin này, con dấu ra đúng kích thước thực tế. Tên file có cả cỡ thật, ví dụ “Đảng ủy phường Hòa Bình”, 35 mm thành <i>con-dau-dang-uy-phuong-hoa-binh-35mm-2400x2400.png</i>. File PNG còn ghi thông tin nguồn gốc (tên cơ quan, màu, cỡ thật, ngày tạo) để dễ kiểm tra về sau.</li>
           <li><b>Bước ④ Kiểm tra:</b> xem dòng trạng thái (nền vàng nhắc khi chưa có cỡ thật); bấm <b>Xem cỡ con dấu trên văn bản mẫu</b> để xem con dấu trên giấy theo cỡ thật đã nhập. Bấm <b>Tải bản in kiểm tra cỡ thật (PDF)</b> để có trang A4 gồm con dấu đúng cỡ thật, thước đo mm, đoạn 100 mm và một vòng tròn trống: in với tỉ lệ 100% (không chọn Vừa trang), đóng con dấu thật vào vòng tròn trống rồi so với hình bên cạnh, đo đoạn 100 mm để chắc máy in không co giãn.</li>
-          <li><b>Bước ⑤ Tùy chọn file:</b> kích thước (mặc định 2400 × 2400; nút chọn nhanh 2000, 1500, 1000, 600, 300 hoặc gõ số từ 90 đến 4000) và lề quanh dấu (mặc định 0%: cắt sát mép dấu, không chừa khoảng trắng).</li>
+          <li><b>Bước ⑤ Tùy chọn file:</b> kích thước (mặc định 2400 × 2400; nút chọn nhanh 2000, 1500, 1000, 640, 600, 300, hoặc gõ cỡ tùy chỉnh từ 90 đến 4000; ví dụ hệ thống yêu cầu con dấu 640 × 640 px thì bấm 640) và lề quanh dấu (mặc định 0%: cắt sát mép dấu, không chừa khoảng trắng).</li>
           <li>Bấm <b>Tải PNG con dấu</b>, hoặc <b>Trọn bộ .zip</b> (PNG 2400 px, PNG 1000 px, JSON và hướng dẫn).</li>
           <li><b>Khóa file tải về bằng mật khẩu</b> (ô đánh dấu trên các nút tải): khi bật, mọi file con dấu tải về (PNG, Trọn bộ, JSON) đều nằm trong file .zip mã hóa AES-256, tên file có đuôi <i>-khoa.zip</i>. Lần tải đầu tiên phần mềm hỏi mật khẩu (8 – 64 ký tự, chữ không dấu, chữ số, ký hiệu), các lần tải sau trong cùng lần làm việc dùng lại mật khẩu đó; mật khẩu chỉ giữ trong bộ nhớ, tải lại trang hoặc bỏ đánh dấu là quên. Mở file bằng WinRAR, 7-Zip, hoặc nút <b>Mở JSON</b> của phần mềm (Windows không tự mở được file .zip mã hóa AES). Mất mật khẩu thì không ai mở lại được file.</li>
         </ol>
@@ -1288,7 +1305,7 @@ textarea{font-family:inherit}
           <dt>Xem thử trên văn bản mẫu</dt>
           <dd>Đặt chữ ký (hoặc con dấu) vào khối ký của một văn bản mẫu ở cỡ gần đúng khi in. Chọn cỡ ô chữ ký 35 – 55 mm (con dấu 30 – 42 mm), sửa chức danh, chuyển Vừa khung hoặc Cỡ thật.</dd>
           <dt>Chiều rộng, tỉ lệ (Tùy chọn file)</dt>
-          <dd><b>Chuẩn hệ thống:</b> 90 – 1000 px, tỉ lệ <b>3 : 2</b> (mặc định 1000 × 667). <b>Độ phân giải cao hơn:</b> 1500 – 4000 px để in ấn hay chèn vào Word; không dùng cỡ này để nộp lên hệ thống. Các tỉ lệ khác: 4 : 3, 16 : 9, 2 : 1, 3 : 1, 1 : 1, Cắt sát chữ ký. Nút <b>Đặt lại chuẩn hệ thống</b> trả về 1000 × 667, 3 : 2, trong suốt.</dd>
+          <dd><b>Chuẩn hệ thống:</b> 90 – 1000 px, tỉ lệ <b>3 : 2</b> (mặc định 1000 × 667). <b>Độ phân giải cao hơn:</b> 1500 – 4000 px để in ấn hay chèn vào Word; không dùng cỡ này để nộp lên hệ thống. Các tỉ lệ khác: 4 : 3, 16 : 9, 2 : 1, 3 : 1, 1 : 1, Cắt sát chữ ký. <b>Cỡ tùy chỉnh:</b> gõ cả chiều rộng và chiều cao (90 – 4000 px) khi hệ thống yêu cầu một cỡ riêng; có sẵn nút <b>1300 × 640</b>. Chữ ký luôn được căn giữa, không bị kéo dãn. Nút <b>Đặt lại chuẩn hệ thống</b> trả về 1000 × 667, 3 : 2, trong suốt.</dd>
           <dt>Tự căn giữa, lề, nền ảnh</dt>
           <dd>Tự căn giữa và phóng vừa khung (bật mặc định); lề quanh chữ ký mặc định 6%; nền Trong suốt (mặc định) hoặc Trắng (chỉ khi hệ thống không nhận ảnh trong suốt).</dd>
           <dt>Trọn bộ .zip</dt>
@@ -1392,7 +1409,7 @@ textarea{font-family:inherit}
 
       <section id="g-spec">
         <h3>15. Yêu cầu file của hệ thống</h3>
-        <p>Chữ ký: PNG, chiều rộng từ 90 đến 1000 px, khuyến khích tỉ lệ 3 : 2. Mỗi lần mở, phần mềm đặt sẵn <b>1000 × 667 px</b>, nền trong suốt, chất lượng cao nhất. Các cỡ lớn hơn 1000 px và tỉ lệ khác dùng cho mục đích khác như in ấn; khi đó dòng trạng thái chuyển sang nền vàng để nhắc.</p>
+        <p>Chữ ký: PNG, chiều rộng từ 90 đến 1000 px, khuyến khích tỉ lệ 3 : 2. Mỗi lần mở, phần mềm đặt sẵn <b>1000 × 667 px</b>, nền trong suốt, chất lượng cao nhất. Các cỡ lớn hơn 1000 px và tỉ lệ khác dùng cho mục đích khác như in ấn; khi đó dòng trạng thái chuyển sang nền vàng để nhắc. Hệ thống yêu cầu cỡ riêng (ví dụ chữ ký 1300 × 640 px, con dấu 640 × 640 px) thì chọn Cỡ tùy chỉnh ở Tùy chọn file (chữ ký) hoặc nút 640 (con dấu).</p>
         <p>Con dấu: PNG vuông 1 : 1, mặc định 2400 × 2400 px, nền trong suốt, màu đỏ đồng đều ở mọi điểm ảnh, con dấu căn theo tâm và gần kín khung, kích thước thực tế (mm) ghi trong file theo Hướng dẫn 05-HD/VPTW. Nếu hệ thống yêu cầu cỡ khác, chọn hoặc gõ kích thước ở bước ⑤ Tùy chọn file của thẻ Con dấu.</p>
       </section>
     </div>
@@ -1745,10 +1762,15 @@ textarea{font-family:inherit}
   const $ = (id) => document.getElementById(id);
 
   const DEFAULTS = { color: '#1937E1', ink5: true, thick: 7, smooth: 50, sens: 70, taper: true, input: 'all', inputManual: false,
-    width: 1000, frame: '3:2', fit: true, margin: 6, bg: 'clear', sealSize: 2400, sealMargin: 0, sealM0: true, sealColor: '#FF0000', sealKeep: false, sealLock: false, sigLock: false, batchLock: false };
+    width: 1000, frame: '3:2', height: 640, fit: true, margin: 6, bg: 'clear', sealSize: 2400, sealMargin: 0, sealM0: true, sealColor: '#FF0000', sealKeep: false, sealLock: false, sigLock: false, batchLock: false };
   // width ÷ height for each frame; 'trim' fits the signature itself
   const RATIOS = { '3:2': 1.5, '4:3': 4 / 3, '16:9': 16 / 9, '2:1': 2, '3:1': 3, '1:1': 1 };
   const SYS_MAX_W = 1000, MAX_W = 4000;
+  // Cỡ tùy chỉnh: width and height both typed (a system that asks for, say, 1300 × 640 px)
+  const SIZE_PRESETS = { '1000x667': { width: 1000, frame: '3:2' }, '1300x640': { width: 1300, frame: 'custom', height: 640 } };
+  const clampH = (v) => Math.min(MAX_W, Math.max(90, Math.round(Number(v) || 640)));
+  // the file's height: from the frame's ratio, or as typed for Cỡ tùy chỉnh
+  const frameH = (W, o) => (o.frame === 'custom' ? clampH(o.height) : Math.max(1, Math.round(W / (RATIOS[o.frame] || 1.5))));
   const cfg = Object.assign({}, DEFAULTS);
   try {
     const saved = JSON.parse(localStorage.getItem('bangky.cfg.v1') || 'null');
@@ -1779,7 +1801,7 @@ textarea{font-family:inherit}
 
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const clampW = (v) => clamp(Math.round(Number(v) || 1000), 90, MAX_W);
-  const frameLabel = (f) => (f === 'trim' ? 'cắt sát chữ ký' : String(f).replace(':', ' : '));
+  const frameLabel = (f) => (f === 'trim' ? 'cắt sát chữ ký' : f === 'custom' ? 'cỡ tùy chỉnh' : String(f).replace(':', ' : '));
   const rBase = () => cfg.thick * 1.5 / 2;
   // "Võ Hữu Ngợi" -> "vo-huu-ngoi": plain ASCII so every upload system accepts the file name
   function slugName(s) {
@@ -2304,17 +2326,17 @@ textarea{font-family:inherit}
       const H = clamp(Math.round(bb.h * s + 2 * mp), 1, 8000);
       return { W, H, s, ox: mp - bb.x0 * s, oy: (H - bb.h * s) / 2 - bb.y0 * s };
     }
-    const H = Math.max(1, Math.round(W / (RATIOS[o.frame] || 1.5)));
+    const H = frameH(W, o);
     const mp = W * m, s = Math.min((W - 2 * mp) / bb.w, (H - 2 * mp) / bb.h);
     return { W, H, s, ox: (W - bb.w * s) / 2 - bb.x0 * s, oy: (H - bb.h * s) / 2 - bb.y0 * s };
   }
   // the file's size and where the signature sits in it; `over` changes width, frame, fit or margin for one file
   function geometry(list = strokes, over) {
-    const o = over ? Object.assign({ width: cfg.width, frame: cfg.frame, fit: cfg.fit, margin: cfg.margin }, over) : cfg;
+    const o = over ? Object.assign({ width: cfg.width, frame: cfg.frame, height: cfg.height, fit: cfg.fit, margin: cfg.margin }, over) : cfg;
     const bb = bbox(list);
     if (bb && (o.frame === 'trim' || o.fit)) return frameFor(bb, o);
     // the whole 3:2 signing paper, centred in the chosen frame
-    const W = clampW(o.width), H = Math.max(1, Math.round(W / (RATIOS[o.frame] || 1.5)));
+    const W = clampW(o.width), H = frameH(W, o);
     const s = Math.min(W / LW, H / LH);
     return { W, H, s, ox: (W - LW * s) / 2, oy: (H - LH * s) / 2 };
   }
@@ -3013,7 +3035,7 @@ textarea{font-family:inherit}
       signer: String(who || '').trim(),
       canvas: { width: LW, height: LH, ratio: '3:2' },
       settings: { color: cfg.color, thick: cfg.thick, smooth: cfg.smooth, taper: cfg.taper, sens: cfg.sens,
-        width: cfg.width, frame: cfg.frame, fit: cfg.fit, margin: cfg.margin, bg: cfg.bg },
+        width: cfg.width, frame: cfg.frame, height: cfg.height, fit: cfg.fit, margin: cfg.margin, bg: cfg.bg },
       strokes: list.map((s) => (s.type === 'image'
         ? { type: 'image', x: r2(s.x), y: r2(s.y), w: r2(s.w), h: r2(s.h), png: s.mask.toDataURL('image/png') }
         : s.type === 'vector'
@@ -3094,7 +3116,8 @@ textarea{font-family:inherit}
     if (typeof s.taper === 'boolean') p.taper = s.taper;
     if (Number.isFinite(+s.width)) p.width = clampW(+s.width);
     if (s.frame === '32') p.frame = '3:2';
-    else if (s.frame === 'trim' || Object.prototype.hasOwnProperty.call(RATIOS, s.frame)) p.frame = s.frame;
+    else if (s.frame === 'trim' || s.frame === 'custom' || Object.prototype.hasOwnProperty.call(RATIOS, s.frame)) p.frame = s.frame;
+    if (Number.isFinite(+s.height)) p.height = clampH(+s.height);
     if (typeof s.fit === 'boolean') p.fit = s.fit;
     if (Number.isFinite(+s.margin)) p.margin = clamp(Math.round(+s.margin), 0, 20);
     if (s.bg === 'clear' || s.bg === 'white') p.bg = s.bg;
@@ -3232,7 +3255,8 @@ textarea{font-family:inherit}
     if (!strokes.length) { txt.textContent = takes.length > 1 ? 'Bản ký ' + (takeIdx + 1) + ' đang trống: ký vào khung, hoặc chạm vào bản khác.' : 'Chưa có nét ký nào.'; return; }
     if (!hasName) { st.classList.add('warn'); txt.textContent = 'Nhập họ và tên người ký ở bước 1 để tải file.'; return; }
     const which = takes.length > 1 ? 'Bản ký ' + (takeIdx + 1) + ': ' : '';
-    if (g.W > SYS_MAX_W) { st.classList.add('warn'); txt.textContent = which + 'Ảnh rộng ' + g.W + ' px, lớn hơn mức 1000 px hệ thống ký văn bản cho phép. Dùng cho in ấn hoặc chèn vào văn bản; để nộp lên hệ thống, bấm Đặt lại chuẩn hệ thống ở bước 3.'; }
+    if (cfg.frame === 'custom') { st.classList.add('ok'); txt.textContent = which + 'Hợp lệ: PNG ' + g.W + ' × ' + g.H + ' px theo cỡ tùy chỉnh. Hãy chắc cỡ này đúng cỡ hệ thống yêu cầu (ví dụ 1300 × 640).'; }
+    else if (g.W > SYS_MAX_W) { st.classList.add('warn'); txt.textContent = which + 'Ảnh rộng ' + g.W + ' px, lớn hơn mức 1000 px hệ thống ký văn bản cho phép. Dùng cho in ấn hoặc chèn vào văn bản; để nộp lên hệ thống, bấm Đặt lại chuẩn hệ thống ở bước 3.'; }
     else if (cfg.frame === 'trim') { st.classList.add('warn'); txt.textContent = which + 'Hợp lệ: PNG, rộng ' + g.W + ' px. Khung cắt sát chữ ký không theo tỉ lệ 3 : 2 hệ thống khuyến khích.'; }
     else if (cfg.frame !== '3:2') { st.classList.add('warn'); txt.textContent = which + 'Hợp lệ: PNG, rộng ' + g.W + ' px. Tỉ lệ ' + frameLabel(cfg.frame) + ' không phải tỉ lệ 3 : 2 hệ thống khuyến khích.'; }
     else { st.classList.add('ok'); txt.textContent = which + 'Đạt yêu cầu: PNG, rộng ' + g.W + ' px (trong 90 – 1000), tỉ lệ 3 : 2.'; }
@@ -3542,6 +3566,9 @@ textarea{font-family:inherit}
     $('widthNum').value = cfg.width; $('widthRange').value = Math.min(cfg.width, SYS_MAX_W);
     document.querySelectorAll('.chip[data-w]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.w === cfg.width ? 'true' : 'false'));
     document.querySelectorAll('.chip[data-frame]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.frame === cfg.frame ? 'true' : 'false'));
+    document.querySelectorAll('.chip[data-size]').forEach((b) => { const q = SIZE_PRESETS[b.dataset.size]; b.setAttribute('aria-pressed', q && clampW(cfg.width) === q.width && cfg.frame === q.frame && (q.frame !== 'custom' || clampH(cfg.height) === q.height) ? 'true' : 'false'); });
+    $('heightField').hidden = cfg.frame !== 'custom';
+    if (document.activeElement !== $('heightNum')) $('heightNum').value = clampH(cfg.height);
     $('fit').checked = cfg.fit; $('fitRow').hidden = cfg.frame === 'trim';
     $('margin').value = cfg.margin; $('marginOut').textContent = cfg.margin + '%';
     setPressed('bgClear', cfg.bg !== 'white'); setPressed('bgWhite', cfg.bg === 'white');
@@ -3561,6 +3588,9 @@ textarea{font-family:inherit}
   $('widthNum').addEventListener('change', (e) => set({ width: clampW(e.target.value) }));
   document.querySelectorAll('.chip[data-w]').forEach((b) => b.addEventListener('click', () => set({ width: +b.dataset.w })));
   document.querySelectorAll('.chip[data-frame]').forEach((b) => b.addEventListener('click', () => set({ frame: b.dataset.frame })));
+  document.querySelectorAll('.chip[data-size]').forEach((b) => b.addEventListener('click', () => { const q = SIZE_PRESETS[b.dataset.size]; if (q) set(Object.assign({}, q)); }));
+  $('heightNum').addEventListener('input', (e) => { const v = Math.round(+e.target.value); if (v >= 90 && v <= MAX_W) { Object.assign(cfg, { height: v, frame: 'custom' }); saveCfg(); document.querySelectorAll('.chip[data-size]').forEach((b) => { const q = SIZE_PRESETS[b.dataset.size]; b.setAttribute('aria-pressed', q && clampW(cfg.width) === q.width && q.frame === 'custom' && q.height === v ? 'true' : 'false'); }); schedulePreview(); } });
+  $('heightNum').addEventListener('change', (e) => set({ height: clampH(e.target.value), frame: 'custom' }));
   $('fit').addEventListener('change', (e) => set({ fit: e.target.checked }));
   $('margin').addEventListener('input', (e) => set({ margin: +e.target.value }));
   $('bgClear').addEventListener('click', () => set({ bg: 'clear' }));
@@ -8394,7 +8424,7 @@ self.onmessage = async (e) => {
     if (tab === 'batch' && batch.stale) { batch.stale = false; batch.items.forEach(batchThumb); }
   }
   function syncBatchFmt() {
-    const W = clampW(cfg.width), H = cfg.frame === 'trim' ? 0 : Math.round(W / (RATIOS[cfg.frame] || 1.5));
+    const W = clampW(cfg.width), H = cfg.frame === 'trim' ? 0 : frameH(W, cfg);
     const fmt = W + (H ? ' × ' + H : ' px, cắt sát') + ' · ' + frameLabel(cfg.frame) + ' · ' + (cfg.bg === 'white' ? 'nền trắng' : 'nền trong suốt');
     $('batchFmt').textContent = 'Mỗi người một file PNG ' + fmt + ', theo Tùy chọn file ở thẻ Chữ ký. Tên file theo họ tên, ví dụ chu-ky-nguyen-van-an-' + W + 'x' + (H || 'h') + '.png.';
     $('batchOptsSum').textContent = W + (H ? ' × ' + H : '') + ' · ' + (batch.keepColor ? 'màu bản scan' : 'màu ' + cfg.color.toUpperCase());

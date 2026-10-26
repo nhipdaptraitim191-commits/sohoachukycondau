@@ -1,6 +1,6 @@
 /* Offline copy of the app: the page and icons are cached on first visit; later visits open from the cache at once
    and fetch the newest version in the background (it shows the next time the app is opened). */
-const CACHE = 'so-hoa-chu-ky-ea8add8612';
+const CACHE = 'so-hoa-chu-ky-2dae42f4a4';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'favicon.png'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
