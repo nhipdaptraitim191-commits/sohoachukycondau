@@ -345,7 +345,6 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .ai-law{padding:8px 10px; border-left:3px solid var(--accent); background:var(--surface-2); border-radius:0 8px 8px 0}
 .seal-busy{position:absolute; left:50%; bottom:14px; transform:translateX(-50%); display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:999px; background:var(--surface); box-shadow:var(--shadow); font-size:13.5px; font-weight:600; color:var(--fg); white-space:nowrap}
 .seal-busy .spin{width:20px; height:20px}
-.seal-cmp{position:absolute; top:12px; right:12px; z-index:1}
 .seal-cmp[aria-pressed="true"]{background:var(--warn-bg); border-color:var(--warn); color:var(--warn)}
 #sealClear .lbl{display:none}
 @media (prefers-reduced-motion: reduce){.ai-step .sw,.ai-step .sw::after{transition:none}}
@@ -578,18 +577,85 @@ textarea{font-family:inherit}
   .app{grid-template-columns:minmax(0,1fr) clamp(370px,31vw,450px)}
   .thick input{width:130px}
 }
-/* sideways on a short screen: the whole side panel scrolls as one, with the main download button kept in view at its foot */
-@media (pointer: coarse) and (min-width: 900px) and (max-height: 940px){
-  .brand p{display:none}
-  .panel{overflow-y:auto; overscroll-behavior:contain}
-  .panel-body{flex:none; overflow:visible}
-  .panel-foot{display:contents}
-  .panel-foot > *{margin:0 16px 10px}
-  .panel-foot > :last-child{margin-bottom:18px}
-  .panel-foot .btn-primary{position:sticky; bottom:14px; z-index:5; flex:none; width:auto; box-shadow:0 0 0 14px var(--surface), 0 -18px 18px 8px var(--surface)}
-  /* a pinned button must stay opaque: a disabled one gets a pale fill instead of transparency */
-  .panel-foot .btn-primary:disabled{opacity:1; background:#9AA8EE; background:color-mix(in srgb, var(--accent) 42%, var(--surface)); color:var(--accent-fg)}
+@media (pointer: coarse) and (min-width: 900px) and (max-height: 940px){ .brand p{display:none} }
+/* ===== no small scroll boxes: the page itself scrolls like any web page. ① and ② sit under the work area on the
+   left; the options and the download buttons are on the right, and the download buttons stay in view ===== */
+html,body{height:auto}
+.shell{height:auto; min-height:calc(100dvh - 24px)}
+.app{flex:none; align-items:start}
+.stage-box{flex:none}
+.stage.expanded .stage-box{flex:1; min-height:0}
+.panel{overflow:visible}
+.panel-body{flex:none; overflow:visible}
+/* only the bar with the main download button stays pinned at the bottom of the screen (full width of the panel,
+   with a clean edge and a shadow while it is pinned); the lock and the other buttons follow it at the end of the
+   panel, so the pinned bar covers as little of the options as possible */
+.panel{padding-bottom:16px}
+.panel-foot{display:contents}
+.panel-foot > *{margin:10px 16px 0; width:auto; align-self:stretch}
+.panel-foot > .dl-bar{margin:0; position:sticky; bottom:0; z-index:6; padding:12px 16px; background:var(--surface); border-top:1px solid var(--line); transition:box-shadow .15s}
+.panel-foot > .dl-bar.stuck{box-shadow:0 -12px 24px -10px rgba(20,26,46,.22)}
+.dl-bar .btn-primary{width:100%}
+@media (pointer: coarse) and (min-width: 700px){ .dl-bar .btn-primary{font-size:16px; padding:0 8px; gap:8px} }
+.panel-foot > .dl-bar + *{margin-top:12px}
+.panel-foot .btn-primary:disabled{opacity:1; background:#9AA8EE; background:color-mix(in srgb, var(--accent) 42%, var(--surface)); color:var(--accent-fg)}
+.seal-stage{flex:none}
+.seal-canvas{flex:none; height:clamp(300px, calc(100dvh - 440px), 600px)}
+.seal-canvas img{max-height:100%}
+.batch-stage .batch-scroll{overflow:visible; flex:none}
+/* where each part sits: one column on a phone; work area with ① ② under it beside the panel; on a wide screen
+   ① ② in their own column on the left of the work area, so nothing needs scrolling to be found */
+.app{grid-template-areas:"stage" "steps" "panel"}
+.app > .stage{grid-area:stage} .app > .steps-col{grid-area:steps} .app > .panel{grid-area:panel}
+.steps-col{min-width:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap:12px; align-items:start; align-content:start}
+.steps-col > .group{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px 16px}
+@media (min-width: 900px){
+  .app{grid-template-columns:minmax(0,1fr) 340px; grid-template-areas:"stage panel" "steps panel"; grid-template-rows:auto 1fr}
+  .panel.fits{position:sticky; top:12px}
 }
+@media (pointer: coarse) and (min-width: 900px){ .app{grid-template-columns:minmax(0,1fr) clamp(370px,31vw,450px)} }
+@media (min-width: 1120px){
+  .app{grid-template-columns:clamp(260px,21vw,340px) minmax(0,1fr) 340px; grid-template-areas:"steps stage panel"; grid-template-rows:auto}
+  .seal-canvas{height:clamp(300px, calc(100dvh - 330px), 640px)}
+  /* the drawing pad (and ① ② when they fit) stay in sight while the page scrolls down the options on the right */
+  .app > .stage.fits:not(.expanded), .app > .steps-col.fits{position:sticky; top:12px}
+}
+@media (pointer: coarse) and (min-width: 1120px){
+  .seal-canvas{height:clamp(300px, calc(100dvh - 370px), 640px)}
+  .app{grid-template-columns:clamp(250px,20vw,320px) minmax(0,1fr) clamp(330px,27vw,400px)}
+}
+.takes{flex-wrap:wrap}
+.takes .btn{white-space:nowrap}
+@media (min-width: 900px) and (max-height: 760px){ .brand p{display:none} }
+/* AI làm đẹp: once a step has run, its result line says what it did (the short description is in the guide) */
+.ai-step-text:has(.ai-res:not(:empty):not(.off)) .ai-step-sub{display:none}
+/* four width buttons share one row instead of wrapping onto two */
+.chips.chips-4{display:grid; grid-template-columns:repeat(4, minmax(0,1fr))}
+.chips.chips-4 .chip{padding:0 4px}
+/* a full-width panel (tablet upright) lays its file options out in two columns */
+.panel-body{container-type:inline-size}
+@container (min-width: 620px){
+  .opts-body{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); column-gap:24px; align-items:start}
+  .opts-body .spec, .opts-body > .small, .opts-body .btn-block{grid-column:1 / -1}
+}
+/* the size controls are one block, shown in ③ of the tab that is open (Chữ ký or Hàng loạt) */
+.opts-core, .opts-slot{display:contents}
+.ink-out{font-variant-numeric:tabular-nums; color:var(--muted)}
+.batch-swatches{display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 6px}
+.panel .batch-swatches .swatch{width:40px; height:40px}
+/* full screen button: the icon and the words follow the state */
+.tabs-row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.tabs-row .tabs{flex:0 1 auto; min-width:0}
+.fs-btn{flex:none; min-height:44px; background:var(--surface)}
+#fsBtn .fs-off{display:none}
+#fsBtn[aria-pressed="true"] .fs-on{display:none}
+#fsBtn[aria-pressed="true"] .fs-off{display:inline}
+@media (max-width: 640px){
+  .tabs-row .tabs{flex:1 1 auto}
+  #fsBtn{width:46px; padding:0}
+  #fsBtn #fsLabel{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+}
+:fullscreen{background:var(--bg); overflow-y:auto}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
 </style>
 
@@ -619,20 +685,27 @@ textarea{font-family:inherit}
     </div>
   </header>
 
-  <nav class="tabs" role="tablist" aria-label="Chức năng">
-    <button class="tab" type="button" role="tab" id="tab-sig" data-tab="sig" aria-selected="true" aria-controls="viewSig">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19c2.5-.6 4.5-2.8 6-5.6"/><path d="M14.5 4.5l5 5L11 18l-5 .6.5-5z"/></svg>
-      Chữ ký
+  <div class="tabs-row">
+    <nav class="tabs" role="tablist" aria-label="Chức năng">
+      <button class="tab" type="button" role="tab" id="tab-sig" data-tab="sig" aria-selected="true" aria-controls="viewSig">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19c2.5-.6 4.5-2.8 6-5.6"/><path d="M14.5 4.5l5 5L11 18l-5 .6.5-5z"/></svg>
+        Chữ ký
+      </button>
+      <button class="tab" type="button" role="tab" id="tab-seal" data-tab="seal" aria-selected="false" aria-controls="viewSeal" tabindex="-1">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.5"/><path d="M12 9.6l.8 1.6 1.7.2-1.3 1.2.3 1.7-1.5-.8-1.5.8.3-1.7-1.3-1.2 1.7-.2z"/></svg>
+        Con dấu
+      </button>
+      <button class="tab" type="button" role="tab" id="tab-batch" data-tab="batch" aria-selected="false" aria-controls="viewBatch" tabindex="-1">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7.5" width="13" height="13" rx="2"/><path d="M7.5 4.5h11a2 2 0 012 2v11"/><path d="M6.5 16c1.2-.3 2-1.3 2.7-2.6M12 10.5l1.8 1.8-3.5 3.5-2 .3.3-2z"/></svg>
+        Hàng loạt <span class="tab-count" id="batchCount" hidden>0</span>
+      </button>
+    </nav>
+    <button class="btn fs-btn" id="fsBtn" type="button" title="Toàn màn hình: ẩn thanh trình duyệt để có thêm chỗ (bấm lại hoặc phím Esc để thoát)" hidden>
+      <svg class="fs-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      <svg class="fs-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+      <span id="fsLabel">Toàn màn hình</span>
     </button>
-    <button class="tab" type="button" role="tab" id="tab-seal" data-tab="seal" aria-selected="false" aria-controls="viewSeal" tabindex="-1">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.5"/><path d="M12 9.6l.8 1.6 1.7.2-1.3 1.2.3 1.7-1.5-.8-1.5.8.3-1.7-1.3-1.2 1.7-.2z"/></svg>
-      Con dấu
-    </button>
-    <button class="tab" type="button" role="tab" id="tab-batch" data-tab="batch" aria-selected="false" aria-controls="viewBatch" tabindex="-1">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7.5" width="13" height="13" rx="2"/><path d="M7.5 4.5h11a2 2 0 012 2v11"/><path d="M6.5 16c1.2-.3 2-1.3 2.7-2.6M12 10.5l1.8 1.8-3.5 3.5-2 .3.3-2z"/></svg>
-      Hàng loạt <span class="tab-count" id="batchCount" hidden>0</span>
-    </button>
-  </nav>
+  </div>
 
   <!-- ===== Chữ ký ===== -->
   <main class="app view" id="viewSig" role="tabpanel" aria-labelledby="tab-sig">
@@ -730,108 +803,114 @@ textarea{font-family:inherit}
       <p class="stage-note">Mẹo trên Galaxy Tab hoặc iPad: xoay ngang máy, bấm <b>Phóng to</b> để ký trên toàn màn hình. Ký vài bản bằng nút <b>Ký bản mới</b> rồi chạm vào bản đẹp nhất.</p>
     </section>
 
-    <aside class="panel" aria-label="Người ký, kiểm tra và tải về">
+    <div class="steps-col" id="sigSteps" role="group" aria-label="Người ký và kiểm tra">
+      <section class="group">
+        <h2><span class="n">1</span>Người ký</h2>
+        <div class="field">
+          <label class="field-head" for="signerName">Họ và tên người ký (dùng để đặt tên file)</label>
+          <input class="text" type="text" id="signerName" maxlength="60" autocomplete="name" spellcheck="false" placeholder="Ví dụ: Nguyễn Văn An">
+          <span class="fname" id="fileName">Tên file sẽ có dạng chu-ky-ho-ten-1000x667.png</span>
+        </div>
+      </section>
+      <section class="group" aria-label="Kiểm tra">
+        <h2><span class="n">2</span>Kiểm tra</h2>
+        <div class="preview" id="preview"><p class="empty" id="previewEmpty">Ảnh xem trước hiện ở đây sau khi bạn ký.</p><img id="previewImg" alt="Xem trước chữ ký sẽ xuất" hidden></div>
+        <div class="meta"><span id="metaDims">1000 × 667 px · PNG</span><span id="metaSize">–</span></div>
+        <div class="status" id="status" role="status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
+          <span id="statusText">Chưa có nét ký nào.</span>
+        </div>
+        <button class="btn btn-block" id="docPrevBtn" type="button" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9 9h6M9 12h6"/><path d="M10 17.5c1-1.4 1.8-.3 2.5-1.4s1.4.4 2-.6"/></svg>
+          Xem thử trên văn bản mẫu
+        </button>
+      </section>
+    </div>
+
+    <aside class="panel" aria-label="Tùy chọn file và tải về">
       <div class="panel-body">
-        <section class="group">
-          <h2><span class="n">1</span>Người ký</h2>
-          <div class="field">
-            <label class="field-head" for="signerName">Họ và tên người ký (dùng để đặt tên file)</label>
-            <input class="text" type="text" id="signerName" maxlength="60" autocomplete="name" spellcheck="false" placeholder="Ví dụ: Nguyễn Văn An">
-            <span class="fname" id="fileName">Tên file sẽ có dạng chu-ky-ho-ten-1000x667.png</span>
-          </div>
-        </section>
-
-        <section class="group" aria-label="Kiểm tra">
-          <h2><span class="n">2</span>Kiểm tra</h2>
-          <div class="preview" id="preview"><p class="empty" id="previewEmpty">Ảnh xem trước hiện ở đây sau khi bạn ký.</p><img id="previewImg" alt="Xem trước chữ ký sẽ xuất" hidden></div>
-          <div class="meta"><span id="metaDims">1000 × 667 px · PNG</span><span id="metaSize">–</span></div>
-          <div class="status" id="status" role="status">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
-            <span id="statusText">Chưa có nét ký nào.</span>
-          </div>
-          <button class="btn btn-block" id="docPrevBtn" type="button" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9 9h6M9 12h6"/><path d="M10 17.5c1-1.4 1.8-.3 2.5-1.4s1.4.4 2-.6"/></svg>
-            Xem thử trên văn bản mẫu
-          </button>
-        </section>
-
         <section class="group">
           <details class="opts" id="sigOpts">
             <summary><span class="n">3</span><span class="opts-title">Tùy chọn file</span><span class="opts-sum" id="sigOptsSum">1000 × 667 · 3 : 2 · nền trong suốt</span></summary>
-            <div class="opts-body">
-              <p class="spec">Yêu cầu thường gặp của hệ thống: <b>PNG</b>, chiều rộng <b>90 – 1000 px</b>, khuyến khích tỉ lệ <b>3 : 2</b>. Mỗi lần mở, phần mềm đặt sẵn 1000 × 667 px. Hệ thống yêu cầu cỡ khác (ví dụ chữ ký <b>1300 × 640 px</b>) thì bấm nút cỡ đó, hoặc chọn <b>Cỡ tùy chỉnh</b> rồi gõ chiều rộng, chiều cao.</p>
-              <div class="field">
-                <span class="field-head">Cỡ ảnh có sẵn</span>
-                <div class="chips" role="group" aria-label="Cỡ ảnh chữ ký có sẵn">
-                  <button class="chip" type="button" data-size="1000x667">1000 × 667 · chuẩn 3 : 2</button>
-                  <button class="chip" type="button" data-size="1300x640">1300 × 640</button>
+            <div class="opts-body" id="sigOptsBody">
+              <div class="opts-core" id="fileOptsCore">
+                <p class="spec">Hệ thống thường yêu cầu <b>PNG</b> rộng <b>90 – 1000 px</b>, tỉ lệ <b>3 : 2</b> (đặt sẵn <b>1000 × 667</b>). Cần cỡ khác như <b>1300 × 640</b>: bấm nút cỡ đó hoặc <b>Cỡ tùy chỉnh</b>.</p>
+                <div class="field">
+                  <span class="field-head">Cỡ ảnh có sẵn</span>
+                  <div class="chips" role="group" aria-label="Cỡ ảnh chữ ký có sẵn">
+                    <button class="chip" type="button" data-size="1000x667">1000 × 667 · chuẩn 3 : 2</button>
+                    <button class="chip" type="button" data-size="1300x640">1300 × 640</button>
+                  </div>
                 </div>
+                <div class="field">
+                  <span class="field-head"><label for="widthNum">Chiều rộng</label><span>Cao: <output id="heightOut">667</output> px</span></span>
+                  <div class="width-row">
+                    <input class="num" type="number" id="widthNum" min="90" max="4000" step="1" value="1000" inputmode="numeric">
+                    <span class="unit">px</span>
+                  </div>
+                  <input type="range" id="widthRange" min="90" max="1000" step="1" value="1000" aria-label="Chiều rộng ảnh xuất trong mức hệ thống cho phép">
+                  <span class="chips-label">Chuẩn hệ thống ký văn bản</span>
+                  <div class="chips chips-4" role="group" aria-label="Chiều rộng chuẩn hệ thống">
+                    <button class="chip" type="button" data-w="1000">1000</button>
+                    <button class="chip" type="button" data-w="600">600</button>
+                    <button class="chip" type="button" data-w="300">300</button>
+                    <button class="chip" type="button" data-w="150">150</button>
+                  </div>
+                  <span class="chips-label">Độ phân giải cao hơn: in ấn, chèn vào Word</span>
+                  <div class="chips chips-4" role="group" aria-label="Chiều rộng độ phân giải cao">
+                    <button class="chip" type="button" data-w="1500">1500</button>
+                    <button class="chip" type="button" data-w="2000">2000</button>
+                    <button class="chip" type="button" data-w="3000">3000</button>
+                    <button class="chip" type="button" data-w="4000">4000</button>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="field-head">Tỉ lệ khung ảnh</span>
+                  <div class="chips" role="group" aria-label="Tỉ lệ khung ảnh">
+                    <button class="chip" type="button" data-frame="3:2">3 : 2 · khuyến nghị</button>
+                    <button class="chip" type="button" data-frame="4:3">4 : 3</button>
+                    <button class="chip" type="button" data-frame="16:9">16 : 9</button>
+                    <button class="chip" type="button" data-frame="2:1">2 : 1</button>
+                    <button class="chip" type="button" data-frame="3:1">3 : 1</button>
+                    <button class="chip" type="button" data-frame="1:1">1 : 1</button>
+                    <button class="chip" type="button" data-frame="custom">Cỡ tùy chỉnh</button>
+                    <button class="chip" type="button" data-frame="trim">Cắt sát chữ ký</button>
+                  </div>
+                </div>
+                <div class="field" id="heightField" hidden>
+                  <span class="field-head"><label for="heightNum">Chiều cao (cỡ tùy chỉnh)</label></span>
+                  <div class="width-row">
+                    <input class="num" type="number" id="heightNum" min="90" max="4000" step="1" value="640" inputmode="numeric">
+                    <span class="unit">px</span>
+                  </div>
+                  <span class="small">Chiều rộng gõ ở ô Chiều rộng phía trên. Chữ ký luôn được căn giữa, giữ đúng tỉ lệ nét, không bị kéo dãn.</span>
+                </div>
+                <label class="check" id="fitRow"><input type="checkbox" id="fit" checked> Tự căn giữa và phóng vừa khung</label>
+                <div class="field">
+                  <span class="field-head"><label for="margin">Lề quanh chữ ký</label><output id="marginOut" for="margin">6%</output></span>
+                  <input type="range" id="margin" min="0" max="20" step="1" value="6">
+                </div>
+                <div class="field">
+                  <span class="field-head">Nền ảnh</span>
+                  <div class="seg" role="group" aria-label="Nền ảnh">
+                    <button type="button" id="bgClear" aria-pressed="true">Trong suốt</button>
+                    <button type="button" id="bgWhite" aria-pressed="false">Trắng</button>
+                  </div>
+                </div>
+                <button class="btn btn-block btn-quiet" id="optsReset" type="button">Đặt lại chuẩn hệ thống (1000 × 667, 3 : 2, trong suốt)</button>
               </div>
-              <div class="field">
-                <span class="field-head"><label for="widthNum">Chiều rộng</label><span>Cao: <output id="heightOut">667</output> px</span></span>
-                <div class="width-row">
-                  <input class="num" type="number" id="widthNum" min="90" max="4000" step="1" value="1000" inputmode="numeric">
-                  <span class="unit">px</span>
-                </div>
-                <input type="range" id="widthRange" min="90" max="1000" step="1" value="1000" aria-label="Chiều rộng ảnh xuất trong mức hệ thống cho phép">
-                <span class="chips-label">Chuẩn hệ thống ký văn bản</span>
-                <div class="chips" role="group" aria-label="Chiều rộng chuẩn hệ thống">
-                  <button class="chip" type="button" data-w="1000">1000</button>
-                  <button class="chip" type="button" data-w="600">600</button>
-                  <button class="chip" type="button" data-w="300">300</button>
-                  <button class="chip" type="button" data-w="150">150</button>
-                </div>
-                <span class="chips-label">Độ phân giải cao hơn: in ấn, chèn vào Word</span>
-                <div class="chips" role="group" aria-label="Chiều rộng độ phân giải cao">
-                  <button class="chip" type="button" data-w="1500">1500</button>
-                  <button class="chip" type="button" data-w="2000">2000</button>
-                  <button class="chip" type="button" data-w="3000">3000</button>
-                  <button class="chip" type="button" data-w="4000">4000</button>
-                </div>
-              </div>
-              <div class="field">
-                <span class="field-head">Tỉ lệ khung ảnh</span>
-                <div class="chips" role="group" aria-label="Tỉ lệ khung ảnh">
-                  <button class="chip" type="button" data-frame="3:2">3 : 2 · khuyến nghị</button>
-                  <button class="chip" type="button" data-frame="4:3">4 : 3</button>
-                  <button class="chip" type="button" data-frame="16:9">16 : 9</button>
-                  <button class="chip" type="button" data-frame="2:1">2 : 1</button>
-                  <button class="chip" type="button" data-frame="3:1">3 : 1</button>
-                  <button class="chip" type="button" data-frame="1:1">1 : 1</button>
-                  <button class="chip" type="button" data-frame="custom">Cỡ tùy chỉnh</button>
-                  <button class="chip" type="button" data-frame="trim">Cắt sát chữ ký</button>
-                </div>
-              </div>
-              <div class="field" id="heightField" hidden>
-                <span class="field-head"><label for="heightNum">Chiều cao (cỡ tùy chỉnh)</label></span>
-                <div class="width-row">
-                  <input class="num" type="number" id="heightNum" min="90" max="4000" step="1" value="640" inputmode="numeric">
-                  <span class="unit">px</span>
-                </div>
-                <span class="small">Chiều rộng gõ ở ô Chiều rộng phía trên. Chữ ký luôn được căn giữa, giữ đúng tỉ lệ nét, không bị kéo dãn.</span>
-              </div>
-              <label class="check" id="fitRow"><input type="checkbox" id="fit" checked> Tự căn giữa và phóng vừa khung</label>
-              <div class="field">
-                <span class="field-head"><label for="margin">Lề quanh chữ ký</label><output id="marginOut" for="margin">6%</output></span>
-                <input type="range" id="margin" min="0" max="20" step="1" value="6">
-              </div>
-              <div class="field">
-                <span class="field-head">Nền ảnh</span>
-                <div class="seg" role="group" aria-label="Nền ảnh">
-                  <button type="button" id="bgClear" aria-pressed="true">Trong suốt</button>
-                  <button type="button" id="bgWhite" aria-pressed="false">Trắng</button>
-                </div>
-              </div>
-              <button class="btn btn-block btn-quiet" id="optsReset" type="button">Đặt lại chuẩn hệ thống (1000 × 667, 3 : 2, trong suốt)</button>
             </div>
           </details>
         </section>
       </div>
       <div class="panel-foot">
-        <button class="btn btn-primary" id="dlBtn" type="button" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          <span id="dlLabel">Tải PNG 1000 × 667</span>
-        </button>
+        <div class="dl-bar">
+          <button class="btn btn-primary" id="dlBtn" type="button" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span id="dlLabel">Tải PNG 1000 × 667</span>
+          </button>
+        </div>
+        <label class="check check-top lock-check" title="Mọi file chữ ký tải về nằm trong file .zip mã hóa AES-256. Mở bằng WinRAR, 7-Zip hoặc nút Mở JSON của phần mềm."><input type="checkbox" id="sigLockChk"> <span><b>Khóa file tải về bằng mật khẩu</b> (.zip mã hóa AES-256)</span></label>
         <div class="btn-row2">
           <button class="btn" id="svgBtn" type="button" disabled title="Nét vector SVG: phóng to cỡ nào cũng không vỡ nét, dùng cho thiết kế, in ấn">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18c3-9 6-12 8-6s5 3 8-6"/><circle cx="4" cy="18" r="1.6"/><circle cx="20" cy="6" r="1.6"/></svg>
@@ -842,7 +921,6 @@ textarea{font-family:inherit}
             Tải PDF vector
           </button>
         </div>
-        <label class="check check-top lock-check" title="Mọi file chữ ký tải về nằm trong file .zip mã hóa AES-256. Mở bằng WinRAR, 7-Zip hoặc nút Mở JSON của phần mềm."><input type="checkbox" id="sigLockChk"> <span><b>Khóa file tải về bằng mật khẩu</b> (.zip mã hóa AES-256)</span></label>
         <div class="btn-row3">
           <button class="btn" id="zipBtn" type="button" disabled title="PNG chuẩn hệ thống, PNG độ phân giải cao 3000 px và file JSON trong một file .zip">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l2-3h12l2 3v13H4z"/><path d="M4 7h16M12 10v6M9.5 13.5L12 16l2.5-2.5"/></svg>
@@ -891,7 +969,6 @@ textarea{font-family:inherit}
             <span>Đóng dấu rõ lên một tờ giấy trắng trơn riêng, scan màu 300 – 600 dpi, rồi bấm <b>Tách con dấu từ bản scan</b>. Phần mềm tách nền giấy, lấy riêng mực đỏ và xuất ảnh PNG vuông nền trong suốt.</span>
           </div>
           <img id="sealImg" alt="Xem trước con dấu sẽ xuất" hidden>
-          <button class="btn btn-soft btn-sm seal-cmp" id="sealCmpBtn" type="button" aria-pressed="false" hidden title="Xem con dấu như lúc tách từ bản scan, chưa qua các bước AI, để đối chiếu: chữ, hình, kích thước phải giữ nguyên">Xem bản tách gốc</button>
           <div class="seal-busy" id="sealBusy" role="status" hidden><span class="spin" aria-hidden="true"></span><span>AI đang làm đẹp con dấu…</span></div>
         </div>
       </div>
@@ -904,15 +981,60 @@ textarea{font-family:inherit}
           <button class="chip" type="button" id="sealRotP90">+90°</button>
           <button class="chip" type="button" id="sealRot180">180°</button>
           <button class="btn btn-soft" type="button" id="sealAuto">Tự xoay thẳng <span class="ai-tag">AI</span></button>
+          <button class="btn seal-cmp" id="sealCmpBtn" type="button" aria-pressed="false" hidden title="Xem con dấu như lúc tách từ bản scan, chưa qua các bước AI, để đối chiếu: chữ, hình, kích thước phải giữ nguyên">Xem bản tách gốc</button>
         </div>
       </div>
       <p class="stage-note">Chữ ký và con dấu là hai phần riêng: mỗi phần được số hóa, lưu và xác thực riêng, không ghép với nhau.</p>
     </section>
 
-    <aside class="panel" id="sealGroup" aria-label="Cơ quan, kiểm tra và tải con dấu">
+    <div class="steps-col" id="sealSteps" role="group" aria-label="Cơ quan và kiểm tra">
+      <section class="group">
+        <h2><span class="n">1</span>Cơ quan</h2>
+        <div class="field">
+          <label class="field-head" for="orgName">Tên cơ quan trên con dấu (dùng để đặt tên file)</label>
+          <input class="text" type="text" id="orgName" maxlength="80" autocomplete="organization" spellcheck="false" placeholder="Ví dụ: Đảng ủy phường Hòa Bình">
+          <span class="small ai-note" id="orgAiNote" hidden>Tên do AI đọc từ con dấu: hãy rà lại cho đúng từng chữ, từng dấu.</span>
+          <span class="fname" id="sealFileName"></span>
+          <button class="btn btn-soft btn-sm read-btn" type="button" id="sealReadBtn" disabled title="AI đọc chữ trên vòng ngoài, vòng dưới và ở giữa con dấu (ngay trên máy, không gửi đi đâu), rồi gợi ý tên cơ quan để đặt tên file.">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8 10h8M8 14h5"/></svg>
+            AI đọc tên trên con dấu <span class="ai-tag">AI</span>
+          </button>
+          <div class="read-box" id="sealReadBox" hidden>
+            <span class="small" id="sealReadMsg" role="status"></span>
+            <div class="read-chips" id="sealReadChips"></div>
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-head"><label for="sealRealMm">Cỡ thật của con dấu</label><output id="sealRealSrc" for="sealRealMm"></output></span>
+          <div class="size-row">
+            <input class="num" type="text" id="sealRealMm" inputmode="decimal" autocomplete="off" maxlength="6" placeholder="ví dụ 35" aria-describedby="sealRealHint" disabled>
+            <span class="unit">mm</span>
+          </div>
+          <span class="small" id="sealRealHint">Đo bằng thước đường kính ngoài của dấu (dấu không tròn: cạnh dài nhất). Cỡ này được ghi vào file PNG để Word, phần mềm ký số chèn con dấu bằng kích thước thực tế (Hướng dẫn 05-HD/VPTW).</span>
+        </div>
+      </section>
+      <section class="group">
+        <h2><span class="n">2</span>Kiểm tra</h2>
+        <span class="small" id="sealInfo">Chưa có con dấu.</span>
+        <div class="status" id="sealStatus" role="status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
+          <span id="sealStatusText">Chưa có con dấu.</span>
+        </div>
+        <button class="btn btn-block" id="docSealBtn" type="button" disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><circle cx="12.5" cy="14" r="3.5"/></svg>
+          Xem cỡ con dấu trên văn bản mẫu
+        </button>
+        <button class="btn btn-block" id="sizePdfBtn" type="button" disabled title="Trang A4 có con dấu đúng cỡ thật, thước đo mm và ô để đóng dấu thật bên cạnh: in ra để so cỡ">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l14-14 4 4L7 21H3z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>
+          Tải bản in kiểm tra cỡ thật (PDF)
+        </button>
+      </section>
+    </div>
+
+    <aside class="panel" id="sealGroup" aria-label="AI làm đẹp, màu, tùy chọn và tải con dấu">
       <div class="panel-body">
         <section class="group" id="sealAiGroup">
-          <h2><span class="n">1</span>AI làm đẹp con dấu</h2>
+          <h2><span class="n">3</span>AI làm đẹp con dấu</h2>
           <div class="ai-steps" role="group" aria-label="Các bước AI làm đẹp con dấu">
             <button class="ai-step" type="button" id="sealFixBtn" role="switch" aria-checked="true" disabled>
               <span class="sw" aria-hidden="true"></span>
@@ -927,11 +1049,10 @@ textarea{font-family:inherit}
               <span class="ai-step-text"><b>Làm mịn nét, xóa răng cưa</b><span class="ai-step-sub">Chữ và hình trơn, mịn, sắc nét; phóng to không vỡ ảnh</span><span class="ai-res" id="sealSmoothRes"></span></span>
             </button>
           </div>
-          <span class="small">Con dấu mới tách được AI làm đủ 3 bước, theo thứ tự trên, từ bản tách gốc. Tắt bước nào thì con dấu bỏ đúng bước đó.</span>
-          <span class="small ai-law">AI chỉ làm sạch, làm rõ hình ảnh từ chính lần đóng dấu: không thêm nét, không đổi chữ, hình, bố cục, kích thước của mẫu con dấu đã đăng ký (Điều 6 Nghị định 99/2016/NĐ-CP). Bấm <b>Xem bản tách gốc</b> trên khung con dấu để đối chiếu; thấy khác mẫu dấu thì tắt bước AI đó.</span>
+          <span class="small ai-law">Bật sẵn cả 3 bước, luôn làm từ bản tách gốc; tắt bước nào thì bỏ đúng bước đó. AI không thêm nét, không đổi chữ, hình, kích thước của mẫu con dấu (Điều 6 Nghị định 99/2016/NĐ-CP). Bấm <b>Xem bản tách gốc</b> để đối chiếu.</span>
         </section>
         <section class="group" id="sealColorGroup">
-          <h2><span class="n">2</span>Màu con dấu</h2>
+          <h2><span class="n">4</span>Màu con dấu</h2>
           <div class="field">
             <span class="field-head">Màu mực<output class="seal-color-out">Đỏ tươi · #FF0000</output></span>
             <div class="swatches" role="group" aria-label="Màu mực con dấu">
@@ -944,47 +1065,6 @@ textarea{font-family:inherit}
             <button class="btn btn-soft btn-sm read-btn" type="button" id="sealColorAI" disabled aria-pressed="false" title="AI đo màu mực trên bản scan, bỏ ám màu của giấy và máy scan, rồi chọn màu đỏ mực dấu tươi, đều mà vẫn giữ sắc riêng của con dấu.">AI chỉnh màu theo mực trên bản scan <span class="ai-tag">AI</span></button>
             <label class="check"><input type="checkbox" class="seal-keep" id="panelSealKeepChk"> Giữ màu mực như trên bản scan</label>
           </div>
-        </section>
-        <section class="group">
-          <h2><span class="n">3</span>Cơ quan</h2>
-          <div class="field">
-            <label class="field-head" for="orgName">Tên cơ quan trên con dấu (dùng để đặt tên file)</label>
-            <input class="text" type="text" id="orgName" maxlength="80" autocomplete="organization" spellcheck="false" placeholder="Ví dụ: Đảng ủy phường Hòa Bình">
-            <span class="small ai-note" id="orgAiNote" hidden>Tên do AI đọc từ con dấu: hãy rà lại cho đúng từng chữ, từng dấu.</span>
-            <span class="fname" id="sealFileName"></span>
-            <button class="btn btn-soft btn-sm read-btn" type="button" id="sealReadBtn" disabled title="AI đọc chữ trên vòng ngoài, vòng dưới và ở giữa con dấu (ngay trên máy, không gửi đi đâu), rồi gợi ý tên cơ quan để đặt tên file.">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8 10h8M8 14h5"/></svg>
-              AI đọc tên trên con dấu <span class="ai-tag">AI</span>
-            </button>
-            <div class="read-box" id="sealReadBox" hidden>
-              <span class="small" id="sealReadMsg" role="status"></span>
-              <div class="read-chips" id="sealReadChips"></div>
-            </div>
-          </div>
-          <div class="field">
-            <span class="field-head"><label for="sealRealMm">Cỡ thật của con dấu</label><output id="sealRealSrc" for="sealRealMm"></output></span>
-            <div class="size-row">
-              <input class="num" type="text" id="sealRealMm" inputmode="decimal" autocomplete="off" maxlength="6" placeholder="ví dụ 35" aria-describedby="sealRealHint" disabled>
-              <span class="unit">mm</span>
-            </div>
-            <span class="small" id="sealRealHint">Đo bằng thước đường kính ngoài của dấu (dấu không tròn: cạnh dài nhất). Cỡ này được ghi vào file PNG để Word, phần mềm ký số chèn con dấu bằng kích thước thực tế (Hướng dẫn 05-HD/VPTW).</span>
-          </div>
-        </section>
-        <section class="group">
-          <h2><span class="n">4</span>Kiểm tra</h2>
-          <span class="small" id="sealInfo">Chưa có con dấu.</span>
-          <div class="status" id="sealStatus" role="status">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
-            <span id="sealStatusText">Chưa có con dấu.</span>
-          </div>
-          <button class="btn btn-block" id="docSealBtn" type="button" disabled>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><circle cx="12.5" cy="14" r="3.5"/></svg>
-            Xem cỡ con dấu trên văn bản mẫu
-          </button>
-          <button class="btn btn-block" id="sizePdfBtn" type="button" disabled title="Trang A4 có con dấu đúng cỡ thật, thước đo mm và ô để đóng dấu thật bên cạnh: in ra để so cỡ">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l14-14 4 4L7 21H3z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>
-            Tải bản in kiểm tra cỡ thật (PDF)
-          </button>
         </section>
         <section class="group">
           <details class="opts" id="sealOpts">
@@ -1015,11 +1095,13 @@ textarea{font-family:inherit}
         </section>
       </div>
       <div class="panel-foot">
+        <div class="dl-bar">
+          <button class="btn btn-primary" id="sealDl" type="button" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span id="sealDlLabel">Tải PNG con dấu 2400 × 2400</span>
+          </button>
+        </div>
         <label class="check check-top lock-check" title="Mọi file con dấu tải về nằm trong file .zip mã hóa AES-256. Mở bằng WinRAR, 7-Zip hoặc nút Mở JSON của phần mềm."><input type="checkbox" id="sealLockChk"> <span><b>Khóa file tải về bằng mật khẩu</b> (.zip mã hóa AES-256)</span></label>
-        <button class="btn btn-primary" id="sealDl" type="button" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          <span id="sealDlLabel">Tải PNG con dấu 2400 × 2400</span>
-        </button>
         <div class="btn-row3">
           <button class="btn" id="sealZipBtn" type="button" disabled title="PNG 2400 px, PNG 1000 px và file JSON con dấu trong một file .zip">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7l2-3h12l2 3v13H4z"/><path d="M4 7h16M12 10v6M9.5 13.5L12 16l2.5-2.5"/></svg>
@@ -1073,8 +1155,7 @@ textarea{font-family:inherit}
       </div>
     </section>
 
-    <aside class="panel" aria-label="Danh sách họ tên, xác nhận và tải về">
-      <div class="panel-body">
+    <div class="steps-col" id="batchSteps" role="group" aria-label="Danh sách họ tên và xác nhận">
         <section class="group">
           <h2><span class="n">1</span>Danh sách họ tên</h2>
           <label class="field-head" for="batchNames">Mỗi dòng một người, đúng thứ tự trang scan</label>
@@ -1086,29 +1167,44 @@ textarea{font-family:inherit}
           <h2><span class="n">2</span>Xác nhận</h2>
           <label class="check check-top"><input type="checkbox" id="batchConsent"> <span>Tôi xác nhận các chữ ký do chính người ký tự ký và đồng ý số hóa, việc số hóa thuộc thẩm quyền được giao. Mỗi người tự kiểm tra và nộp chữ ký của mình lên hệ thống.</span></label>
         </section>
+    </div>
+
+    <aside class="panel" aria-label="Tùy chọn xuất và tải về">
+      <div class="panel-body">
         <section class="group">
           <details class="opts" id="batchOpts">
             <summary><span class="n">3</span><span class="opts-title">Tùy chọn xuất</span><span class="opts-sum" id="batchOptsSum">1000 × 667 · mực xanh</span></summary>
             <div class="opts-body">
-              <p class="small" id="batchFmt">Kích thước, tỉ lệ, lề và nền theo Tùy chọn file ở thẻ Chữ ký.</p>
+              <div class="opts-slot" id="batchSizeSlot"></div>
               <div class="field">
-                <span class="field-head">Màu mực</span>
+                <span class="field-head">Màu mực<span class="ink-out" id="batchInkOut">#1937E1</span></span>
+                <div class="swatches batch-swatches" role="group" aria-label="Màu mực chữ ký hàng loạt">
+                  <button class="swatch" type="button" data-color="#00A3FF" style="--sw:#00A3FF" aria-label="Mực xanh dạ quang" title="Xanh dạ quang" aria-pressed="false"></button>
+                  <button class="swatch" type="button" data-color="#1A85FF" style="--sw:#1A85FF" aria-label="Mực xanh sáng" title="Xanh sáng" aria-pressed="false"></button>
+                  <button class="swatch" type="button" data-color="#1937E1" style="--sw:#1937E1" aria-label="Mực xanh" title="Xanh" aria-pressed="true"></button>
+                  <button class="swatch" type="button" data-color="#0E2783" style="--sw:#0E2783" aria-label="Mực xanh đậm" title="Xanh đậm" aria-pressed="false"></button>
+                  <button class="swatch" type="button" data-color="#15171C" style="--sw:#15171C" aria-label="Mực đen" title="Đen" aria-pressed="false"></button>
+                  <label class="swatch swatch-custom" id="batchCustomSwatch" title="Màu khác"><input type="color" id="batchCustomColor" value="#1937E1" aria-label="Chọn màu mực khác"></label>
+                </div>
                 <div class="seg" role="group" aria-label="Màu mực chữ ký hàng loạt">
-                  <button type="button" id="batchInkCfg" aria-pressed="true">Màu đang chọn</button>
+                  <button type="button" id="batchInkCfg" aria-pressed="true">Màu đã chọn</button>
                   <button type="button" id="batchInkKeep" aria-pressed="false">Giữ màu bản scan</button>
                 </div>
               </div>
               <label class="check"><input type="checkbox" id="batchHi"> Kèm bản độ phân giải cao 3000 px (in ấn)</label>
               <label class="check"><input type="checkbox" id="batchJson"> Kèm file JSON từng người</label>
+              <p class="small" id="batchFmt">Mỗi người một file PNG 1000 × 667 · 3 : 2 · nền trong suốt, tên file theo họ tên. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.</p>
             </div>
           </details>
         </section>
       </div>
       <div class="panel-foot">
-        <button class="btn btn-primary" id="batchZip" type="button" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          <span id="batchZipLabel">Tải tất cả (.zip)</span>
-        </button>
+        <div class="dl-bar">
+          <button class="btn btn-primary" id="batchZip" type="button" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            <span id="batchZipLabel">Tải tất cả (.zip)</span>
+          </button>
+        </div>
         <label class="check check-top lock-check" title="File .zip chữ ký hàng loạt được mã hóa AES-256. Mở bằng WinRAR, 7-Zip."><input type="checkbox" id="batchLockChk"> <span><b>Khóa file tải về bằng mật khẩu</b> (.zip mã hóa AES-256)</span></label>
         <button class="btn btn-block" id="batchClearAll" type="button" disabled>Xóa danh sách chữ ký</button>
       </div>
@@ -1159,9 +1255,10 @@ textarea{font-family:inherit}
         <h3>1. Bố cục phần mềm</h3>
         <ul>
           <li><b>Đầu trang:</b> nút <b>Tải phần mềm, video</b> (mã QR), <b>Hướng dẫn</b> và <b>Xóa dữ liệu</b> (xóa sạch mọi thứ trên máy dùng chung).</li>
-          <li><b>Ba thẻ:</b> <b>Chữ ký</b>, <b>Con dấu</b>, <b>Hàng loạt</b>. Mỗi thẻ là một việc riêng; bấm thẻ để chuyển.</li>
-          <li><b>Bên trái</b> là chỗ làm việc: khung ký, ảnh con dấu, hoặc danh sách chữ ký hàng loạt.</li>
-          <li><b>Bên phải</b> đi theo 3 bước có đánh số: ① tên (người ký, cơ quan, danh sách), ② kiểm tra, ③ tùy chọn file (đã thu gọn vì mặc định đã đúng chuẩn hệ thống). Nút <b>Tải</b> luôn nằm ở đáy khung bên phải, không phải cuộn tìm.</li>
+          <li><b>Ba thẻ:</b> <b>Chữ ký</b>, <b>Con dấu</b>, <b>Hàng loạt</b>. Mỗi thẻ là một việc riêng; bấm thẻ để chuyển. Cuối hàng thẻ là nút <b>Toàn màn hình</b>: ẩn thanh trình duyệt để phần mềm có thêm chỗ; bấm lại (hoặc phím Esc) để thoát.</li>
+          <li><b>Bên trái</b> là ① và ②: thẻ Chữ ký có ① Người ký, ② Kiểm tra; thẻ Con dấu có ① Cơ quan, ② Kiểm tra; thẻ Hàng loạt có ① Danh sách họ tên, ② Xác nhận. <b>Ở giữa</b> là khung ký, ảnh con dấu, hoặc các thẻ chữ ký hàng loạt (màn hình hẹp hơn thì ① ② nằm ngay dưới).</li>
+          <li><b>Bên phải</b> là một khung gồm các tùy chọn và nút tải: thẻ Chữ ký có ③ Tùy chọn file; thẻ Con dấu có ③ AI làm đẹp con dấu, ④ Màu con dấu, ⑤ Tùy chọn file; thẻ Hàng loạt có ③ Tùy chọn xuất (cỡ ảnh, độ phân giải, màu mực). Tùy chọn mở sẵn, bấm tiêu đề để thu gọn. Nút <b>Tải</b> luôn hiện ở đáy màn hình, bên phải.</li>
+          <li><b>Không có ô cuộn nhỏ:</b> mọi mục hiện đầy đủ, cả trang cuộn như một trang web bình thường (con lăn chuột, vuốt ở bất kỳ chỗ nào ngoài khung ký). Khi cuộn, khung ký hoặc ảnh con dấu đứng yên, chỉ cột tùy chọn chạy.</li>
         </ul>
       </section>
 
@@ -1213,7 +1310,7 @@ textarea{font-family:inherit}
       <section id="g-seal">
         <h3>5. Thẻ Con dấu</h3>
         <p>Tách con dấu của cơ quan thành ảnh PNG vuông, màu đỏ đồng đều, nền trong suốt, bằng kích thước thực tế của con dấu, để dùng với chữ ký số của cơ quan.</p>
-        <p class="callout"><b>Theo quy định:</b> Hướng dẫn 05-HD/VPTW ngày 27/5/2026 của Văn phòng Trung ương Đảng (thay Hướng dẫn 36-HD/VPTW) quy định trên văn bản điện tử của Đảng: chữ ký số của cơ quan, tổ chức là hình ảnh con dấu <b>màu đỏ, kích thước bằng kích thước thực tế của con dấu, định dạng PNG nền trong suốt</b>; hình ảnh chữ ký của người ký <b>màu xanh, PNG nền trong suốt</b>. Văn bản hành chính theo Nghị định 30/2020/NĐ-CP cũng yêu cầu hình ảnh con dấu màu đỏ, bằng kích thước thực tế, PNG nền trong suốt. Phần mềm đáp ứng các yêu cầu này: con dấu màu đỏ, nền trong suốt, cỡ thật ghi sẵn trong file (Bước ③); chữ ký mặc định mực xanh.</p>
+        <p class="callout"><b>Theo quy định:</b> Hướng dẫn 05-HD/VPTW ngày 27/5/2026 của Văn phòng Trung ương Đảng (thay Hướng dẫn 36-HD/VPTW) quy định trên văn bản điện tử của Đảng: chữ ký số của cơ quan, tổ chức là hình ảnh con dấu <b>màu đỏ, kích thước bằng kích thước thực tế của con dấu, định dạng PNG nền trong suốt</b>; hình ảnh chữ ký của người ký <b>màu xanh, PNG nền trong suốt</b>. Văn bản hành chính theo Nghị định 30/2020/NĐ-CP cũng yêu cầu hình ảnh con dấu màu đỏ, bằng kích thước thực tế, PNG nền trong suốt. Phần mềm đáp ứng các yêu cầu này: con dấu màu đỏ, nền trong suốt, cỡ thật ghi sẵn trong file (Bước ①); chữ ký mặc định mực xanh.</p>
         <p class="callout">Chữ ký và con dấu là hai phần riêng, được số hóa, lưu và xác thực riêng (chữ ký với chữ ký số của người ký, con dấu với chữ ký số của cơ quan). Tách chung hay ghép chữ ký với con dấu, hoặc để dấu đè lên chữ ký trước khi từng phần được xác thực, là sai quy định. Vì vậy phần mềm tách từng phần riêng và không tạo ảnh ghép.</p>
         <h4>Chuẩn bị bản scan con dấu</h4>
         <ul>
@@ -1228,19 +1325,19 @@ textarea{font-family:inherit}
           <li>Chọn thẻ <b>Con dấu</b>, bấm <b>Tách con dấu từ bản scan</b> và chọn file. (Ở thẻ Chữ ký, nếu trang chỉ có con dấu, phần mềm cũng tự chuyển sang tách con dấu.)</li>
           <li>Phần mềm tự khoanh con dấu bằng khung đỏ và chỉ lấy mực đỏ. Chỉnh vùng chọn nếu cần, xem phần AI kiểm tra bản scan, rồi bấm <b>Dùng con dấu này</b>.</li>
           <li><b>AI làm đều nét</b> (mặc định): AI đo độ đậm của mực ở từng vùng con dấu, nên chỗ đóng nhẹ tay, mực nhạt hay chữ nhỏ vẫn giữ đủ nét; nét đứt ngắn được nối lại, lỗ mực khô được lấp, đường viền tròn bị hở được nối liền theo đúng đường tròn; mực ra đều một màu, viền gọn. Muốn giữ y như bản scan thì chọn <b>Giữ như bản scan</b>.</li>
-          <li><b>Bước ① AI làm đẹp con dấu</b> (ba công tắc ở khung bên phải): con dấu mới tách được bật sẵn cả ba bước. AI làm lần lượt theo đúng thứ tự dưới đây, luôn từ bản tách gốc; tắt bước nào thì con dấu bỏ đúng bước đó (các bước còn lại giữ nguyên), bật lại là có ngay. Dưới mỗi công tắc có dòng cho biết AI đã làm gì. AI không thêm nét nào ngoài nét của con dấu.
+          <li><b>Bước ① Cơ quan</b> (dưới ảnh con dấu): nhập tên cơ quan để đặt tên file, và <b>Cỡ thật của con dấu</b> (mm): đường kính ngoài của dấu tròn, đo bằng thước trên dấu đóng ra giấy (dấu không tròn: cạnh dài nhất). Với bản scan PDF, hoặc ảnh scan có ghi độ phân giải, AI đo sẵn cỡ này; hãy đo lại bằng thước cho chắc. Cỡ thật được ghi vào file PNG, nên khi chèn vào Word hoặc phần mềm ký số đọc thông tin này, con dấu ra đúng kích thước thực tế. Tên file có cả cỡ thật, ví dụ “Đảng ủy phường Hòa Bình”, 35 mm thành <i>con-dau-dang-uy-phuong-hoa-binh-35mm-2400x2400.png</i>. File PNG còn ghi thông tin nguồn gốc (tên cơ quan, màu, cỡ thật, ngày tạo) để dễ kiểm tra về sau.</li>
+          <li><b>AI đọc tên trên con dấu</b> (bước ①): khi ô tên cơ quan còn trống, AI tự đọc chữ trên con dấu ngay sau khi bấm Dùng con dấu này (bấm nút <b>AI đọc tên trên con dấu</b> để đọc lại bất cứ lúc nào). AI trải vòng chữ cong thành dòng thẳng để đọc, tự nhận ra chữ vòng trên đọc xuôi và chữ vòng dưới đọc ngược chiều, đọc cả các dòng chữ ở giữa, rồi sửa các dấu tiếng Việt hay đọc nhầm theo từ ngữ thường có trên con dấu (ĐẢNG ỦY, ỦY BAN NHÂN DÂN, CÔNG ĐOÀN, THÀNH PHỐ…). Theo cách bố trí thông thường, tên cơ quan sử dụng con dấu nằm ở giữa, vòng ngoài là tên cơ quan cấp trên; nếu ở giữa không có chữ thì tên lấy từ vòng ngoài. AI điền sẵn tên hợp lý nhất và liệt kê các dòng đọc được để bạn chọn. Việc đọc chạy ngay trên máy bằng bộ đọc chữ Tesseract, không gửi con dấu đi đâu. <b>Luôn rà lại tên</b> với con dấu thật: chữ quá nhỏ, mờ, kiểu chữ lạ có thể đọc sai một vài dấu.</li>
+          <li><b>Bước ② Kiểm tra</b> (dưới ảnh con dấu): xem dòng trạng thái (nền vàng nhắc khi chưa có cỡ thật); bấm <b>Xem cỡ con dấu trên văn bản mẫu</b> để xem con dấu trên giấy theo cỡ thật đã nhập. Bấm <b>Tải bản in kiểm tra cỡ thật (PDF)</b> để có trang A4 gồm con dấu đúng cỡ thật, thước đo mm, đoạn 100 mm và một vòng tròn trống: in với tỉ lệ 100% (không chọn Vừa trang), đóng con dấu thật vào vòng tròn trống rồi so với hình bên cạnh, đo đoạn 100 mm để chắc máy in không co giãn.</li>
+          <li><b>Bước ③ AI làm đẹp con dấu</b> (ba công tắc ở khung bên phải): con dấu mới tách được bật sẵn cả ba bước. AI làm lần lượt theo đúng thứ tự dưới đây, luôn từ bản tách gốc; tắt bước nào thì con dấu bỏ đúng bước đó (các bước còn lại giữ nguyên), bật lại là có ngay. Dưới mỗi công tắc có dòng cho biết AI đã làm gì. AI không thêm nét nào ngoài nét của con dấu.
             <ul>
               <li><b>Sửa khuyết điểm:</b> AI chỉ sửa những lỗi rõ ràng khi đóng dấu: vết nứt, vết mẻ cắt ngang nét; chỗ nét bị đứt mà hai đầu còn hướng vào nhau và còn vết mực mờ; chỗ hở trên viền dấu. Phần còn lại giữ nguyên. Không thấy lỗi nào thì AI để nguyên và ghi rõ dưới công tắc.</li>
               <li><b>Chuẩn hóa viền</b> (dấu tròn): AI đo từng viền tròn của con dấu (viền ngoài dày, viền mảnh ngay bên trong, viền trong quanh chữ ở giữa) ở hàng nghìn điểm quanh vòng, rồi chuẩn hóa mỗi viền thành đường tròn đều nét, sắc nét, mịn, đúng độ dày đo được và cùng một tâm. Mực lem lấp vào khe hẹp giữa viền ngoài và viền mảnh, mực loang bám dọc mép viền được làm sạch; chỗ viền bị đứt, mòn, rỗ được chuẩn hóa liền nét. Chữ, ngôi sao, hình ở giữa giữ nguyên; chữ chạm vào viền vẫn liền với viền; dấu thanh, chấm nhỏ của chữ nằm sát viền được giữ nguyên. Viền ngoài có răng cưa thì giữ nguyên viền ngoài. Con dấu chụp hơi nghiêng (hơi bầu dục) được chuẩn hóa theo đúng dáng con dấu; dấu bầu dục, dấu vuông không áp dụng. Khi đã có cỡ thật, dòng kết quả ghi độ dày từng viền (mm).</li>
               <li><b>Làm mịn nét, xóa răng cưa:</b> AI dò theo mép từng nét chữ, hình và viền, rồi làm trơn những chỗ răng cưa, gồ ghề, vỡ ảnh do bản scan độ phân giải thấp hoặc ảnh JPEG. Nét không mảnh đi, chữ không đổi cỡ, góc chữ vẫn sắc; đốm mực li ti nhỏ hơn dấu thanh được bỏ. Mép nét được giữ dạng đường nét, nên file 2400 px (hoặc lớn hơn) vẫn sắc nét, không vỡ ảnh, kể cả khi bản scan nhỏ.</li>
             </ul>
           </li>
-          <li><b>Bước ② Màu con dấu:</b> mặc định <b>Đỏ tươi</b> (#FF0000); chọn được Đỏ chuẩn, Đỏ sáng, Đỏ đậm, màu tùy chọn, hoặc giữ màu mực như trên bản scan. Nút <b>AI chỉnh màu theo mực trên bản scan</b>: AI đo màu mực, bỏ ám màu của giấy và đèn máy scan, rồi chọn màu đỏ mực dấu tươi, đều; dấu mực nhạt hồng, ngả nâu hay đỏ sẫm đều ra màu đỏ đẹp mà vẫn giữ sắc riêng của con dấu. Bấm Hoàn tác để về màu trước.</li>
+          <li><b>Bước ④ Màu con dấu:</b> mặc định <b>Đỏ tươi</b> (#FF0000); chọn được Đỏ chuẩn, Đỏ sáng, Đỏ đậm, màu tùy chọn, hoặc giữ màu mực như trên bản scan. Nút <b>AI chỉnh màu theo mực trên bản scan</b>: AI đo màu mực, bỏ ám màu của giấy và đèn máy scan, rồi chọn màu đỏ mực dấu tươi, đều; dấu mực nhạt hồng, ngả nâu hay đỏ sẫm đều ra màu đỏ đẹp mà vẫn giữ sắc riêng của con dấu. Bấm Hoàn tác để về màu trước.</li>
           <li><b>AI tự xoay thẳng và đúng chiều:</b> AI đọc dòng chữ ở giữa con dấu: các dấu tiếng Việt (sắc, huyền, hỏi, ngã, mũ, móc) nằm phía trên chữ, nên AI biết con dấu đang thẳng, nghiêng, xoay ngang hay bị ngược. Việc này làm ngay trên khung bản scan: con dấu bị ngược hoặc xoay ngang thì AI xoay luôn trang scan cho con dấu đúng chiều, còn chỗ nghiêng lệch nhỏ thì khung <b>Kết quả sau khi tách nền</b> hiện sẵn con dấu đã xoay thẳng, bấm Dùng là con dấu vào bảng đã đúng chiều. Với ảnh tải lên trực tiếp, khi chắc chắn AI cũng tự xoay lại cho chữ đúng chiều (kể cả 90° hoặc 180°) và báo góc đã xoay; bấm Hoàn tác nếu chưa đúng. Con dấu không có chữ ở giữa thì AI chỉ tự xoay thẳng khi nghiêng ít (đến 30°); trường hợp khác bấm <b>Tự xoay thẳng (AI)</b>, hoặc dùng thanh <b>Xoay con dấu cho thẳng</b> và các nút −90°, 0°, +90°, 180°.</li>
           <li><b>Ghép thêm lần đóng dấu</b> (nút riêng trên khung con dấu, có thể ghép tối đa 3 lần đóng): khi con dấu bị mất chữ, mờ hoặc đứt nét ở vài chỗ, hãy đóng dấu thêm 1 – 2 lần lên giấy trắng khác, scan (hoặc chụp), bấm nút rồi chọn file đó và bấm <b>Ghép vào con dấu đang có</b>. AI căn khớp các lần đóng dấu cho trùng khít (kể cả khi đóng lệch góc hoặc scan khác độ phân giải), rồi lấy chỗ nét rõ của lần đóng mới bù vào chỗ mờ, đứt, lóa của con dấu đang có. Nét viền mỏng do mực loang khác nhau giữa các lần đóng được bỏ qua nên nét không bị dày lên. Mọi nét đều lấy từ các lần đóng dấu thật, AI không thêm nét nào. Ghép xong, các bước AI làm đẹp đang bật được làm lại trên con dấu đã ghép. Lần đóng của một con dấu khác thì phần mềm nhận ra và không ghép. Bấm Hoàn tác để bỏ ghép.</li>
-          <li><b>AI đọc tên trên con dấu</b> (bước ③): khi ô tên cơ quan còn trống, AI tự đọc chữ trên con dấu ngay sau khi bấm Dùng con dấu này (bấm nút <b>AI đọc tên trên con dấu</b> để đọc lại bất cứ lúc nào). AI trải vòng chữ cong thành dòng thẳng để đọc, tự nhận ra chữ vòng trên đọc xuôi và chữ vòng dưới đọc ngược chiều, đọc cả các dòng chữ ở giữa, rồi sửa các dấu tiếng Việt hay đọc nhầm theo từ ngữ thường có trên con dấu (ĐẢNG ỦY, ỦY BAN NHÂN DÂN, CÔNG ĐOÀN, THÀNH PHỐ…). Theo cách bố trí thông thường, tên cơ quan sử dụng con dấu nằm ở giữa, vòng ngoài là tên cơ quan cấp trên; nếu ở giữa không có chữ thì tên lấy từ vòng ngoài. AI điền sẵn tên hợp lý nhất và liệt kê các dòng đọc được để bạn chọn. Việc đọc chạy ngay trên máy bằng bộ đọc chữ Tesseract, không gửi con dấu đi đâu. <b>Luôn rà lại tên</b> với con dấu thật: chữ quá nhỏ, mờ, kiểu chữ lạ có thể đọc sai một vài dấu.</li>
-          <li><b>Bước ③ Cơ quan:</b> nhập tên cơ quan để đặt tên file, và <b>Cỡ thật của con dấu</b> (mm): đường kính ngoài của dấu tròn, đo bằng thước trên dấu đóng ra giấy (dấu không tròn: cạnh dài nhất). Với bản scan PDF, hoặc ảnh scan có ghi độ phân giải, AI đo sẵn cỡ này; hãy đo lại bằng thước cho chắc. Cỡ thật được ghi vào file PNG, nên khi chèn vào Word hoặc phần mềm ký số đọc thông tin này, con dấu ra đúng kích thước thực tế. Tên file có cả cỡ thật, ví dụ “Đảng ủy phường Hòa Bình”, 35 mm thành <i>con-dau-dang-uy-phuong-hoa-binh-35mm-2400x2400.png</i>. File PNG còn ghi thông tin nguồn gốc (tên cơ quan, màu, cỡ thật, ngày tạo) để dễ kiểm tra về sau.</li>
-          <li><b>Bước ④ Kiểm tra:</b> xem dòng trạng thái (nền vàng nhắc khi chưa có cỡ thật); bấm <b>Xem cỡ con dấu trên văn bản mẫu</b> để xem con dấu trên giấy theo cỡ thật đã nhập. Bấm <b>Tải bản in kiểm tra cỡ thật (PDF)</b> để có trang A4 gồm con dấu đúng cỡ thật, thước đo mm, đoạn 100 mm và một vòng tròn trống: in với tỉ lệ 100% (không chọn Vừa trang), đóng con dấu thật vào vòng tròn trống rồi so với hình bên cạnh, đo đoạn 100 mm để chắc máy in không co giãn.</li>
           <li><b>Bước ⑤ Tùy chọn file:</b> kích thước (mặc định 2400 × 2400; nút chọn nhanh 2000, 1500, 1000, 640, 600, 300, hoặc gõ cỡ tùy chỉnh từ 90 đến 4000; ví dụ hệ thống yêu cầu con dấu 640 × 640 px thì bấm 640) và lề quanh dấu (mặc định 0%: cắt sát mép dấu, không chừa khoảng trắng).</li>
           <li>Bấm <b>Tải PNG con dấu</b>, hoặc <b>Trọn bộ .zip</b> (PNG 2400 px, PNG 1000 px, JSON và hướng dẫn).</li>
           <li><b>Khóa file tải về bằng mật khẩu</b> (ô đánh dấu trên các nút tải): khi bật, mọi file con dấu tải về (PNG, Trọn bộ, JSON) đều nằm trong file .zip mã hóa AES-256, tên file có đuôi <i>-khoa.zip</i>. Lần tải đầu tiên phần mềm hỏi mật khẩu (8 – 64 ký tự, chữ không dấu, chữ số, ký hiệu), các lần tải sau trong cùng lần làm việc dùng lại mật khẩu đó; mật khẩu chỉ giữ trong bộ nhớ, tải lại trang hoặc bỏ đánh dấu là quên. Mở file bằng WinRAR, 7-Zip, hoặc nút <b>Mở JSON</b> của phần mềm (Windows không tự mở được file .zip mã hóa AES). Mất mật khẩu thì không ai mở lại được file.</li>
@@ -1277,7 +1374,7 @@ textarea{font-family:inherit}
           <li>Bấm <b>Thêm file PDF, ảnh scan</b>, hoặc kéo thả nhiều file vào thẻ. Mỗi trang PDF hoặc mỗi ảnh là một chữ ký. AI tách chữ ký từng trang (với phiếu ký mẫu: chọn ô đẹp nhất) và gán họ tên theo danh sách; ảnh chưa có trong danh sách lấy họ tên theo tên file ảnh (ví dụ ảnh <i>Nguyen Van An.jpg</i>). Bấm <b>Dừng</b> nếu cần.</li>
           <li><b>Kiểm tra từng thẻ:</b> nhãn <b>Đạt</b> (xanh) hoặc <b>Cần kiểm tra</b> (vàng, kèm lý do). Sửa họ tên ngay trên thẻ; bấm vào ảnh hoặc <b>Chỉnh vùng chữ ký</b> để mở trang đó và khoanh lại, rồi bấm <b>Cập nhật</b>. Bỏ dấu <b>Xuất</b> hoặc bấm × để loại một chữ ký.</li>
           <li><b>Bước ② Xác nhận:</b> đánh dấu ô xác nhận các chữ ký do chính người ký tự ký và đồng ý số hóa, đúng thẩm quyền được giao.</li>
-          <li><b>Bước ③ Tùy chọn xuất:</b> kích thước, tỉ lệ, nền theo Tùy chọn file của thẻ Chữ ký; màu mực theo màu đang chọn hoặc giữ màu bản scan; có thể kèm bản 3000 px để in và file JSON từng người.</li>
+          <li><b>Bước ③ Tùy chọn xuất:</b> chọn cỡ ảnh ngay tại đây: bấm cỡ có sẵn (1000 × 667 chuẩn 3 : 2, 1300 × 640), gõ chiều rộng, hoặc chọn <b>Cỡ tùy chỉnh</b> rồi gõ chiều rộng, chiều cao; chỉnh tỉ lệ khung, lề, nền. Chọn màu mực (hoặc giữ màu bản scan); có thể kèm bản 3000 px để in và file JSON từng người. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.</li>
           <li>Bấm <b>Tải … chữ ký (.zip)</b>: mỗi người một file PNG đặt tên theo họ tên, kèm <i>danh-sach.csv</i> (mở bằng Excel) để đối chiếu.</li>
         </ol>
         <p class="callout">Hàng loạt chỉ dùng để số hóa chữ ký mà chính người ký đã tự ký trên phiếu và đồng ý số hóa, đúng thẩm quyền được giao. Mỗi người tự kiểm tra và nộp chữ ký của mình lên hệ thống ký văn bản.</p>
@@ -1912,8 +2009,14 @@ textarea{font-family:inherit}
     const box = stageBox.getBoundingClientRect();
     const wide = expanded || window.matchMedia('(min-width: 900px)').matches;
     let w = box.width;
-    if (wide) w = Math.min(w, box.height * 1.5);
-    else w = Math.min(w, Math.max(240, (window.innerHeight - 120) * 1.5));
+    if (expanded) w = Math.min(w, box.height * 1.5);
+    else if (wide) {
+      // the pad as large as the screen allows above the row of takes (① Người ký and ② Kiểm tra are beside it on a
+      // wide screen; between 900 and 1120 px they come under it, still in sight on a tall screen)
+      // measured from the top of the layout, so a pad kept in sight while the page scrolls keeps its size
+      const stage = stageBox.closest('.stage'), top = stage.parentElement.getBoundingClientRect().top + window.scrollY + box.top - stage.getBoundingClientRect().top, H = window.innerHeight, beside = window.matchMedia('(min-width: 1120px)').matches;
+      w = Math.min(w, Math.max(300, H - top - (beside || H < 880 ? 90 : 330)) * 1.5);
+    } else w = Math.min(w, Math.max(240, (window.innerHeight - 120) * 1.5));
     w = Math.max(200, Math.floor(w));
     pad.style.width = w + 'px';
     pad.style.height = Math.round(w / 1.5) + 'px';
@@ -3315,7 +3418,7 @@ textarea{font-family:inherit}
     $('sealBusy').hidden = !(has && seal.aiRun);
     if (!sealAIChanged(seal)) cmpOrig = false;
     $('sealCmpBtn').hidden = !sealAIChanged(seal); setPressed('sealCmpBtn', cmpOrig);
-    $('sealCmpBtn').textContent = cmpOrig ? 'Đang xem bản tách gốc · bấm để xem bản đã làm đẹp' : 'Xem bản tách gốc';
+    $('sealCmpBtn').textContent = cmpOrig ? 'Đang xem bản tách gốc' : 'Xem bản tách gốc';
     const aiOn = !!(seal && seal.aiColor && !cfg.sealKeep && sealHex(seal) === seal.aiColor);
     $('sealColorAI').disabled = !has; setPressed('sealColorAI', aiOn);
     const mg = seal ? seal.merged || 1 : 1;
@@ -3354,8 +3457,8 @@ textarea{font-family:inherit}
     $('sealInfo').textContent = 'PNG ' + S + ' × ' + S + ' px, nền trong suốt · ' + bits.join(' · ') + '.';
     if (S < 600) { st.classList.add('warn'); txt.textContent = 'Ảnh ' + S + ' × ' + S + ' px khá nhỏ: chữ trên con dấu có thể không rõ. Nên dùng 1000 px trở lên, trừ khi hệ thống yêu cầu cỡ này.'; }
     else if (seal.realBad) { st.classList.add('warn'); txt.textContent = 'Cỡ thật của con dấu phải từ 10 đến 120 mm (ví dụ 35 hoặc 35,5).'; }
-    else if (!realMmOf(seal)) { st.classList.add('warn'); txt.textContent = 'Chưa có cỡ thật: nhập đường kính thật của con dấu (mm) ở mục 3 để ảnh con dấu bằng kích thước thực tế theo Hướng dẫn 05-HD/VPTW.'; }
-    else if (!slugName(org)) { st.classList.add('warn'); txt.textContent = 'Nên nhập tên cơ quan ở mục 3 để đặt tên file rõ ràng (không bắt buộc).'; }
+    else if (!realMmOf(seal)) { st.classList.add('warn'); txt.textContent = 'Chưa có cỡ thật: nhập đường kính thật của con dấu (mm) ở mục 1 để ảnh con dấu bằng kích thước thực tế theo Hướng dẫn 05-HD/VPTW.'; }
+    else if (!slugName(org)) { st.classList.add('warn'); txt.textContent = 'Nên nhập tên cơ quan ở mục 1 để đặt tên file rõ ràng (không bắt buộc).'; }
     else { st.classList.add('ok'); txt.textContent = 'Đạt: PNG vuông ' + S + ' × ' + S + ' px, nền trong suốt, màu đồng đều, bằng kích thước thực tế ' + fmtMm(realMmOf(seal)) + ' mm' + (seal.circle ? ', con dấu căn giữa.' : '.'); }
   }
   // the real size measured on the scan: the seal's outer edge, at the scan's known scale (checked by the user with a ruler)
@@ -3558,6 +3661,10 @@ textarea{font-family:inherit}
     const preset = swatches.some((b) => b.dataset.color.toLowerCase() === cfg.color.toLowerCase());
     $('customSwatch').style.boxShadow = preset ? '' : '0 0 0 2px var(--accent)';
     $('customColor').value = cfg.color;
+    $('batchCustomSwatch').style.boxShadow = preset ? '' : '0 0 0 2px var(--accent)';
+    $('batchCustomColor').value = cfg.color;
+    const sw = swatches.find((b) => b.dataset.color.toLowerCase() === cfg.color.toLowerCase());
+    $('batchInkOut').textContent = (sw ? sw.title + ' · ' : 'Màu khác · ') + cfg.color.toUpperCase();
     $('thick').value = cfg.thick; $('thickOut').textContent = String(cfg.thick).replace('.', ',') + ' px';
     $('smooth').value = cfg.smooth; $('smoothOut').textContent = cfg.smooth + '%';
     $('sens').value = cfg.sens; $('sensOut').textContent = cfg.sens + '%';
@@ -3577,6 +3684,7 @@ textarea{font-family:inherit}
 
   document.querySelectorAll('.swatch[data-color]').forEach((b) => b.addEventListener('click', () => set({ color: b.dataset.color }, true)));
   $('customColor').addEventListener('input', (e) => set({ color: e.target.value }, true));
+  $('batchCustomColor').addEventListener('input', (e) => set({ color: e.target.value }, true));
   $('thick').addEventListener('input', (e) => set({ thick: +e.target.value }, true));
   $('smooth').addEventListener('input', (e) => set({ smooth: +e.target.value }, true));
   $('sens').addEventListener('input', (e) => set({ sens: +e.target.value }));
@@ -4434,6 +4542,9 @@ self.onmessage = async (e) => {
       if (on && focus) b.focus();
     });
     $('viewSig').hidden = t !== 'sig'; $('viewSeal').hidden = t !== 'seal'; $('viewBatch').hidden = t !== 'batch';
+    // the size controls (one set, shared by Chữ ký and Hàng loạt) are shown in ③ of the tab that is open
+    const core = $('fileOptsCore'), home = t === 'batch' ? $('batchSizeSlot') : $('sigOptsBody');
+    if (core.parentNode !== home) home.appendChild(core);
     closePop();
     if (t === 'sig') layoutPad();
     else if (t === 'seal') scheduleSealPreview(0);
@@ -4634,7 +4745,7 @@ self.onmessage = async (e) => {
       else { for (const c of new Set([s.rc, s.full, s.orig, s.flat])) if (c) c.width = c.height = 0; }
     }
     if (scan.crop) scan.crop.c.width = scan.crop.c.height = 0;
-    scan.src = null; scan.sel = null; scan.res = null; scan.crop = null; scan.pre = null;
+    scan.src = null; scan.sel = null; scan.res = null; scan.crop = null; scan.pre = null; scan.wantUse = false;
   }
   function showScan() {
     if (scanDlg.open) return;
@@ -6783,9 +6894,17 @@ self.onmessage = async (e) => {
     return c;
   }
   let procTimer = 0;
-  function scheduleProcess() { clearTimeout(procTimer); procTimer = setTimeout(processScan, 150); }
+  function scheduleProcess() { clearTimeout(procTimer); scan.queued = true; procTimer = setTimeout(processScan, 150); }
+  // "Dùng" pressed while the preview is still being redone (an option was just changed): it waits for the new
+  // preview and then goes ahead with it, instead of being lost
+  function useWhenReady() {
+    if (!scan.wantUse || !scanDlg.open) { scan.wantUse = false; return; }
+    if (scan.running || scan.queued || !scan.res) return;   // the run under way calls back when it is done
+    scan.wantUse = false; $('scanUse').click();
+  }
   // One job at a time; changes made meanwhile are folded into a single follow-up run, so nothing piles up.
   async function processScan() {
+    scan.queued = false;
     const s = scan.src, sel = scan.sel;
     if (!s || !sel) { showResult(null); $('scanWorking').hidden = true; return; }
     if (scan.running) { scan.dirty = true; return; }
@@ -6812,7 +6931,8 @@ self.onmessage = async (e) => {
       if (scan.sel === sel) { showResult(null); setEmpty('Không xử lý được vùng này. Hãy khoanh lại.'); }
     } finally {
       scan.running = false;
-      if (scan.dirty && scan.src) { scan.dirty = false; processScan(); } else $('scanWorking').hidden = true;
+      if (scan.dirty && scan.src) { scan.dirty = false; processScan(); }
+      else { $('scanWorking').hidden = true; if (scan.wantUse) setTimeout(useWhenReady, 0); }
     }
   }
   // The seal on the scan, put straight and the right way up while still in the scan window. A page with no clear
@@ -7750,7 +7870,7 @@ self.onmessage = async (e) => {
     drawSel(anim); processScan();
   }
   function noSel(msg, silent) {
-    scan.sel = null; drawSel(); showResult(null);
+    scan.wantUse = false; scan.sel = null; drawSel(); showResult(null);
     setEmpty(msg);
     if (!silent) toast(msg);
   }
@@ -8097,6 +8217,7 @@ self.onmessage = async (e) => {
   }
   $('scanUse').addEventListener('click', async () => {
     const res = scan.res; if (!res || scan.using) return;
+    if (scan.running || scan.queued) { scan.wantUse = true; return; }   // goes ahead as soon as the new preview is ready
     const sig = res.mode !== 'seal' ? res.sig : null, sl = res.mode !== 'sig' ? res.seal : null;
     if (!sig && !sl) return;
     // full-size results: usually ready already (prepared in the background while the preview was on screen)
@@ -8110,7 +8231,8 @@ self.onmessage = async (e) => {
     try { out = await job.p; } catch (e) { out = null; }
     $('scanWorkingText').textContent = 'Đang tách nền…'; $('scanWorking').hidden = true;
     scan.using = false; $('scanUse').disabled = false;
-    if (!scanDlg.open || scan.res !== res) return;   // closed or changed meanwhile
+    if (!scanDlg.open) return;
+    if (scan.res !== res) { scan.wantUse = true; useWhenReady(); return; }   // redone meanwhile: use the new preview
     const full = (m) => { const q = m.s || 1; return Object.assign({}, m, { x0: m.x0 * q, y0: m.y0 * q, ex: m.x0 * q, ey: m.y0 * q, ew: m.w * q, eh: m.h * q, s: 1, pw: m.w * q, ph: m.h * q, prevPerPx: q / res.kx }); };
     const sigF = sig ? (out && out.sig ? full(out.sig) : full(sig)) : null;
     const hi = sl ? (out && out.hi) || full(sl) : null;
@@ -8155,7 +8277,7 @@ self.onmessage = async (e) => {
         const sNow = seal;
         toast('Đã đưa con dấu vào thẻ Con dấu, AI đã xoay ' + (Math.abs(tl) > 120 ? 'lại cho đúng chiều ' : 'thẳng ') + fmtDeg(tl) + ' như trên khung bản scan. Bấm Hoàn tác nếu chưa đúng.',
           () => { if (seal && seal === sNow) { seal.rot = 0; scheduleSealPreview(0); } });
-      } else toast('Đã đưa con dấu vào thẻ Con dấu. AI đang làm đẹp con dấu (3 bước bên phải); nhập tên cơ quan rồi bấm Tải PNG con dấu.');
+      } else toast('Đã đưa con dấu vào thẻ Con dấu. AI đang làm đẹp con dấu (mục 3 bên phải); nhập tên cơ quan ở mục 1 rồi bấm Tải PNG con dấu.');
       setTimeout(() => autoStraighten(false), 900);
       const sNew = seal;
       setTimeout(() => { if (seal === sNew && !org.trim()) runSealRead(true); }, 1400);
@@ -8418,7 +8540,7 @@ self.onmessage = async (e) => {
     $('batchSum').textContent = bits.join(' · ');
     const ex = exportable(), noName = ex.filter((it) => !slugName(it.name)).length;
     $('batchZip').disabled = !ex.length || batch.running || saving;
-    $('batchZipLabel').textContent = ex.length ? 'Tải ' + ex.length + ' chữ ký (.zip)' + (noName ? ' · thiếu ' + noName + ' tên' : '') : 'Tải tất cả (.zip)';
+    $('batchZipLabel').textContent = ex.length ? 'Tải ' + ex.length + ' chữ ký' + (noName ? ' · thiếu ' + noName + ' tên' : ' (.zip)') : 'Tải tất cả (.zip)';
     $('batchClearAll').disabled = !n || batch.running;
     syncBatchFmt();
     if (tab === 'batch' && batch.stale) { batch.stale = false; batch.items.forEach(batchThumb); }
@@ -8426,7 +8548,7 @@ self.onmessage = async (e) => {
   function syncBatchFmt() {
     const W = clampW(cfg.width), H = cfg.frame === 'trim' ? 0 : frameH(W, cfg);
     const fmt = W + (H ? ' × ' + H : ' px, cắt sát') + ' · ' + frameLabel(cfg.frame) + ' · ' + (cfg.bg === 'white' ? 'nền trắng' : 'nền trong suốt');
-    $('batchFmt').textContent = 'Mỗi người một file PNG ' + fmt + ', theo Tùy chọn file ở thẻ Chữ ký. Tên file theo họ tên, ví dụ chu-ky-nguyen-van-an-' + W + 'x' + (H || 'h') + '.png.';
+    $('batchFmt').textContent = 'Mỗi người một file PNG ' + fmt + ', tên file theo họ tên, ví dụ chu-ky-nguyen-van-an-' + W + 'x' + (H || 'h') + '.png. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.';
     $('batchOptsSum').textContent = W + (H ? ' × ' + H : '') + ' · ' + (batch.keepColor ? 'màu bản scan' : 'màu ' + cfg.color.toUpperCase());
     if (batch.items.some((it) => it.list)) rethumbAll();
   }
@@ -8439,6 +8561,10 @@ self.onmessage = async (e) => {
   });
   $('batchNames').addEventListener('input', () => { if ($('formNames').value !== $('batchNames').value) $('formNames').value = $('batchNames').value; });
   $('batchConsent').addEventListener('change', syncBatch);
+  // picking an ink colour in the batch tab means using it (not the colour of the scan)
+  const batchInkPick = () => { if (!batch.keepColor) return; batch.keepColor = false; setPressed('batchInkCfg', true); setPressed('batchInkKeep', false); syncBatch(); batch.items.forEach(batchThumb); };
+  document.querySelectorAll('.batch-swatches .swatch[data-color]').forEach((b) => b.addEventListener('click', batchInkPick));
+  $('batchCustomColor').addEventListener('input', batchInkPick);
   $('batchInkCfg').addEventListener('click', () => { batch.keepColor = false; setPressed('batchInkCfg', true); setPressed('batchInkKeep', false); syncBatch(); batch.items.forEach(batchThumb); });
   $('batchInkKeep').addEventListener('click', () => { batch.keepColor = true; setPressed('batchInkCfg', false); setPressed('batchInkKeep', true); syncBatch(); batch.items.forEach(batchThumb); });
   $('batchClearAll').addEventListener('click', () => {
@@ -8548,7 +8674,7 @@ self.onmessage = async (e) => {
   }
   $('sizePdfBtn').addEventListener('click', () => {
     if (!seal) return;
-    if (!realMmOf(seal)) { toast('Nhập cỡ thật của con dấu (mm) ở mục 3 Cơ quan trước.'); $('sealRealMm').focus(); return; }
+    if (!realMmOf(seal)) { toast('Nhập cỡ thật của con dấu (mm) ở mục 1 Cơ quan trước.'); $('sealRealMm').focus(); return; }
     busy(async () => {
       await sealReady();
       const name = sealBase() + '-kiem-tra-co-that-' + Math.round(realMmOf(seal) * 10) / 10 + 'mm.pdf', b = await makeSizeCheckPdf();
@@ -8657,6 +8783,35 @@ self.onmessage = async (e) => {
     setTab(t0);
     syncBatch();
     if ('ResizeObserver' in window) new ResizeObserver(() => layoutPad()).observe(stageBox);
+    // Toàn màn hình: the whole program fills the screen (no browser bars); shown only where the browser allows it
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+    const fsOK = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+    const syncFs = () => { const on = !!fsEl(); $('fsBtn').setAttribute('aria-pressed', on ? 'true' : 'false'); $('fsLabel').textContent = on ? 'Thoát toàn màn hình' : 'Toàn màn hình'; };
+    $('fsBtn').hidden = !fsOK; syncFs();
+    $('fsBtn').addEventListener('click', async () => {
+      try {
+        if (fsEl()) await (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else { const el = document.documentElement; await (el.requestFullscreen || el.webkitRequestFullscreen).call(el, { navigationUI: 'hide' }); }
+      } catch (e) { toast('Trình duyệt không cho bật toàn màn hình ở đây. Có thể bấm phím F11 trên máy tính.'); }
+      syncFs();
+    });
+    document.addEventListener('fullscreenchange', syncFs); document.addEventListener('webkitfullscreenchange', syncFs);
+    // the pinned bar with the main download button shows a shadow only while it floats over the options
+    let barRaf = 0;
+    const markBars = () => { barRaf = 0; document.querySelectorAll('.dl-bar').forEach((b) => {
+      const n = b.nextElementSibling; if (!b.offsetParent || !n) return;
+      b.classList.toggle('stuck', n.getBoundingClientRect().top - b.getBoundingClientRect().bottom > 24); }); };
+    const queueBars = () => { if (!barRaf) barRaf = requestAnimationFrame(markBars); };
+    window.addEventListener('scroll', queueBars, { passive: true }); window.addEventListener('resize', queueBars);
+    if ('ResizeObserver' in window) { const ro = new ResizeObserver(queueBars); document.querySelectorAll('.panel').forEach((el) => ro.observe(el)); }
+    // file options start open: every setting is in sight the first time (the heading still folds them away)
+    document.querySelectorAll('details.opts').forEach((d) => { d.open = true; });
+    // a column short enough for the screen stays in view while the page scrolls
+    const COLS = '.app > .panel, .app > .stage, .app > .steps-col';
+    const fitPanels = () => document.querySelectorAll(COLS).forEach((el) => el.classList.toggle('fits', el.offsetHeight <= window.innerHeight - 24));
+    window.addEventListener('resize', fitPanels);
+    if ('ResizeObserver' in window) { const ro = new ResizeObserver(fitPanels); document.querySelectorAll(COLS).forEach((el) => ro.observe(el)); }
+    fitPanels();
     window.addEventListener('resize', layoutPad);
     layoutPad();
     changed();
