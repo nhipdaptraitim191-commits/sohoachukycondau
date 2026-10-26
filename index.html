@@ -641,6 +641,15 @@ html,body{height:auto}
 /* the size controls are one block, shown in ③ of the tab that is open (Chữ ký or Hàng loạt) */
 .opts-core, .opts-slot{display:contents}
 .ink-out{font-variant-numeric:tabular-nums; color:var(--muted)}
+/* Xoay chữ ký: like the thickness control, with a step button at each end */
+.turn{gap:6px; padding:0 6px}
+.turn input{width:120px}
+.turn output{min-width:52px}
+.turn.on output{color:var(--accent)}
+.turn-step{display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border:0; border-radius:8px; background:transparent; color:var(--fg); cursor:pointer}
+.turn-step:hover:not(:disabled){background:var(--surface-2)}
+.turn-step:disabled, .turn input:disabled{opacity:.4; cursor:default}
+@media (pointer: coarse){ .turn-step{width:44px; height:44px} .thick.turn input{width:100px} .thick.turn output{min-width:46px} }
 .batch-swatches{display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 6px}
 .panel .batch-swatches .swatch{width:40px; height:40px}
 /* full screen button: the icon and the words follow the state */
@@ -763,6 +772,21 @@ html,body{height:auto}
             <label class="check"><input type="checkbox" id="taper" checked> Thon nhẹ đầu và cuối nét như bút mực</label>
           </div>
         </div>
+        <div class="thick turn" role="group" aria-label="Xoay chữ ký">
+          <button class="turn-step" id="turnLeft" type="button" aria-label="Xoay chữ ký ngược chiều kim đồng hồ 1 độ" title="Xoay trái 1°" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4v5h5"/><path d="M5.2 15a7.5 7.5 0 101.6-7.8L4 9"/></svg>
+          </button>
+          <label for="turnRange">Xoay</label>
+          <input type="range" id="turnRange" min="-45" max="45" step="0.5" value="0" disabled>
+          <output id="turnOut" for="turnRange">0°</output>
+          <button class="turn-step" id="turnRight" type="button" aria-label="Xoay chữ ký theo chiều kim đồng hồ 1 độ" title="Xoay phải 1°" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4v5h-5"/><path d="M18.8 15a7.5 7.5 0 11-1.6-7.8L20 9"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-soft" id="sigAutoTurn" type="button" title="AI đo hướng dòng chữ ký và xoay cho thẳng (nằm ngang). Bấm Hoàn tác nếu muốn giữ như cũ." disabled>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-4 4 3 8-6"/><path d="M3 21h18"/></svg>
+          Tự xoay thẳng <span class="ai-tag">AI</span>
+        </button>
         <input type="file" id="scanFile" accept=".pdf,.jpg,.jpeg,.jfif,.jpe,.png,.webp,.bmp,.gif,.heic,.heif,.tif,.tiff,application/pdf,image/*" hidden>
       </div>
 
@@ -1191,6 +1215,7 @@ html,body{height:auto}
                   <button type="button" id="batchInkKeep" aria-pressed="false">Giữ màu bản scan</button>
                 </div>
               </div>
+              <label class="check"><input type="checkbox" id="batchTurn"> <span>Tự xoay thẳng từng chữ ký <span class="ai-tag">AI</span></span></label>
               <label class="check"><input type="checkbox" id="batchHi"> Kèm bản độ phân giải cao 3000 px (in ấn)</label>
               <label class="check"><input type="checkbox" id="batchJson"> Kèm file JSON từng người</label>
               <p class="small" id="batchFmt">Mỗi người một file PNG 1000 × 667 · 3 : 2 · nền trong suốt, tên file theo họ tên. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.</p>
@@ -1280,6 +1305,7 @@ html,body{height:auto}
           <li><b>Kiểm tra màu mực, độ dày nét</b> trên thanh công cụ (mặc định: ô xanh thứ ba, nét 7 px). Nút <b>Bút</b> mở các cài đặt bút: Chỉ nhận bút hay cả ngón tay, độ mượt, lực nhấn, thon đầu nét.</li>
           <li><b>Bấm Phóng to</b> ở góc khung ký để ký trên toàn màn hình, ký xong bấm Thu nhỏ. Nên ký to, chiếm khoảng hai phần ba chiều ngang khung; phần mềm tự căn chữ ký vào giữa ảnh.</li>
           <li><b>Ký vài bản, chọn bản đẹp nhất:</b> ký xong một bản, bấm <b>Ký bản mới</b> để ký bản khác (tối đa 5 bản). Các bản hiện thành ảnh nhỏ dưới khung ký: chạm vào ảnh để chọn bản dùng, bấm dấu × để xóa bản không dùng. Hoàn tác, Xóa hết, Tải và Lưu luôn áp dụng cho bản đang chọn.</li>
+          <li><b>Xoay chữ ký cho thẳng</b> (không bắt buộc): kéo thanh <b>Xoay</b> trên thanh công cụ (từ −45° đến +45°), hoặc bấm nút ⟲ ⟳ ở hai đầu để xoay từng 1°; số độ hiện ngay bên cạnh. Bấm <b>Tự xoay thẳng</b> <span class="ai-tag">AI</span> để AI đo hướng dòng chữ ký (đáy các chữ và chiều cao nét) rồi xoay cho nằm ngang; người ký muốn giữ độ nghiêng riêng thì chỉnh lại bằng thanh Xoay. Chỉ đổi hướng cả chữ ký, không thêm, bớt hay sửa nét nào. Một lần Hoàn tác bỏ cả lần xoay; ký thêm nét thì số độ tính lại từ 0°.</li>
           <li><b>Bước ② Kiểm tra:</b> xem ảnh ở ô xem trước (nền ô caro là trong suốt). Dòng xanh lá “Đạt yêu cầu” nghĩa là file đúng chuẩn; dòng vàng cho biết còn thiếu gì. Bấm <b>Xem thử trên văn bản mẫu</b> để thấy chữ ký đặt dưới chức danh của văn bản ở cỡ gần đúng khi in, kèm độ dày nét trên giấy.</li>
           <li><b>Bấm Tải PNG.</b> Tùy máy, trình duyệt sẽ hỏi xác nhận hoặc tải về ngay.</li>
           <li><b>Trọn bộ .zip</b> (không bắt buộc): một file gồm PNG chuẩn hệ thống, PNG độ phân giải cao 3000 px để in ấn, chữ ký vector SVG và PDF, file JSON bản gốc và file hướng dẫn. <b>Lưu JSON</b> giữ bản gốc nét ký để xuất lại sau.</li>
@@ -1374,7 +1400,7 @@ html,body{height:auto}
           <li>Bấm <b>Thêm file PDF, ảnh scan</b>, hoặc kéo thả nhiều file vào thẻ. Mỗi trang PDF hoặc mỗi ảnh là một chữ ký. AI tách chữ ký từng trang (với phiếu ký mẫu: chọn ô đẹp nhất) và gán họ tên theo danh sách; ảnh chưa có trong danh sách lấy họ tên theo tên file ảnh (ví dụ ảnh <i>Nguyen Van An.jpg</i>). Bấm <b>Dừng</b> nếu cần.</li>
           <li><b>Kiểm tra từng thẻ:</b> nhãn <b>Đạt</b> (xanh) hoặc <b>Cần kiểm tra</b> (vàng, kèm lý do). Sửa họ tên ngay trên thẻ; bấm vào ảnh hoặc <b>Chỉnh vùng chữ ký</b> để mở trang đó và khoanh lại, rồi bấm <b>Cập nhật</b>. Bỏ dấu <b>Xuất</b> hoặc bấm × để loại một chữ ký.</li>
           <li><b>Bước ② Xác nhận:</b> đánh dấu ô xác nhận các chữ ký do chính người ký tự ký và đồng ý số hóa, đúng thẩm quyền được giao.</li>
-          <li><b>Bước ③ Tùy chọn xuất:</b> chọn cỡ ảnh ngay tại đây: bấm cỡ có sẵn (1000 × 667 chuẩn 3 : 2, 1300 × 640), gõ chiều rộng, hoặc chọn <b>Cỡ tùy chỉnh</b> rồi gõ chiều rộng, chiều cao; chỉnh tỉ lệ khung, lề, nền. Chọn màu mực (hoặc giữ màu bản scan); có thể kèm bản 3000 px để in và file JSON từng người. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.</li>
+          <li><b>Bước ③ Tùy chọn xuất:</b> chọn cỡ ảnh ngay tại đây: bấm cỡ có sẵn (1000 × 667 chuẩn 3 : 2, 1300 × 640), gõ chiều rộng, hoặc chọn <b>Cỡ tùy chỉnh</b> rồi gõ chiều rộng, chiều cao; chỉnh tỉ lệ khung, lề, nền. Chọn màu mực (hoặc giữ màu bản scan). Đánh dấu <b>Tự xoay thẳng từng chữ ký</b> <span class="ai-tag">AI</span> để AI xoay cho từng chữ ký nằm ngang (số độ ghi trên từng thẻ; bỏ dấu là về như bản scan). Có thể kèm bản 3000 px để in và file JSON từng người. Cỡ ảnh và màu mực dùng chung với thẻ Chữ ký.</li>
           <li>Bấm <b>Tải … chữ ký (.zip)</b>: mỗi người một file PNG đặt tên theo họ tên, kèm <i>danh-sach.csv</i> (mở bằng Excel) để đối chiếu.</li>
         </ol>
         <p class="callout">Hàng loạt chỉ dùng để số hóa chữ ký mà chính người ký đã tự ký trên phiếu và đồng ý số hóa, đúng thẩm quyền được giao. Mỗi người tự kiểm tra và nộp chữ ký của mình lên hệ thống ký văn bản.</p>
@@ -1393,6 +1419,8 @@ html,body{height:auto}
           <dd>Từ 2 đến 16 px, tính theo ảnh rộng 1000 px. Áp dụng cho chữ ký đã ký và cả chữ ký từ bản scan (làm nét dày hoặc mảnh hơn bản scan).</dd>
           <dt>Bút</dt>
           <dd><b>Chỉ nhận bút:</b> chỉ bút (và chuột) tạo nét, tay chạm màn hình không tạo nét; tự bật khi bút chạm khung lần đầu. <b>Bút và ngón tay:</b> ký được bằng ngón tay. <b>Độ mượt nét:</b> 40 – 60% hợp với đa số chữ ký. <b>Ảnh hưởng lực nhấn bút:</b> 0% nét đều, 70% (mặc định) đậm nhạt tự nhiên. <b>Thon nhẹ đầu và cuối nét</b> như bút mực.</dd>
+          <dt>Xoay, Tự xoay thẳng</dt>
+          <dd>Xoay cả chữ ký quanh tâm (±45°, nút ⟲ ⟳ từng 1°). Tự xoay thẳng: AI xoay cho dòng chữ ký nằm ngang; chữ ký quá ngắn hoặc gần tròn thì AI không tự xoay, hãy xoay tay. Dùng được cho chữ ký vừa ký và chữ ký từ bản scan.</dd>
           <dt>Phóng to, Thu nhỏ</dt>
           <dd>Nút ở góc khung ký. Phóng to cho khung chiếm toàn màn hình; trên máy tính, phím Esc cũng thu nhỏ khung.</dd>
           <dt>Ký bản mới, các bản ký</dt>
@@ -1465,6 +1493,8 @@ html,body{height:auto}
           <dd>Phần mềm đang ở chế độ Chỉ nhận bút; bấm nút Bút, chọn Bút và ngón tay.</dd>
           <dt>Nét ký bị gợn, run</dt>
           <dd>Bấm nút Bút, tăng Độ mượt nét lên 60 – 70%.</dd>
+          <dt>Chữ ký bị nghiêng, không thẳng</dt>
+          <dd>Bấm Tự xoay thẳng (AI) trên thanh công cụ, hoặc kéo thanh Xoay. Ở thẻ Hàng loạt: đánh dấu Tự xoay thẳng từng chữ ký ở bước ③.</dd>
           <dt>Nét quá mảnh hoặc quá đậm</dt>
           <dd>Chỉnh Độ dày nét; bấm Xem thử trên văn bản mẫu để xem nét trên giấy dày bao nhiêu mm.</dd>
           <dt>Bấm Tải nhưng không thấy file</dt>
@@ -2320,6 +2350,190 @@ html,body{height:auto}
   function undo() { if (!undoStack.length) return; redoStack.push(strokes); strokes = undoStack.pop(); changed(); }
   function redo() { if (!redoStack.length) return; undoStack.push(strokes); strokes = redoStack.pop(); changed(); }
   function clearAll() { if (!strokes.length) return; commit([]); toast('Đã xóa chữ ký. Bấm Hoàn tác nếu muốn lấy lại.'); }
+
+  /* ---------- xoay chữ ký: the whole signature turned about its centre ----------
+     The strokes themselves are turned (pen strokes, outlines from a scan, masks from older files), so the pad, the
+     preview and every file show the same signature: nothing is added, removed or reshaped, only the direction
+     changes. The angle counts from the signature as it was when the turning began; drawing again, Hoàn tác or another
+     take starts again from 0°. One Hoàn tác undoes the whole turning. */
+  const TURN_MAX = 45;
+  let sigTurn = null;   // { from: strokes before turning, ctr: {x, y}, deg, list: the turned strokes }
+  const turnNow = () => (sigTurn && sigTurn.list === strokes ? sigTurn.deg : 0);
+  const turnTxt = (d) => (d > 0 ? '+' : '') + String(Math.round(d * 10) / 10).replace('.', ',') + '°';
+  // every item of a list through x' = a x + c y + e, y' = b x + d y + f (a turn, a shift, an even scale)
+  function xformList(list, M) {
+    const [a, b, c, d, e, f] = M, k = Math.sqrt(Math.abs(a * d - b * c)) || 1;
+    const T = (x, y) => [a * x + c * y + e, b * x + d * y + f];
+    return list.map((s) => {
+      if (!s.type) return { input: s.input, raw: s.raw.map((p) => { const q = T(p.x, p.y); return { x: q[0], y: q[1], f: p.f }; }) };
+      if (s.type === 'vector') {
+        const sx = s.w / s.iw, sy = s.h / s.ih, u = (sx + sy) / 2 * k;
+        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+        const P = s.paths.map((p) => {
+          const o = new Float64Array(p.length);
+          for (let i = 0; i < p.length; i += 2) {
+            const q = T(s.x + p[i] * sx, s.y + p[i + 1] * sy); o[i] = q[0]; o[i + 1] = q[1];
+            if (q[0] < x0) x0 = q[0]; if (q[0] > x1) x1 = q[0]; if (q[1] < y0) y0 = q[1]; if (q[1] > y1) y1 = q[1];
+          }
+          return o;
+        });
+        if (!(x1 > x0 && y1 > y0)) return s;
+        for (const o of P) for (let i = 0; i < o.length; i += 2) { o[i] = (o[i] - x0) / u; o[i + 1] = (o[i + 1] - y0) / u; }
+        return { type: 'vector', paths: P, iw: (x1 - x0) / u, ih: (y1 - y0) / u, x: x0, y: y0, w: x1 - x0, h: y1 - y0, t0: s.t0, hw: s.hw * k };
+      }
+      if (s.type === 'image' && s.mask) {
+        const u = s.w / s.iw, t = Math.atan2(b, a), cs = Math.abs(Math.cos(t)), sn = Math.abs(Math.sin(t));
+        const c0 = T(s.x + s.w / 2, s.y + s.h / 2), W2 = (s.w * cs + s.h * sn) * k, H2 = (s.w * sn + s.h * cs) * k;
+        const cv = document.createElement('canvas'); cv.width = Math.max(1, Math.ceil(W2 / u / k)); cv.height = Math.max(1, Math.ceil(H2 / u / k));
+        const x = cv.getContext('2d'); x.translate(cv.width / 2, cv.height / 2); x.rotate(t); x.drawImage(s.mask, -s.iw / 2, -s.ih / 2);
+        const w = cv.width * u * k, h = cv.height * u * k;
+        return { type: 'image', mask: cv, iw: cv.width, ih: cv.height, x: c0[0] - w / 2, y: c0[1] - h / 2, w, h };
+      }
+      return s;
+    });
+  }
+  // the turned signature stays on the signing paper: moved back inside, or (only when it no longer fits) made smaller
+  function keepOnPad(list) {
+    const bb = bbox(list); if (!bb) return list;
+    const m = 0.01 * LW;
+    if (bb.x0 >= 0 && bb.y0 >= 0 && bb.x0 + bb.w <= LW && bb.y0 + bb.h <= LH) return list;
+    const k = Math.min(1, (LW - 2 * m) / bb.w, (LH - 2 * m) / bb.h), w = bb.w * k, h = bb.h * k;
+    const cx = bb.x0 + bb.w / 2, cy = bb.y0 + bb.h / 2;
+    const nx = clamp(cx, m + w / 2, LW - m - w / 2), ny = clamp(cy, m + h / 2, LH - m - h / 2);
+    return xformList(list, [k, 0, 0, k, nx - k * cx, ny - k * cy]);
+  }
+  function turnedList(list, deg, ctr) {
+    const t = deg * Math.PI / 180, cs = Math.cos(t), sn = Math.sin(t);
+    return keepOnPad(xformList(list, [cs, sn, -sn, cs, ctr.x - cs * ctr.x + sn * ctr.y, ctr.y - sn * ctr.x - cs * ctr.y]));
+  }
+  // turn to an angle (degrees, + = clockwise) counted from the signature as it was before the turning began
+  function setTurn(deg) {
+    if (!strokes.length) return;
+    deg = clamp(Math.round(deg * 10) / 10, -TURN_MAX, TURN_MAX);
+    if (!(sigTurn && sigTurn.list === strokes)) {
+      if (Math.abs(deg) < 0.05) return;
+      const bb = bbox(strokes);
+      sigTurn = { from: strokes, ctr: { x: bb.x0 + bb.w / 2, y: bb.y0 + bb.h / 2 }, deg: 0, list: null };
+      undoStack.push(strokes); if (undoStack.length > 300) undoStack.shift(); redoStack = [];
+    }
+    sigTurn.deg = deg;
+    strokes = sigTurn.list = Math.abs(deg) < 0.05 ? sigTurn.from : turnedList(sigTurn.from, deg, sigTurn.ctr);
+    changed();
+  }
+  /* AI tự xoay thẳng: the direction of the line of writing. Ink is sampled along the strokes (outlines: by length);
+     for each angle within ±45° the ink is turned and its height measured (the spread between the 10th and 90th, 5th and
+     95th, 20th and 80th percentiles, so a flourish or a dot does not decide alone); the angle with the lowest height
+     lays the signature level. A short or round signature has no clear direction: then nothing is turned. */
+  function sigLevelAngle(list) {
+    const X = [], Y = [], Wt = [];
+    for (const s of list) {
+      if (!s.type) { for (const p of processed(s)) { X.push(p.x); Y.push(p.y); Wt.push(1); } }
+      else if (s.type === 'vector') {
+        const sx = s.w / s.iw, sy = s.h / s.ih;
+        for (const a of s.paths) {
+          const n = a.length >> 1; if (n < 2) continue;
+          for (let i = 0; i < n; i++) {
+            const j = ((i + 1) % n) * 2, k = ((i + n - 1) % n) * 2, x = s.x + a[2 * i] * sx, y = s.y + a[2 * i + 1] * sy;
+            const l = (Math.hypot((a[j] - a[2 * i]) * sx, (a[j + 1] - a[2 * i + 1]) * sy) + Math.hypot((a[k] - a[2 * i]) * sx, (a[k + 1] - a[2 * i + 1]) * sy)) / 2;
+            X.push(x); Y.push(y); Wt.push(l);
+          }
+        }
+      } else if (s.type === 'image' && s.mask) {
+        const m = s.mask, st = Math.max(1, Math.round(Math.sqrt(m.width * m.height / 20000)));
+        const d = m.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, m.width, m.height).data;
+        for (let y = 0; y < m.height; y += st) for (let x = 0; x < m.width; x += st) {
+          const v = d[(y * m.width + x) * 4 + 3]; if (v > 96) { X.push(s.x + (x + 0.5) * s.w / m.width); Y.push(s.y + (y + 0.5) * s.h / m.height); Wt.push(v / 255); }
+        }
+      }
+    }
+    let n = X.length; if (n < 12) return { deg: 0, sure: false, why: 'ít' };
+    const stp = Math.max(1, Math.ceil(n / 4000)), xs = [], ys = [], ws = [];
+    let cx = 0, cy = 0, W = 0;
+    for (let i = 0; i < n; i += stp) { xs.push(X[i]); ys.push(Y[i]); ws.push(Wt[i]); cx += X[i] * Wt[i]; cy += Y[i] * Wt[i]; W += Wt[i]; }
+    cx /= W; cy /= W; n = xs.length;
+    const idx = new Array(n), v = new Float64Array(n);
+    const spread = (deg, horiz) => {
+      const t = deg * Math.PI / 180, cs = Math.cos(t), sn = Math.sin(t);
+      for (let i = 0; i < n; i++) { const dx = xs[i] - cx, dy = ys[i] - cy; v[i] = horiz ? dx * cs - dy * sn : dx * sn + dy * cs; idx[i] = i; }
+      idx.sort((p, q) => v[p] - v[q]);
+      const qs = [0.05, 0.1, 0.2, 0.8, 0.9, 0.95], out = [];
+      let acc = 0, k = 0;
+      for (let i = 0; i < n && k < qs.length; i++) { acc += ws[idx[i]]; while (k < qs.length && acc >= qs[k] * W) { out.push(v[idx[i]]); k++; } }
+      while (out.length < qs.length) out.push(v[idx[n - 1]]);
+      return ((out[5] - out[0]) + (out[4] - out[1]) + (out[3] - out[2])) / 3;
+    };
+    let best = 0, bv = spread(0, false);
+    const v0 = bv;
+    for (let d = -TURN_MAX; d <= TURN_MAX; d += 1) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = d; } }
+    for (let d = best - 1; d <= best + 1 + 1e-9; d += 0.1) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = Math.round(d * 10) / 10; } }
+    const long = spread(best, true);
+    if (long < 1.5 * bv) return { deg: 0, sure: false, why: 'tròn' };   // nearly as tall as it is wide: no clear line of writing
+    // finer: the line through the bottoms of the letters (the lowest point of each curve along the ink, a robust
+    // Theil–Sen line, so a descender or a loop does not pull it), used when it agrees with the height measure
+    const base = sigBaseline(list, best);
+    const fin = clamp(base != null && Math.abs(base - best) <= 6 ? base : best, -TURN_MAX, TURN_MAX);
+    if (Math.abs(fin) < 0.5 || ((v0 - bv) / v0 < 0.01 && Math.abs(fin) < 2)) return { deg: 0, sure: true, level: true, tilt: fin };
+    return { deg: fin, sure: true, height: best, base };
+  }
+  // the turn that lays the bottoms of the letters level (null when there are too few of them, spread too little)
+  function sigBaseline(list, guess) {
+    const lines = [];
+    for (const s of list) {
+      if (!s.type) lines.push({ p: processed(s).map((q) => [q.x, q.y]), closed: false });
+      else if (s.type === 'vector') {
+        const sx = s.w / s.iw, sy = s.h / s.ih;
+        for (const a of s.paths) { const p = []; for (let i = 0; i < a.length; i += 2) p.push([s.x + a[i] * sx, s.y + a[i + 1] * sy]); if (p.length > 2) lines.push({ p, closed: true }); }
+      }
+    }
+    if (!lines.length) return null;
+    // work in the frame turned by the first guess, so "lowest" means low along the signature's own line
+    const t = guess * Math.PI / 180, cs = Math.cos(t), sn = Math.sin(t), R = 25;
+    const B = [];
+    let xa = Infinity, xb = -Infinity;
+    for (const L of lines) {
+      const P = L.p.map(([x, y]) => [x * cs - y * sn, x * sn + y * cs]), n = P.length;
+      const arc = new Float64Array(n + 1);
+      for (let i = 1; i <= n; i++) { const a = P[i - 1], b = P[i % n]; arc[i] = arc[i - 1] + Math.hypot(b[0] - a[0], b[1] - a[1]); }
+      const len = L.closed ? arc[n] : arc[n - 1];
+      for (let i = 0; i < n; i++) {
+        if (P[i][0] < xa) xa = P[i][0]; if (P[i][0] > xb) xb = P[i][0];
+        let low = true;
+        for (const dir of [1, -1]) {
+          for (let j = 1; j < n; j++) {
+            const k = i + dir * j; if (!L.closed && (k < 0 || k >= n)) break;
+            const kk = ((k % n) + n) % n;
+            let d = Math.abs(arc[kk] - arc[i]); if (L.closed) d = Math.min(d, len - d);
+            if (d > R) break;
+            if (P[kk][1] > P[i][1]) { low = false; break; }
+          }
+          if (!low) break;
+        }
+        if (low) B.push(P[i]);
+      }
+    }
+    if (B.length < 6) return null;
+    const stp = Math.max(1, Math.ceil(B.length / 300)), Q = B.filter((_, i) => i % stp === 0);
+    let qa = Infinity, qb = -Infinity; for (const q of Q) { if (q[0] < qa) qa = q[0]; if (q[0] > qb) qb = q[0]; }
+    if (qb - qa < 0.3 * (xb - xa)) return null;
+    const sl = [], gap = 0.08 * (xb - xa);
+    for (let i = 0; i < Q.length; i++) for (let j = i + 1; j < Q.length; j++) { const dx = Q[j][0] - Q[i][0]; if (Math.abs(dx) > gap) sl.push((Q[j][1] - Q[i][1]) / dx); }
+    if (sl.length < 10) return null;
+    sl.sort((a, b) => a - b);
+    return Math.round((guess - Math.atan(sl[sl.length >> 1]) * 180 / Math.PI) * 10) / 10;
+  }
+  function autoTurnSig() {
+    if (!strokes.length) return;
+    const from = sigTurn && sigTurn.list === strokes ? sigTurn.from : strokes, was = turnNow();
+    const r = sigLevelAngle(from);
+    if (!r.sure) { toast('AI chưa nhận ra hướng dòng chữ ký (chữ ký ngắn hoặc gần tròn): hãy xoay tay bằng thanh Xoay.'); return; }
+    if (r.level) {
+      if (was) setTurn(0);
+      toast(was ? 'Chữ ký gốc vốn đã thẳng: đã về 0°.' : 'Chữ ký đã thẳng, không cần xoay.'); return;
+    }
+    setTurn(r.deg);
+    toast('AI đã xoay thẳng chữ ký ' + turnTxt(r.deg) + '. Bấm Hoàn tác nếu muốn giữ như cũ, hoặc chỉnh thêm bằng thanh Xoay.',
+      () => { if (sigTurn && sigTurn.list === strokes) setTurn(was); });
+  }
   /* ---------- takes: sign several times, keep the best ---------- */
   const MAX_TAKES = 5;
   let takes = [{ strokes: [], undo: [], redo: [] }], takeIdx = 0, takesTimer = 0;
@@ -2397,6 +2611,10 @@ html,body{height:auto}
   $('undoBtn').addEventListener('click', undo);
   $('redoBtn').addEventListener('click', redo);
   $('clearBtn').addEventListener('click', clearAll);
+  $('turnRange').addEventListener('input', (e) => setTurn(+e.target.value));
+  $('turnLeft').addEventListener('click', () => setTurn(turnNow() - 1));
+  $('turnRight').addEventListener('click', () => setTurn(turnNow() + 1));
+  $('sigAutoTurn').addEventListener('click', autoTurnSig);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && expanded) { setExpanded(false); return; }
     if (!(e.ctrlKey || e.metaKey) || /^(INPUT|TEXTAREA)$/.test((e.target && e.target.tagName) || '')) return;
@@ -3653,6 +3871,9 @@ html,body{height:auto}
     $('zipBtn').disabled = !ready; $('svgBtn').disabled = !ready; $('pdfVecBtn').disabled = !ready;
     $('docPrevBtn').disabled = !strokes.length;
     $('takeNew').disabled = !strokes.length || takes.length >= MAX_TAKES;
+    ['turnLeft', 'turnRight', 'turnRange', 'sigAutoTurn'].forEach((id) => { $(id).disabled = !strokes.length; });
+    const d = turnNow(); $('turnRange').value = d; $('turnOut').textContent = turnTxt(d);
+    $('turnRange').closest('.turn').classList.toggle('on', !!d);
     syncSeal();
   }
   function syncControls() {
@@ -8306,7 +8527,7 @@ self.onmessage = async (e) => {
   // item: { id, file, kind 'pdf'|'img', page, pages, name, role, nameSrc 'list'|'file'|'manual', include,
   //         st 'wait'|'work'|'ok'|'check'|'fail', note, list (strokes), color, sel, rot, report, el }
   const MAX_BATCH = 300;
-  const batch = { items: [], queue: [], docs: new Map(), seq: 0, running: false, stop: false, keepColor: false, done: 0 };
+  const batch = { items: [], queue: [], docs: new Map(), seq: 0, running: false, stop: false, keepColor: false, autoTurn: false, done: 0 };
   const ST_LABEL = { wait: 'Đang chờ', work: 'Đang xử lý', ok: 'Đạt', check: 'Cần kiểm tra', fail: 'Không thấy chữ ký' };
   function parseNames(text) {
     return String(text || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 500).map((l) => {
@@ -8441,7 +8662,8 @@ self.onmessage = async (e) => {
     } finally { free(); }
   }
   function batchSetResult(it, item, color, info) {
-    it.list = [item]; it.color = color || null; it.sel = info.sel; it.rot = info.rot || 0;
+    it.list0 = [item]; it.color = color || null; it.sel = info.sel; it.rot = info.rot || 0;
+    turnBatchItem(it);
     if (info.report) it.report = info.report;
     const rep = it.report || [], bad = rep.find((r) => r.lvl === 'bad'), warn = rep.find((r) => r.lvl === 'warn');
     if (info.manual) { it.st = 'ok'; it.note = 'Đã chỉnh tay vùng chữ ký.'; }
@@ -8457,6 +8679,16 @@ self.onmessage = async (e) => {
     renderCard(it); batchThumb(it); syncBatch();
   }
   const batchColor = (it) => (batch.keepColor && it.color ? rgbHex(it.color) : cfg.color);
+  // Tự xoay thẳng từng chữ ký: each signature turned level by the AI (the scan as found is kept, so unticking undoes it)
+  function turnBatchItem(it) {
+    if (!it.list0) return;
+    it.list = it.list0; it.turn = 0;
+    if (!batch.autoTurn) return;
+    const r = sigLevelAngle(it.list0);
+    if (!r.sure || r.level || !r.deg) return;
+    const bb = bbox(it.list0);
+    it.list = turnedList(it.list0, r.deg, { x: bb.x0 + bb.w / 2, y: bb.y0 + bb.h / 2 }); it.turn = r.deg;
+  }
   async function batchThumb(it) {
     if (!it.list || !it.el) return;
     const gen = it.tg = (it.tg || 0) + 1;
@@ -8496,7 +8728,7 @@ self.onmessage = async (e) => {
     if (document.activeElement !== nm) nm.value = it.name || '';
     nm.setAttribute('aria-invalid', it.list && it.include && !slugName(it.name) ? 'true' : 'false');
     el.querySelector('.bc-src').textContent = it.srcLabel + (it.role ? ' · ' + it.role : '');
-    el.querySelector('.bc-note').textContent = it.note || '';
+    el.querySelector('.bc-note').textContent = (it.note || '') + (it.turn ? ' AI đã xoay thẳng ' + turnTxt(it.turn) + '.' : '');
     el.querySelector('.bc-pv .spin').hidden = !(it.st === 'work' || (it.st === 'wait' && batch.running));
     el.querySelector('.bc-edit').disabled = it.st === 'work';
     el.querySelector('.bc-pv img').alt = 'Chữ ký ' + (i + 1) + (it.name ? ' của ' + it.name : '');
@@ -8561,6 +8793,12 @@ self.onmessage = async (e) => {
   });
   $('batchNames').addEventListener('input', () => { if ($('formNames').value !== $('batchNames').value) $('formNames').value = $('batchNames').value; });
   $('batchConsent').addEventListener('change', syncBatch);
+  $('batchTurn').addEventListener('change', (e) => {
+    batch.autoTurn = e.target.checked;
+    let n = 0;
+    batch.items.forEach((it) => { if (!it.list0) return; turnBatchItem(it); if (it.turn) n++; renderCard(it); batchThumb(it); });
+    if (batch.items.some((it) => it.list0)) toast(batch.autoTurn ? (n ? 'AI đã xoay thẳng ' + n + ' chữ ký (số độ ghi trên từng thẻ). Bỏ dấu để giữ như bản scan.' : 'Các chữ ký đều đã thẳng, không cần xoay.') : 'Đã giữ các chữ ký như bản scan, không xoay.');
+  });
   // picking an ink colour in the batch tab means using it (not the colour of the scan)
   const batchInkPick = () => { if (!batch.keepColor) return; batch.keepColor = false; setPressed('batchInkCfg', true); setPressed('batchInkKeep', false); syncBatch(); batch.items.forEach(batchThumb); };
   document.querySelectorAll('.batch-swatches .swatch[data-color]').forEach((b) => b.addEventListener('click', batchInkPick));
@@ -8763,12 +9001,12 @@ self.onmessage = async (e) => {
     toastTimer = setTimeout(() => { t.hidden = true; }, undoFn ? 6000 : 3800);
   }
 
-  window.__bangKy = { makePNG, buildJSON, parseSignature, openJsonFile, get strokes() { return strokes; },
+  window.__bangKy = { makePNG, buildJSON, parseSignature, openJsonFile, get strokes() { return strokes; }, sigLevelAngle, setTurn, turnNow: () => turnNow(),
     get scanSel() { return scan.sel; }, get scanSrc() { return scan.src; }, scanEngine: () => (wks.main ? 'worker' : wkBroken ? 'page' : 'idle'),
     get seal() { return seal; }, get scanMode() { return scan.mode; }, get scanRes() { return scan.res; }, makeSealPNG, get timings() { return Object.assign({}, T); },
     get takes() { saveTake(); return takes.map((t) => t.strokes.length); }, get takeIdx() { return takeIdx; }, get tab() { return tab; },
     setTab, sigBundle, sealBundle, drawItems, makeFormPdf, sealAngle: () => sealAngle(seal), sealUp: (a) => sealUpright(seal, a), get lastMerge() { return lastMerge; }, get lastRing() { return lastRing; }, get lastSmooth() { return lastSmooth; }, aiState: () => seal && { ai: Object.assign({}, seal.ai), done: seal.aiKey, busy: !!seal.aiRun, res: seal.aiRes, paths: !!seal.paths, up: seal.up || 0 }, sealExt: () => seal && Object.assign({ mmPx: seal.mmPx, iw: seal.iw }, sealExtent(seal), inkBox(seal)), autoStraighten, vectorize, traceOutlines,
-    get batch() { return batch.items.map((it) => ({ name: it.name, st: it.st, note: it.note, page: it.page, has: !!it.list, sel: it.sel, report: it.report })); },
+    get batch() { return batch.items.map((it) => ({ name: it.name, st: it.st, note: it.note, page: it.page, has: !!it.list, sel: it.sel, report: it.report, turn: it.turn || 0 })); },
     get batchRunning() { return batch.running; }, batchAddFiles, get report() { return Array.from(document.querySelectorAll('#scanQList li')).map((l) => l.className + ': ' + l.textContent); } };
 
   /* ---------- boot ---------- */
