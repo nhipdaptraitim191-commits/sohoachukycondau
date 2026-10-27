@@ -261,6 +261,7 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .guide-inner{display:flex; flex-direction:column; max-height:calc(100dvh - 40px)}
 .guide-head{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; border-bottom:1px solid var(--line)}
 .guide-head h2{margin:0; font-size:18px; font-weight:700}
+.guide-ver{font-size:13px; font-weight:500; color:var(--muted); white-space:nowrap}
 .guide-body{flex:1; min-height:0; padding:16px 18px 8px; overflow-y:auto; display:flex; flex-direction:column; gap:18px}
 .guide-body h3{margin:0 0 6px; font-size:14px; font-weight:700; color:var(--fg)}
 .guide-body p,.guide-body li{font-size:14px; line-height:1.55; color:var(--fg)}
@@ -398,7 +399,7 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .seal-canvas img{max-height:min(62vh,560px,100%); max-width:100%; box-shadow:none}
 .seal-empty{display:flex; flex-direction:column; align-items:center; gap:10px; max-width:46ch; color:var(--pad-hint); text-align:center; background:var(--surface); border-radius:14px; padding:22px; box-shadow:var(--shadow-sm)}
 
-.seal-empty svg{color:#D7262E}
+.seal-empty > svg{color:#D7262E}
 .rotbar{display:flex; flex-direction:column; gap:6px; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
 .rot-chips{align-items:center}
 .rot-chips .btn{min-height:36px; font-size:13px; padding:0 12px}
@@ -412,7 +413,7 @@ html.is-expanded,html.is-expanded body{overflow:hidden}
 .batch-progress .bar i{display:block; height:100%; width:0; background:var(--accent); transition:width .2s}
 .batch-progress .btn{min-height:34px; font-size:13px}
 .batch-empty{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:18px 20px; display:flex; flex-direction:column; gap:12px}
-.batch-empty h3{margin:0; font-size:16px}
+.batch-empty h2{margin:0; font-size:16px; letter-spacing:0; text-transform:none; color:var(--fg)}
 .flow{margin:0; padding:0; list-style:none; counter-reset:f; display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px}
 .flow li{counter-increment:f; display:flex; flex-direction:column; gap:4px; padding:12px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line); font-size:13px; color:var(--muted)}
 .flow li::before{content:counter(f); width:24px; height:24px; border-radius:50%; background:var(--accent); color:var(--accent-fg); font-weight:700; font-size:12.5px; display:flex; align-items:center; justify-content:center}
@@ -641,6 +642,33 @@ html,body{height:auto}
 /* the size controls are one block, shown in ③ of the tab that is open (Chữ ký or Hàng loạt) */
 .opts-core, .opts-slot{display:contents}
 .ink-out{font-variant-numeric:tabular-nums; color:var(--muted)}
+.views{display:contents}
+/* empty places that take a file: a button, and a line saying a file can be dropped there */
+.pad .hint .hint-or{font-size:12.5px; margin-top:6px}
+.pad .hint{z-index:3; top:16%}   /* above the ink layers, so its button can be pressed; the rest of it lets the pen through */
+.pad .hint .hint-acts{pointer-events:auto; display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+.pad .hint .hint-drop{font-size:12.5px}
+.pad .hint .hint-or, .pad .hint .hint-drop{background:var(--paper); padding:1px 8px; border-radius:6px}   /* readable over the signing line */
+.hint-act{min-height:42px}
+.seal-canvas.is-empty{outline:2px dashed var(--line); outline-offset:-8px; cursor:pointer}
+.seal-canvas.is-empty:hover{outline-color:var(--accent)}
+.empty-acts{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+.drop-line{font-size:12.5px; color:var(--muted)}
+.seal-empty .empty-note{font-size:12.5px}
+.batch-drop{display:flex; flex-direction:column; align-items:center; gap:8px; padding:18px; border:2px dashed var(--line); border-radius:12px; text-align:center}
+.batch-drop .btn-primary{width:auto; padding:0 22px}
+@media (max-width: 640px){ .pad .hint .hint-how, .pad .hint .hint-drop{display:none} }
+.pad.short .hint{top:16%} .pad.short .hint .hint-how{display:none}
+/* Phóng to is for signing: the signing tools stay, the rest waits until Thu nhỏ, so the pad gets the room */
+.stage.expanded .turn, .stage.expanded #sigAutoTurn, .stage.expanded #scanBtn, .stage.expanded #camBtn, .stage.expanded .takes-label{display:none}
+@media (max-height: 560px){
+  .stage.expanded .toolbar .thick, .stage.expanded .toolbar .pop-wrap{display:none}
+  .stage.expanded{gap:8px}
+  /* a phone on its side: Ký bản mới moves up beside the tools, the pad takes all the height that is left */
+  .stage.expanded .takes{position:absolute; top:calc(12px + env(safe-area-inset-top,0px)); right:max(16px, env(safe-area-inset-right,0px)); margin:0; padding:0; min-height:0; border:0; background:none}
+  .stage.expanded .takes-list{display:none}
+}
+.seal-empty span{color:var(--muted)}
 /* Xoay chữ ký: like the thickness control, with a step button at each end */
 .turn{gap:6px; padding:0 6px}
 .turn input{width:120px}
@@ -716,8 +744,9 @@ html,body{height:auto}
     </button>
   </div>
 
+  <main class="views">
   <!-- ===== Chữ ký ===== -->
-  <main class="app view" id="viewSig" role="tabpanel" aria-labelledby="tab-sig">
+  <section class="app view" id="viewSig" role="tabpanel" aria-labelledby="tab-sig">
     <section class="stage" aria-label="Khu vực ký">
       <div class="toolbar">
         <button class="btn" id="undoBtn" type="button" aria-label="Hoàn tác" title="Hoàn tác (Ctrl + Z)" disabled>
@@ -796,7 +825,12 @@ html,body{height:auto}
           <div class="corner" aria-hidden="true">Khung 3 : 2 <span id="inputPill"><span id="inputPillText"></span></span></div>
           <div class="hint" id="padHint">
             <strong>Ký vào đây</strong>
-            <span>Dùng bút S Pen hoặc Apple Pencil và ký như trên giấy. Nét được lưu dạng vector nên ảnh xuất ra luôn sắc nét.</span>
+            <span class="hint-how">Dùng bút S Pen hoặc Apple Pencil và ký như trên giấy. Nét được lưu dạng vector nên ảnh xuất ra luôn sắc nét.</span>
+            <span class="hint-or">hoặc lấy chữ ký có sẵn trên giấy</span>
+            <span class="hint-acts">
+              <button class="btn btn-soft hint-act" id="padScanBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg> Nhập từ bản scan <span class="ai-tag">AI</span></button>
+            </span>
+            <span class="hint-drop">hoặc kéo thả file scan (PDF, JPG, PNG…) vào khung này</span>
           </div>
           <canvas id="base"></canvas>
           <canvas id="live"></canvas>
@@ -962,10 +996,10 @@ html,body{height:auto}
         <input type="file" id="jsonFile" accept=".json,.zip,application/json,application/zip" hidden>
       </div>
     </aside>
-  </main>
+  </section>
 
   <!-- ===== Con dấu ===== -->
-  <main class="app view" id="viewSeal" role="tabpanel" aria-labelledby="tab-seal" hidden>
+  <section class="app view" id="viewSeal" role="tabpanel" aria-labelledby="tab-seal" hidden>
     <section class="stage" aria-label="Con dấu">
       <div class="toolbar">
         <button class="btn btn-soft" id="sealScanBtn" type="button">
@@ -990,7 +1024,13 @@ html,body{height:auto}
           <div class="empty seal-empty" id="sealEmpty">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="6"/><path d="M12 9.4l.85 1.75 1.9.25-1.4 1.3.35 1.9L12 13.7l-1.7.9.35-1.9-1.4-1.3 1.9-.25z"/></svg>
             <b>Chưa có con dấu</b>
-            <span>Đóng dấu rõ lên một tờ giấy trắng trơn riêng, scan màu 300 – 600 dpi, rồi bấm <b>Tách con dấu từ bản scan</b>. Phần mềm tách nền giấy, lấy riêng mực đỏ và xuất ảnh PNG vuông nền trong suốt.</span>
+            <span>Đóng dấu rõ lên một tờ giấy trắng trơn riêng, scan màu <b>300 – 1200 dpi</b> (nên 600 dpi; dấu chữ nhỏ, nét mảnh: 1200 dpi), rồi đưa file vào đây:</span>
+            <span class="empty-acts">
+              <button class="btn btn-primary" id="sealEmptyAdd" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg> Thêm file scan con dấu</button>
+              <button class="btn" id="sealEmptyCam" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg> Chụp bằng camera</button>
+            </span>
+            <span class="drop-line">hoặc kéo thả file PDF, JPG, PNG… vào ô này</span>
+            <span class="empty-note">Phần mềm tách nền giấy, lấy riêng mực đỏ và xuất ảnh PNG vuông nền trong suốt.</span>
           </div>
           <img id="sealImg" alt="Xem trước con dấu sẽ xuất" hidden>
           <div class="seal-busy" id="sealBusy" role="status" hidden><span class="spin" aria-hidden="true"></span><span>AI đang làm đẹp con dấu…</span></div>
@@ -1142,10 +1182,10 @@ html,body{height:auto}
         </div>
       </div>
     </aside>
-  </main>
+  </section>
 
   <!-- ===== Hàng loạt ===== -->
-  <main class="app view" id="viewBatch" role="tabpanel" aria-labelledby="tab-batch" hidden>
+  <section class="app view" id="viewBatch" role="tabpanel" aria-labelledby="tab-batch" hidden>
     <section class="stage batch-stage" aria-label="Danh sách chữ ký hàng loạt">
       <div class="toolbar">
         <button class="btn btn-soft" id="batchAdd" type="button">
@@ -1166,11 +1206,15 @@ html,body{height:auto}
       </div>
       <div class="batch-scroll">
         <div class="batch-empty" id="batchEmpty">
-          <h3>Số hóa chữ ký của nhiều người cùng lúc</h3>
+          <h2>Số hóa chữ ký của nhiều người cùng lúc</h2>
+          <div class="batch-drop" id="batchDrop">
+            <button class="btn btn-primary" id="batchEmptyAdd" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg> Thêm file PDF, ảnh scan</button>
+            <span class="drop-line">hoặc kéo thả nhiều file PDF, JPG, PNG… vào ô này</span>
+          </div>
           <ol class="flow">
             <li><b>Tạo phiếu ký mẫu</b><span>Dán danh sách họ tên, bấm Tạo phiếu ký mẫu và in ra. Mỗi người có một phiếu ghi sẵn họ tên, có 3 ô ký.</span></li>
             <li><b>Từng người tự ký</b><span>Mỗi người tự ký vào phiếu của mình bằng bút mực xanh, ký gọn trong ô.</span></li>
-            <li><b>Scan cả xấp</b><span>Scan màu 300 dpi, đúng thứ tự danh sách, thành một file PDF (hoặc nhiều ảnh).</span></li>
+            <li><b>Scan cả xấp</b><span>Scan màu 300 – 1200 dpi (300 dpi là đủ và nhanh nhất), đúng thứ tự danh sách, thành một file PDF (hoặc nhiều ảnh).</span></li>
             <li><b>Thêm file, kiểm tra, tải về</b><span>AI tách chữ ký từng trang, chọn ô ký đẹp nhất, gán họ tên theo danh sách. Kiểm tra từng thẻ rồi tải tất cả trong một file .zip.</span></li>
           </ol>
           <p class="small">Cũng dùng được với bản scan thông thường: mỗi trang hoặc mỗi ảnh là một chữ ký; tên lấy theo danh sách, hoặc theo tên file ảnh.</p>
@@ -1234,6 +1278,7 @@ html,body{height:auto}
         <button class="btn btn-block" id="batchClearAll" type="button" disabled>Xóa danh sách chữ ký</button>
       </div>
     </aside>
+  </section>
   </main>
   <p class="foot">Phần mềm được viết bởi <b>Võ Hữu Ngợi</b> - 0917010170</p>
 </div>
@@ -1241,7 +1286,7 @@ html,body{height:auto}
 <dialog class="guide" id="guideDlg" aria-labelledby="guideTitle">
   <div class="guide-inner">
     <div class="guide-head">
-      <h2 id="guideTitle">Hướng dẫn sử dụng</h2>
+      <h2 id="guideTitle">Hướng dẫn sử dụng <span class="guide-ver" id="guideVer"></span></h2>
       <button class="btn btn-icon" type="button" id="guideClose" aria-label="Đóng hướng dẫn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
@@ -1319,10 +1364,10 @@ html,body{height:auto}
         <h3>4. Tách chữ ký từ bản scan hoặc ảnh chụp</h3>
         <p>Dùng khi đã ký trên giấy rồi scan thành PDF hoặc chụp ảnh. Phần mềm tách nền giấy, lọc đốm bẩn, làm mượt viền nét rồi <b>chuyển chữ ký thành nét vector</b>: ảnh xuất ở cỡ nào cũng sắc nét, đổi được màu mực và độ dày nét trên thanh công cụ như chữ ký ký trực tiếp.</p>
         <ol>
-          <li><b>Chuẩn bị bản scan tốt:</b> ký bằng bút mực xanh hoặc đen, nét rõ, trên giấy trắng trơn. Scan màu 300 dpi trở lên; nếu chụp ảnh thì chụp thẳng góc, đủ sáng, không bóng đổ. Nên dùng <b>phiếu ký mẫu</b> (mục 6).</li>
+          <li><b>Chuẩn bị bản scan tốt:</b> ký bằng bút mực xanh hoặc đen, nét rõ, trên giấy trắng trơn. Scan màu 300 – 1200 dpi (chữ ký: 300 – 600 dpi là đủ); nếu chụp ảnh thì chụp thẳng góc, đủ sáng, không bóng đổ. Nên dùng <b>phiếu ký mẫu</b> (mục 6).</li>
           <li><b>Chụp bằng camera</b> (dưới khung ký; ở thẻ Con dấu là nút trên khung con dấu): mở camera của điện thoại, máy tính bảng hoặc máy tính, đặt chữ ký vào khung (con dấu vào vòng tròn). AI kiểm tra liên tục 5 điều: rõ nét, đủ sáng, không lóa, giữ yên, thấy nét mực; khi đủ cả 5 trong khoảng một giây thì AI tự bấm chụp (bỏ dấu AI tự chụp nếu muốn tự bấm Chụp). Ảnh chụp mở ngay trong cửa sổ tách. Trang không được phép dùng camera thì phần mềm mở camera có sẵn của máy.</li>
           <li><b>Tờ giấy chụp nghiêng:</b> với ảnh chụp, AI tự tìm bốn góc tờ giấy, nắn lại cho phẳng, vuông góc (tờ A4 ra đúng tỉ lệ A4) và cắt bỏ phần mặt bàn xung quanh. Chọn <b>Ảnh gốc</b> ở mục Tờ giấy chụp nghiêng nếu muốn giữ nguyên.</li>
-          <li>Ở thẻ Chữ ký, bấm <b>Nhập từ bản scan</b> (dưới khung ký), hoặc kéo thả file vào trang. Nhận file PDF và ảnh JPG, PNG, WEBP, BMP; phần mềm nhận ra loại file theo nội dung, kể cả ảnh không có đuôi file. Cũng có thể dán ảnh bằng <b>Ctrl + V</b>.</li>
+          <li>Ở thẻ Chữ ký, bấm <b>Nhập từ bản scan</b> (ngay trong khung ký khi chưa ký, hoặc dưới khung ký), hoặc kéo thả file vào khung ký. Ở thẻ Con dấu: bấm <b>Thêm file scan con dấu</b> trong ô con dấu (hoặc bấm vào ô), hoặc kéo thả file vào ô. Nhận file PDF và ảnh JPG, PNG, WEBP, BMP; phần mềm nhận ra loại file theo nội dung, kể cả ảnh không có đuôi file. Cũng có thể dán ảnh bằng <b>Ctrl + V</b>.</li>
           <li>File nhiều trang thì chuyển trang bằng nút ‹ ›. <b>AI tự nhận ra trang bị ngược hoặc xoay ngang</b> (dựa vào dòng chữ in trên trang và dấu tiếng Việt) và tự xoay lại cho đúng chiều khi mở file. Trang chỉ có con dấu (không có chữ in) thì AI xem chữ trên con dấu để xoay trang cho con dấu đúng chiều. Nếu chưa đúng, hoặc trang không có chữ in, chọn <b>Xoay trang</b> 0°, 90°, 180° hoặc 270°.</li>
           <li><b>AI offline tự chọn chữ ký:</b> AI nhận ra nét viết tay, mực xanh hay mực đen, phân biệt với chữ in, dòng kẻ, bảng biểu và con dấu, ưu tiên chữ ký ở khối ký tên hơn bút phê trong đoạn văn. Với phiếu ký mẫu, AI nhận ra các ô ký và chọn ô đẹp nhất. Nếu chưa đúng: <b>chạm vào chữ ký</b> để chọn lại, <b>kéo trong khung</b> để di chuyển, kéo <b>ô vuông ở góc, cạnh</b> để đổi cỡ, hoặc kéo ở chỗ trống để khoanh vùng mới.</li>
           <li><b>AI kiểm tra bản scan:</b> khung bên phải liệt kê những điểm cần lưu ý kèm cách khắc phục: chữ ký hoặc con dấu quá nhỏ trên bản scan, độ phân giải thấp, ảnh mờ, scan đen trắng, con dấu đè lên chữ ký, nét chạm mép vùng chọn. Dấu ✓ xanh là tốt, dấu ! vàng là nên xem lại.</li>
@@ -1341,7 +1386,7 @@ html,body{height:auto}
         <h4>Chuẩn bị bản scan con dấu</h4>
         <ul>
           <li>Đóng dấu rõ, đủ mực lên <b>một tờ giấy trắng trơn riêng</b>: không có chữ ký, không có chữ in bên dưới.</li>
-          <li>Scan <b>màu</b> (không scan đen trắng hay thang xám), <b>300 dpi trở lên, tốt nhất 600 dpi</b>. Con dấu đường kính 35 mm ở 600 dpi được khoảng 830 điểm ảnh, đủ cho file 2400 × 2400 sắc nét.</li>
+          <li>Scan <b>màu</b> (không scan đen trắng hay thang xám), <b>300 – 1200 dpi, nên dùng 600 dpi</b>; con dấu có chữ rất nhỏ, nét mảnh thì scan 1200 dpi. Con dấu đường kính 35 mm ở 600 dpi được khoảng 830 điểm ảnh, ở 1200 dpi khoảng 1650 điểm ảnh: phần mềm đọc đúng độ phân giải này từ file (ảnh JPG, PNG hoặc PDF) khi tách. Nếu máy scan cho chọn vùng, chỉ scan vùng có con dấu để file nhẹ.</li>
           <li><b>Chụp bằng điện thoại</b> cũng được: đặt máy song song với mặt giấy, đủ sáng, tránh đèn chiếu thẳng gây lóa. Lỡ chụp nghiêng làm con dấu tròn méo thành hình bầu dục thì <b>AI tự nắn tròn lại</b> (chọn <b>Giữ nguyên hình</b> nếu con dấu vốn hình bầu dục). Ảnh có <b>vệt lóa đèn</b> trên con dấu thì AI báo trong phần AI kiểm tra bản scan: chụp thêm một ảnh ở góc khác rồi dùng <b>Ghép thêm lần đóng dấu</b> để lấy lại phần bị lóa.</li>
           <li>Có thể <b>dán ảnh bằng Ctrl + V</b> (ảnh chụp màn hình, ảnh sao chép từ phần mềm khác) thay cho chọn file.</li>
         </ul>
@@ -1389,7 +1434,7 @@ html,body{height:auto}
           <li>Ở thẻ <b>Hàng loạt</b>, bấm <b>Tạo phiếu ký mẫu</b>. Nhập tên đơn vị (không bắt buộc) và danh sách họ tên, mỗi dòng một người; thêm chức vụ sau dấu chấm phẩy, ví dụ <i>Nguyễn Văn An; Phó Bí thư</i>. Để trống danh sách thì được 1 phiếu trống để điền tay.</li>
           <li>Bấm <b>Tải phiếu ký mẫu (PDF)</b> và in ra, mỗi người một trang.</li>
           <li>Người ký tự ký 3 lần vào 3 ô bằng bút bi mực xanh, ký gọn trong ô, không chạm khung.</li>
-          <li>Scan màu 300 dpi. Một người: nhập ở thẻ Chữ ký. Nhiều người: scan cả xấp đúng thứ tự danh sách thành một file PDF rồi thêm vào thẻ Hàng loạt.</li>
+          <li>Scan màu 300 – 1200 dpi (300 dpi là đủ cho chữ ký). Một người: nhập ở thẻ Chữ ký. Nhiều người: scan cả xấp đúng thứ tự danh sách thành một file PDF rồi thêm vào thẻ Hàng loạt.</li>
         </ol>
       </section>
 
@@ -1422,7 +1467,7 @@ html,body{height:auto}
           <dt>Xoay, Tự xoay thẳng</dt>
           <dd>Xoay cả chữ ký quanh tâm (±45°, nút ⟲ ⟳ từng 1°). Tự xoay thẳng: AI xoay cho dòng chữ ký nằm ngang; chữ ký quá ngắn hoặc gần tròn thì AI không tự xoay, hãy xoay tay. Dùng được cho chữ ký vừa ký và chữ ký từ bản scan.</dd>
           <dt>Phóng to, Thu nhỏ</dt>
-          <dd>Nút ở góc khung ký. Phóng to cho khung chiếm toàn màn hình; trên máy tính, phím Esc cũng thu nhỏ khung.</dd>
+          <dd>Nút ở góc khung ký. Phóng to cho khung chiếm toàn màn hình, chỉ giữ các nút dùng khi ký (Hoàn tác, Xóa hết, màu mực, độ dày, Ký bản mới); thanh Xoay, Nhập từ bản scan, Chụp bằng camera hiện lại khi Thu nhỏ. Trên máy tính, phím Esc cũng thu nhỏ khung.</dd>
           <dt>Ký bản mới, các bản ký</dt>
           <dd>Ký thử đến 5 bản; chạm ảnh nhỏ để chọn bản dùng, dấu × để xóa bản.</dd>
           <dt>Nhập từ bản scan</dt>
@@ -1506,13 +1551,13 @@ html,body{height:auto}
           <dt>Không mở được file ảnh</dt>
           <dd>Phần mềm thử nhiều cách đọc ảnh nên chạy được cả trên trình duyệt cũ và máy có chính sách bảo mật chặt. Nếu vẫn báo lỗi: ảnh HEIC chụp từ iPhone thì chuyển sang JPG; ảnh TIFF thì scan ra PDF hoặc JPG, hoặc mở bằng Paint rồi lưu thành PNG.</dd>
           <dt>Mở bản scan chậm</dt>
-          <dd>Thường chỉ 1 – 2 giây. Máy yếu hoặc file rất lớn: scan 300 dpi, chỉ scan trang cần dùng, đóng bớt thẻ trình duyệt. Hàng loạt mất khoảng 1 – 2 giây mỗi chữ ký.</dd>
+          <dd>Thường chỉ 1 – 2 giây. Máy yếu hoặc file rất lớn (scan 1200 dpi cả trang A4): scan 300 – 600 dpi, hoặc chỉ scan vùng có chữ ký, con dấu, chỉ scan trang cần dùng, đóng bớt thẻ trình duyệt. Hàng loạt mất khoảng 1 – 2 giây mỗi chữ ký.</dd>
           <dt>AI chọn chưa đúng vùng</dt>
           <dd>Chạm thẳng vào nét chữ ký để AI chọn đúng chữ ký đó; với phiếu ký mẫu, chạm vào ô muốn dùng. Vẫn chưa đúng thì kéo ô vuông ở góc khung, hoặc kéo khoanh vùng bằng tay.</dd>
           <dt>AI kiểm tra báo vàng</dt>
           <dd>Làm theo gợi ý trên từng dòng: scan lại ở độ phân giải cao hơn, scan màu, chụp rõ hơn, nới rộng khung chọn. Kết quả vẫn dùng được nếu ảnh xem trước đẹp.</dd>
           <dt>Không tách được con dấu</dt>
-          <dd>Bản scan phải là ảnh màu; khoanh vùng bao trọn con dấu, hoặc tăng Độ nhạy tách con dấu. Dấu lem: dùng bản dấu đóng riêng trên giấy trắng; dấu đứt nét: scan 600 dpi.</dd>
+          <dd>Bản scan phải là ảnh màu; khoanh vùng bao trọn con dấu, hoặc tăng Độ nhạy tách con dấu. Dấu lem: dùng bản dấu đóng riêng trên giấy trắng; dấu đứt nét: scan 600 – 1200 dpi.</dd>
           <dt>Con dấu mất nét, mực không đều</dt>
           <dd>Bấm <b>AI sửa khuyết điểm</b> trên khung con dấu. Khi tách, để chế độ <b>AI làm đều nét</b>. Nét mảnh vẫn mất thì tăng Độ nhạy tách con dấu; nét quá đậm, chữ dính nhau thì giảm. Tốt nhất đóng dấu lại theo mẹo: vệ sinh con dấu, mực đỏ tươi, giấy in ảnh, scan màu 600 dpi.</dd>
           <dt>Con dấu bị nghiêng</dt>
@@ -1537,6 +1582,7 @@ html,body{height:auto}
       <section id="g-spec">
         <h3>15. Yêu cầu file của hệ thống</h3>
         <p>Chữ ký: PNG, chiều rộng từ 90 đến 1000 px, khuyến khích tỉ lệ 3 : 2. Mỗi lần mở, phần mềm đặt sẵn <b>1000 × 667 px</b>, nền trong suốt, chất lượng cao nhất. Các cỡ lớn hơn 1000 px và tỉ lệ khác dùng cho mục đích khác như in ấn; khi đó dòng trạng thái chuyển sang nền vàng để nhắc. Hệ thống yêu cầu cỡ riêng (ví dụ chữ ký 1300 × 640 px, con dấu 640 × 640 px) thì chọn Cỡ tùy chỉnh ở Tùy chọn file (chữ ký) hoặc nút 640 (con dấu).</p>
+        <p>Bản scan đưa vào: PDF, JPG, PNG, WEBP, BMP, TIFF (và ảnh HEIC của iPhone trên Safari), scan màu <b>300 – 1200 dpi</b>; file tối đa 400 MB trên máy tính, 120 MB trên iPad, iPhone. Với ảnh JPG, PNG và PDF, phần mềm đọc đúng độ phân giải của bản scan ở vùng chữ ký, con dấu khi tách; bản scan 1200 dpi cả trang A4 rất nặng, nên chỉ scan vùng cần dùng.</p>
         <p>Con dấu: PNG vuông 1 : 1, mặc định 2400 × 2400 px, nền trong suốt, màu đỏ đồng đều ở mọi điểm ảnh, con dấu căn theo tâm và gần kín khung, kích thước thực tế (mm) ghi trong file theo Hướng dẫn 05-HD/VPTW. Nếu hệ thống yêu cầu cỡ khác, chọn hoặc gõ kích thước ở bước ⑤ Tùy chọn file của thẻ Con dấu.</p>
       </section>
     </div>
@@ -1880,6 +1926,8 @@ html,body{height:auto}
 <script>
 (() => {
   'use strict';
+  // the version shown in Hướng dẫn and written into the HUONG-DAN.txt of every pack (raise it with each release)
+  const APP_VERSION = '38', APP_DATE = '27/10/2026';
   // Logical drawing space = the 3:2 paper. 1500 units wide, so 1.5 units = 1 px of a 1000 px export.
   const LW = 1500, LH = 1000, TAU = Math.PI * 2;
   const SP = 1.2;                                   // resample spacing along a stroke (logical units)
@@ -2050,6 +2098,7 @@ html,body{height:auto}
     w = Math.max(200, Math.floor(w));
     pad.style.width = w + 'px';
     pad.style.height = Math.round(w / 1.5) + 'px';
+    pad.classList.toggle('short', w / 1.5 < 330);   // a small pad: the hint keeps only what is needed
     resizeCanvases();
   }
   function resizeCanvases() {
@@ -2285,7 +2334,7 @@ html,body{height:auto}
     drawLive();
   }
   pad.addEventListener('pointerdown', (ev) => {
-    if (ev.target.closest && ev.target.closest('.pad-btn')) return; // the expand button is not ink
+    if (ev.target.closest && ev.target.closest('.pad-btn, .hint-act')) return; // the expand and scan buttons are not ink
     if (active) { ev.preventDefault(); return; }
     if (cfg.input === 'pen' && ev.pointerType === 'touch') return; // palm / finger ignored
     if (ev.pointerType === 'mouse' && ev.button !== 0) return;
@@ -2425,47 +2474,48 @@ html,body{height:auto}
      95th, 20th and 80th percentiles, so a flourish or a dot does not decide alone); the angle with the lowest height
      lays the signature level. A short or round signature has no clear direction: then nothing is turned. */
   function sigLevelAngle(list) {
-    const X = [], Y = [], Wt = [];
+    // ink samples evenly spaced along the ink (every ~3 units): pen centrelines, scan outlines, old masks on a grid
+    const X = [], Y = [], STEP = 3;
+    const walk = (P, closed) => {
+      const n = P.length >> 1; if (!n) return;
+      if (n === 1) { X.push(P[0]); Y.push(P[1]); return; }
+      let next = 0;   // how far along the current segment the next sample falls
+      for (let i = 0; i < (closed ? n : n - 1); i++) {
+        const j = ((i + 1) % n) * 2, x0 = P[2 * i], y0 = P[2 * i + 1], x1 = P[j], y1 = P[j + 1], L = Math.hypot(x1 - x0, y1 - y0);
+        while (next <= L) { const u = L ? next / L : 0; X.push(x0 + (x1 - x0) * u); Y.push(y0 + (y1 - y0) * u); next += STEP; }
+        next -= L;
+      }
+    };
     for (const s of list) {
-      if (!s.type) { for (const p of processed(s)) { X.push(p.x); Y.push(p.y); Wt.push(1); } }
+      if (!s.type) { const p = processed(s), P = new Float64Array(p.length * 2); p.forEach((q, i) => { P[2 * i] = q.x; P[2 * i + 1] = q.y; }); walk(P, false); }
       else if (s.type === 'vector') {
         const sx = s.w / s.iw, sy = s.h / s.ih;
-        for (const a of s.paths) {
-          const n = a.length >> 1; if (n < 2) continue;
-          for (let i = 0; i < n; i++) {
-            const j = ((i + 1) % n) * 2, k = ((i + n - 1) % n) * 2, x = s.x + a[2 * i] * sx, y = s.y + a[2 * i + 1] * sy;
-            const l = (Math.hypot((a[j] - a[2 * i]) * sx, (a[j + 1] - a[2 * i + 1]) * sy) + Math.hypot((a[k] - a[2 * i]) * sx, (a[k + 1] - a[2 * i + 1]) * sy)) / 2;
-            X.push(x); Y.push(y); Wt.push(l);
-          }
-        }
+        for (const a of s.paths) { const P = new Float64Array(a.length); for (let i = 0; i < a.length; i += 2) { P[i] = s.x + a[i] * sx; P[i + 1] = s.y + a[i + 1] * sy; } walk(P, true); }
       } else if (s.type === 'image' && s.mask) {
         const m = s.mask, st = Math.max(1, Math.round(Math.sqrt(m.width * m.height / 20000)));
         const d = m.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, m.width, m.height).data;
         for (let y = 0; y < m.height; y += st) for (let x = 0; x < m.width; x += st) {
-          const v = d[(y * m.width + x) * 4 + 3]; if (v > 96) { X.push(s.x + (x + 0.5) * s.w / m.width); Y.push(s.y + (y + 0.5) * s.h / m.height); Wt.push(v / 255); }
+          if (d[(y * m.width + x) * 4 + 3] > 96) { X.push(s.x + (x + 0.5) * s.w / m.width); Y.push(s.y + (y + 0.5) * s.h / m.height); }
         }
       }
     }
     let n = X.length; if (n < 12) return { deg: 0, sure: false, why: 'ít' };
-    const stp = Math.max(1, Math.ceil(n / 4000)), xs = [], ys = [], ws = [];
-    let cx = 0, cy = 0, W = 0;
-    for (let i = 0; i < n; i += stp) { xs.push(X[i]); ys.push(Y[i]); ws.push(Wt[i]); cx += X[i] * Wt[i]; cy += Y[i] * Wt[i]; W += Wt[i]; }
-    cx /= W; cy /= W; n = xs.length;
-    const idx = new Array(n), v = new Float64Array(n);
+    const stp = Math.max(1, Math.ceil(n / 1500)), xs = [], ys = [];
+    let cx = 0, cy = 0;
+    for (let i = 0; i < n; i += stp) { xs.push(X[i]); ys.push(Y[i]); cx += X[i]; cy += Y[i]; }
+    n = xs.length; cx /= n; cy /= n;
+    const v = new Float64Array(n), at = (q) => v[Math.min(n - 1, Math.floor(q * n))];
+    // the height of the ink when turned by `deg` (or its length, `horiz`): the mean of three percentile spreads
     const spread = (deg, horiz) => {
       const t = deg * Math.PI / 180, cs = Math.cos(t), sn = Math.sin(t);
-      for (let i = 0; i < n; i++) { const dx = xs[i] - cx, dy = ys[i] - cy; v[i] = horiz ? dx * cs - dy * sn : dx * sn + dy * cs; idx[i] = i; }
-      idx.sort((p, q) => v[p] - v[q]);
-      const qs = [0.05, 0.1, 0.2, 0.8, 0.9, 0.95], out = [];
-      let acc = 0, k = 0;
-      for (let i = 0; i < n && k < qs.length; i++) { acc += ws[idx[i]]; while (k < qs.length && acc >= qs[k] * W) { out.push(v[idx[i]]); k++; } }
-      while (out.length < qs.length) out.push(v[idx[n - 1]]);
-      return ((out[5] - out[0]) + (out[4] - out[1]) + (out[3] - out[2])) / 3;
+      for (let i = 0; i < n; i++) { const dx = xs[i] - cx, dy = ys[i] - cy; v[i] = horiz ? dx * cs - dy * sn : dx * sn + dy * cs; }
+      v.sort();
+      return ((at(0.95) - at(0.05)) + (at(0.9) - at(0.1)) + (at(0.8) - at(0.2))) / 3;
     };
     let best = 0, bv = spread(0, false);
     const v0 = bv;
-    for (let d = -TURN_MAX; d <= TURN_MAX; d += 1) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = d; } }
-    for (let d = best - 1; d <= best + 1 + 1e-9; d += 0.1) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = Math.round(d * 10) / 10; } }
+    for (let d = -TURN_MAX + 1; d <= TURN_MAX; d += 2) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = d; } }
+    for (let d = Math.max(-TURN_MAX, best - 2); d <= Math.min(TURN_MAX, best + 2) + 1e-9; d += 0.2) { const s2 = spread(d, false); if (s2 < bv - 1e-9) { bv = s2; best = Math.round(d * 10) / 10; } }
     const long = spread(best, true);
     if (long < 1.5 * bv) return { deg: 0, sure: false, why: 'tròn' };   // nearly as tall as it is wide: no clear line of writing
     // finer: the line through the bottoms of the letters (the lowest point of each curve along the ink, a robust
@@ -2512,14 +2562,15 @@ html,body{height:auto}
       }
     }
     if (B.length < 6) return null;
-    const stp = Math.max(1, Math.ceil(B.length / 300)), Q = B.filter((_, i) => i % stp === 0);
+    const stp = Math.max(1, Math.ceil(B.length / 200)), Q = B.filter((_, i) => i % stp === 0);
     let qa = Infinity, qb = -Infinity; for (const q of Q) { if (q[0] < qa) qa = q[0]; if (q[0] > qb) qb = q[0]; }
     if (qb - qa < 0.3 * (xb - xa)) return null;
-    const sl = [], gap = 0.08 * (xb - xa);
-    for (let i = 0; i < Q.length; i++) for (let j = i + 1; j < Q.length; j++) { const dx = Q[j][0] - Q[i][0]; if (Math.abs(dx) > gap) sl.push((Q[j][1] - Q[i][1]) / dx); }
-    if (sl.length < 10) return null;
-    sl.sort((a, b) => a - b);
-    return Math.round((guess - Math.atan(sl[sl.length >> 1]) * 180 / Math.PI) * 10) / 10;
+    const gap = 0.08 * (xb - xa), all = new Float64Array(Q.length * (Q.length - 1) / 2);
+    let m = 0;
+    for (let i = 0; i < Q.length; i++) for (let j = i + 1; j < Q.length; j++) { const dx = Q[j][0] - Q[i][0]; if (Math.abs(dx) > gap) all[m++] = (Q[j][1] - Q[i][1]) / dx; }
+    if (m < 10) return null;
+    const sl = all.subarray(0, m).sort();
+    return Math.round((guess - Math.atan(sl[m >> 1]) * 180 / Math.PI) * 10) / 10;
   }
   function autoTurnSig() {
     if (!strokes.length) return;
@@ -3023,7 +3074,7 @@ html,body{height:auto}
   }
   const blobBytes = async (b) => new Uint8Array(await b.arrayBuffer());
   const dateVN = () => new Date().toLocaleDateString('vi-VN');
-  const readmeOf = (title, lines) => utf8('\uFEFF' + title + '\r\nTạo bởi Phần mềm số hóa chữ ký & tách nền con dấu, ngày ' + dateVN() + '.\r\n\r\n' +
+  const readmeOf = (title, lines) => utf8('\uFEFF' + title + '\r\nTạo bởi Phần mềm số hóa chữ ký & tách nền con dấu (phiên bản ' + APP_VERSION + '), ngày ' + dateVN() + '.\r\n\r\n' +
     lines.map((l) => '- ' + l).join('\r\n') + '\r\n\r\nGiữ các file này cẩn thận như giữ con dấu thật: ai có file đều dùng được.\r\n');
   // the signature's pack: the system's PNG, the file as currently set (if different), a 3000 px print file, the JSON
   async function sigBundle(list = strokes, who = signer, color = cfg.color) { return makeZip(await sigFiles(list, who, color)); }
@@ -3619,7 +3670,7 @@ html,body{height:auto}
   let readJob = null, orgFromAI = false;   // AI đọc tên trên con dấu: the reading under way; the name came from it
   function syncSeal() {
     const has = !!seal, S = cfg.sealSize;
-    $('sealEmpty').hidden = has;
+    $('sealEmpty').hidden = has; $('sealPv').classList.toggle('is-empty', !has);
     if (!has) $('sealImg').hidden = true;
     $('sealRotBar').hidden = !has;
     $('sealScanLbl').textContent = has ? 'Tách lại từ bản scan khác' : 'Tách con dấu từ bản scan';
@@ -3661,7 +3712,7 @@ html,body{height:auto}
     $('sealOptsSum').textContent = S + ' × ' + S + ' · lề ' + String(cfg.sealMargin).replace('.', ',') + '%';
     const st = $('sealStatus'), txt = $('sealStatusText');
     st.classList.remove('ok', 'warn');
-    if (!has) { $('sealInfo').textContent = 'Chưa có con dấu.'; txt.textContent = 'Chưa có con dấu. Bấm Tách con dấu từ bản scan.'; return; }
+    if (!has) { $('sealInfo').textContent = 'Chưa có con dấu.'; txt.textContent = 'Chưa có con dấu. Bấm Thêm file scan con dấu trong ô con dấu, hoặc kéo thả file vào ô.'; return; }
     $('sealRot').value = seal.rot; $('sealRotOut').textContent = fmtDeg(seal.rot);
     const bits = [sealColorName(seal), seal.circle ? 'dấu tròn, căn theo tâm dấu' : 'căn theo khung dấu'];
     if (realMmOf(seal)) bits.push('cỡ thật ' + fmtMm(realMmOf(seal)) + ' mm, đã ghi vào file PNG');
@@ -5251,7 +5302,8 @@ self.onmessage = async (e) => {
     const isPdf = info.kind === 'pdf' || (!info.kind && (/\.pdf$/i.test(file.name) || /pdf/i.test(file.type)));
     const isImg = !isPdf && (!!info.kind || /^image\//i.test(file.type) || /\.(png|jpe?g|jfif|jpe|webp|gif|bmp|heic|heif|tiff?)$/i.test(file.name));
     if (!isPdf && !isImg) { toast('Chỉ nhận file PDF hoặc ảnh JPG, PNG.'); return; }
-    if (file.size > 80 * 1024 * 1024) { toast('File quá lớn. Hãy scan lại ở 300 dpi.'); return; }
+    const maxMB = IS_APPLE_TOUCH ? 120 : 400;
+    if (file.size > maxMB * 1024 * 1024) { toast('File lớn hơn ' + maxMB + ' MB. Hãy scan ở 600 dpi, hoặc chỉ scan vùng có chữ ký, con dấu (khung xem trước của máy scan), hoặc lưu thành JPG, PDF.'); return; }
     if (expanded) setExpanded(false);
     releaseScan();
     // a new file: the mode is chosen again from what is on the page (or the seal button's request).
@@ -5303,7 +5355,7 @@ self.onmessage = async (e) => {
           try { sheet = findSheet(full); if (sheet) flat = flattenSheet(full, sheet); } catch (e) { flat = null; }
         }
         scan.src = { kind: 'img', full: flat && scanOpts.flatten ? flat : full, orig: full, flat, sheet, rc: null, rcRot: null, pages: 1, page: 1, rot: opts.rot || 0, autoRotDone: opts.rot != null,
-          fid: ++fileSeq, natW: full._natW, natH: full._natH, dpi: info.dpi || 0, photo: !info.dpi };
+          fid: ++fileSeq, natW: full._natW, natH: full._natH, dpi: info.dpi || 0, photo: !info.dpi, file };
         scan.src.rc = scan.src.full; scan.src.rcRot = 0;
         if (flat && scanOpts.flatten) toast('AI đã nắn phẳng tờ giấy chụp nghiêng' + (sheet.skew > 0.03 ? ' (lệch phối cảnh ' + Math.round(sheet.skew * 100) + '%)' : '') + ' và cắt bỏ phần nền xung quanh. Chọn Ảnh gốc nếu muốn giữ nguyên.');
       }
@@ -7074,16 +7126,59 @@ self.onmessage = async (e) => {
     return { mask, w: m.mw, h: m.mh, x0: m.x0, y0: m.y0, color: m.color, paper: m.paper || null, circle: m.circle || null, s: m.s || 1, edge: !!m.edge, ev: m.ev || null };
   }
 
-  // how many output px one pixel of the original scan becomes at k output px per preview px
-  function upOf(s, k) {
+  // how many output px one pixel of the original scan becomes at k output px per preview px (c: the rendered crop,
+  // which says whether it was read from the file at full resolution)
+  function upOf(s, k, c) {
     if (s.kind === 'pdf') return Math.max(1, s.pScale * k / (s.native || 300 / 72));   // unknown: assume a 300 dpi scan
-    return Math.max(1, k / (s.rc.width / s.prevW));
+    return Math.max(1, k / (c && c._native ? nativeScale(s) : s.rc.width / s.prevW));
   }
-  // render part of the page (box in preview px) at k output px per preview px
-  async function renderRegion(s, box, k) {
+  /* A picture scanned with more detail than the working copy keeps (the working copy is at most 4000 px across, so a
+     whole A4 page at 600 – 1200 dpi is reduced): the full-size crops for "Dùng" are read again from the file at its own
+     resolution, only the part that is needed, so a 1200 dpi scan really gives 1200 dpi detail to the seal or signature.
+     Scanner files only (photos are flattened first); anything the browser cannot do falls back to the working copy. */
+  const NATIVE_MAX = IS_APPLE_TOUCH ? 16e6 : 64e6;   // the most pixels read from the file for one crop
+  const nat = { off: false, reads: 0 };   // off: tests compare with the working copy alone
+  function nativeScale(s) {   // native px per preview px, or 0 when the file holds no more than the working copy
+    if (nat.off || !s || s.kind !== 'img' || !s.file || !s.dpi || !s.natW || !s.natH || s.full !== s.orig || !s.prevW) return 0;
+    const f = s.natW / s.orig.width;
+    if (f < 1.15 || Math.abs(s.natW / s.natH - s.orig.width / s.orig.height) > 0.01 || typeof createImageBitmap !== 'function') return 0;
+    return (s.rc.width / s.prevW) * f;
+  }
+  async function nativeRegion(s, box, k, c) {
+    const nr = nativeScale(s);
+    if (!nr || k <= (s.rc.width / s.prevW) * 1.02) return false;   // the working copy is sharp enough at this size
+    const W = s.natW, H = s.natH, rot = ((s.rot % 360) + 360) % 360, swap = rot % 180 !== 0, Wr = swap ? H : W, Hr = swap ? W : H;
+    const t = rot * Math.PI / 180, cs = Math.round(Math.cos(t)), sn = Math.round(Math.sin(t));
+    const inv = (x, y) => { const dx = x - Wr / 2, dy = y - Hr / 2; return [W / 2 + cs * dx + sn * dy, H / 2 - sn * dx + cs * dy]; };
+    const bx = box.x * nr, by = box.y * nr, bw = box.w * nr, bh = box.h * nr;
+    const P = [inv(bx, by), inv(bx + bw, by), inv(bx, by + bh), inv(bx + bw, by + bh)];
+    const sx = clamp(Math.floor(Math.min(...P.map((p) => p[0]))) - 2, 0, W), sy = clamp(Math.floor(Math.min(...P.map((p) => p[1]))) - 2, 0, H);
+    const ex = clamp(Math.ceil(Math.max(...P.map((p) => p[0]))) + 2, 0, W), ey = clamp(Math.ceil(Math.max(...P.map((p) => p[1]))) + 2, 0, H);
+    const sw = ex - sx, sh = ey - sy;
+    if (sw < 4 || sh < 4) return false;
+    const q = k / nr, want = Math.min(1, q * 1.2, Math.sqrt(NATIVE_MAX / (sw * sh)));
+    let bmp = null;
+    try {
+      bmp = want < 0.98 ? await createImageBitmap(s.file, sx, sy, sw, sh, { resizeWidth: Math.max(1, Math.round(sw * want)), resizeHeight: Math.max(1, Math.round(sh * want)), resizeQuality: 'high' })
+        : await createImageBitmap(s.file, sx, sy, sw, sh);
+    } catch (e) { return false; }
+    if (!bmp || bmp.width < 2) return false;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.setTransform(q * cs, q * sn, -q * sn, q * cs, q * (-cs * W / 2 + sn * H / 2 + Wr / 2 - bx), q * (-sn * W / 2 - cs * H / 2 + Hr / 2 - by));
+    ctx.drawImage(bmp, sx, sy, sw, sh);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (bmp.close) bmp.close();
+    c._native = true; nat.reads++;
+    return true;
+  }
+  // render part of the page (box in preview px) at k output px per preview px; `full`: the crop for "Dùng"
+  async function renderRegion(s, box, k, full) {
     const c = document.createElement('canvas');
     c.width = Math.max(1, Math.round(box.w * k)); c.height = Math.max(1, Math.round(box.h * k));
     const ctx = c.getContext('2d');
+    if (full && s.kind === 'img' && await nativeRegion(s, box, k, c)) return c;
     if (s.kind === 'pdf') {
       const vp = s.pageObj.getViewport({ scale: s.pScale * k, rotation: s.rotation });
       ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
@@ -7720,7 +7815,7 @@ self.onmessage = async (e) => {
   function nativePerPreview(s) {
     if (s.kind === 'pdf') return { npp: (s.native || 300 / 72) / s.pScale, dpi: s.native ? Math.round(s.native * 72) : 0 };
     const nat = Math.max(s.natW || s.rc.width, s.natH || s.rc.height);
-    return { npp: nat / Math.max(s.prevW, s.prevH), dpi: 0 };
+    return { npp: nat / Math.max(s.prevW, s.prevH), dpi: s.dpi || 0 };
   }
   // edge sharpness of the ink in a crop: how many px the step from paper to ink takes at the strokes' edges
   // (ink strength against the local paper level, so shadows and grey paper do not count as blur)
@@ -7761,8 +7856,8 @@ self.onmessage = async (e) => {
     if (sig) {
       const px = Math.round(sig.w * (sig.s || 1) / res.kx * npp);
       if (px >= 500) add('ok', 'Đủ chi tiết: chữ ký rộng khoảng ' + px + ' điểm ảnh trên bản scan' + (dpi ? ' (' + dpi + ' dpi)' : '') + '.');
-      else if (px >= 250) add('warn', 'Chữ ký hơi nhỏ trên bản scan (khoảng ' + px + ' điểm ảnh): nét có thể kém mịn. Nên ký to hơn hoặc scan 300 – 600 dpi.');
-      else add('bad', 'Chữ ký quá nhỏ trên bản scan (khoảng ' + px + ' điểm ảnh). Hãy ký to hơn, hoặc scan ở 600 dpi, hoặc chụp gần hơn.');
+      else if (px >= 250) add('warn', 'Chữ ký hơi nhỏ trên bản scan (khoảng ' + px + ' điểm ảnh): nét có thể kém mịn. Nên ký to hơn hoặc scan 600 – 1200 dpi.');
+      else add('bad', 'Chữ ký quá nhỏ trên bản scan (khoảng ' + px + ' điểm ảnh). Hãy ký to hơn, hoặc scan ở 600 – 1200 dpi, hoặc chụp gần hơn.');
       if (A && A.gray) add('info', 'Bản scan thang xám hoặc đen trắng: vẫn tách được, nhưng không phân biệt được mực xanh với chữ in. Nên scan màu.');
       if (res.hasRed) add('warn', 'Có mực đỏ (con dấu) trong vùng chữ ký: phần mềm đã bỏ mực đỏ, nhưng chỗ dấu đè nét ký có thể bị đứt. Tốt nhất ký trên giấy riêng, không có dấu.');
       if (sig.edge) add('warn', 'Nét ký chạm mép vùng chọn nên có thể bị cắt mất: hãy kéo rộng khung chọn.');
@@ -7770,8 +7865,8 @@ self.onmessage = async (e) => {
     if (sl) {
       const dn = Math.round((sl.circle ? 2 * sl.circle.r : Math.max(sl.w, sl.h)) * (sl.s || 1) / res.kx * npp);
       if (dn >= 600) add('ok', 'Đủ chi tiết: con dấu rộng khoảng ' + dn + ' điểm ảnh trên bản scan.');
-      else if (dn >= 350) add('warn', 'Con dấu rộng khoảng ' + dn + ' điểm ảnh trên bản scan: chữ nhỏ trên dấu có thể kém nét. Nên scan 600 dpi.');
-      else add('bad', 'Con dấu quá nhỏ trên bản scan (khoảng ' + dn + ' điểm ảnh). Hãy scan ở 600 dpi.');
+      else if (dn >= 350) add('warn', 'Con dấu rộng khoảng ' + dn + ' điểm ảnh trên bản scan: chữ nhỏ trên dấu có thể kém nét. Nên scan 600 – 1200 dpi.');
+      else add('bad', 'Con dấu quá nhỏ trên bản scan (khoảng ' + dn + ' điểm ảnh). Hãy scan ở 600 – 1200 dpi.');
       if (sl.oval) add('warn', 'Con dấu trên ảnh có hình bầu dục (chiều ngắn chỉ bằng ' + Math.round(sl.oval * 100) + '% chiều dài). Nếu con dấu thật hình tròn thì ảnh đã chụp quá nghiêng: hãy chụp lại, đặt điện thoại song song với mặt giấy.');
       if (sl.slant) add('info', 'Ảnh chụp nghiêng máy: con dấu bị méo thành hình bầu dục (méo khoảng ' + Math.round((1 - sl.slant.ratio) * 100) + '%), AI đã nắn tròn lại. Lần sau nên đặt điện thoại song song với mặt giấy.');
       const gl = s.kind === 'img' ? glareOn(crop, res.sealRaw || sl) : 0;
@@ -8227,6 +8322,7 @@ self.onmessage = async (e) => {
   scanStage.addEventListener('touchmove', (e) => { if (e.cancelable) e.preventDefault(); }, { passive: false });
 
   $('scanBtn').addEventListener('click', () => { scan.wantMode = null; $('scanFile').click(); warmPdf(); });
+  $('padScanBtn').addEventListener('click', () => $('scanBtn').click());
   $('scanOther').addEventListener('click', () => { scan.wantMode = scan.merge && seal ? 'merge' : null; $('scanFile').click(); warmPdf(); });
   $('scanFile').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) openScanFile(f); else scan.wantMode = null; });
   /* ---------- Chụp bằng camera ----------
@@ -8323,6 +8419,10 @@ self.onmessage = async (e) => {
   }
   $('camBtn').addEventListener('click', () => openCamera('sig'));
   $('sealCamBtn').addEventListener('click', () => openCamera('seal'));
+  // the empty seal box takes the file itself: its button, or a click anywhere on the box
+  $('sealEmptyAdd').addEventListener('click', (e) => { e.stopPropagation(); $('sealScanBtn').click(); });
+  $('sealEmptyCam').addEventListener('click', (e) => { e.stopPropagation(); $('sealCamBtn').click(); });
+  $('sealPv').addEventListener('click', (e) => { if (!seal && !$('sealEmpty').hidden && !(e.target.closest && e.target.closest('button'))) $('sealScanBtn').click(); });
   $('camShot').addEventListener('click', () => takePhoto(false));
   $('camClose').addEventListener('click', () => { stopCamera(); closeDlg($('camDlg')); });
   $('camDlg').addEventListener('close', stopCamera);
@@ -8389,17 +8489,17 @@ self.onmessage = async (e) => {
     const box = { x: Math.max(0, cx - half), y: Math.max(0, cy - half) };
     box.w = Math.min(s.prevW, cx + half) - box.x; box.h = Math.min(s.prevH, cy + half) - box.y;
     if (box.w < 4 || box.h < 4) return base;
-    const k = Math.min(SEAL_TARGET / (2 * rp), Math.sqrt(SEAL_AREA / (box.w * box.h)), s.kind === 'pdf' ? 14 : 6 * (s.rc.width / s.prevW));
+    const k = Math.min(SEAL_TARGET / (2 * rp), Math.sqrt(SEAL_AREA / (box.w * box.h)), s.kind === 'pdf' ? 14 : Math.max(6 * (s.rc.width / s.prevW), 1.5 * nativeScale(s)));
     if (s.nativeP) await s.nativeP;
-    const c = await renderRegion(s, box, k);
-    const raw = await extractAsync(c, Object.assign({}, opts, { mode: 'seal', full: true, wantEv: true, up: upOf(s, k),
-      key: 'seal:' + s.fid + ':' + [s.page, s.rot, box.x, box.y, k].map(Math.round).join(',') }), 'seal');
+    const c = await renderRegion(s, box, k, true), upK = upOf(s, k, c);
+    const raw = await extractAsync(c, Object.assign({}, opts, { mode: 'seal', full: true, wantEv: true, up: upK,
+      key: 'seal:' + s.fid + ':' + [s.page, s.rot, box.x, box.y, k].map(Math.round).join(',') + (c._native ? ':n' : '') }), 'seal');
     c.width = c.height = 0;
     let hi = raw ? maskOf(raw.seal) : null;
     if (!hi) return base;
     if (up.slant) hi = unslant(hi, up.slant);   // the photo's slant, as measured on the preview
     const f = res.kx / k;   // shared signature/seal space per high-resolution px
-    return Object.assign(hi, { ex: (box.x - sel.x) * res.kx + hi.x0 * f, ey: (box.y - sel.y) * res.ky + hi.y0 * f, ew: hi.w * f, eh: hi.h * f, prevPerPx: 1 / k, up: upOf(s, k) });
+    return Object.assign(hi, { ex: (box.x - sel.x) * res.kx + hi.x0 * f, ey: (box.y - sel.y) * res.ky + hi.y0 * f, ew: hi.w * f, eh: hi.h * f, prevPerPx: 1 / k, up: upK });
   }
   // the signature at full size from the same crop (the preview is computed at half size)
   async function fullSig(res, opts) {
@@ -8407,8 +8507,8 @@ self.onmessage = async (e) => {
     if (!s || s !== scan.src || s.page !== res.page || s.rot !== res.rot) return null;
     // the full-size crop, rendered privately (the on-screen crop is the smaller copy)
     if (s.nativeP) await s.nativeP;
-    const c = await renderRegion(s, res.sel, res.kFull);
-    const p = extractAsync(c, Object.assign({}, opts, { mode: 'sig', full: true, up: upOf(s, res.kFull), key: res.key + ':full' }), 'bg');   // pixels are read here
+    const c = await renderRegion(s, res.sel, res.kFull, true);
+    const p = extractAsync(c, Object.assign({}, opts, { mode: 'sig', full: true, up: upOf(s, res.kFull, c), key: res.key + ':full' + (c._native ? ':n' : '') }), 'bg');   // pixels are read here
     c.width = c.height = 0;
     const raw = await p;
     return raw ? maskOf(raw.sig) : null;
@@ -8684,7 +8784,7 @@ self.onmessage = async (e) => {
     if (!it.list0) return;
     it.list = it.list0; it.turn = 0;
     if (!batch.autoTurn) return;
-    const r = sigLevelAngle(it.list0);
+    const r = it.lvl && it.lvl.of === it.list0 ? it.lvl.r : (it.lvl = { of: it.list0, r: sigLevelAngle(it.list0) }).r;
     if (!r.sure || r.level || !r.deg) return;
     const bb = bbox(it.list0);
     it.list = turnedList(it.list0, r.deg, { x: bb.x0 + bb.w / 2, y: bb.y0 + bb.h / 2 }); it.turn = r.deg;
@@ -8785,6 +8885,7 @@ self.onmessage = async (e) => {
     if (batch.items.some((it) => it.list)) rethumbAll();
   }
   $('batchAdd').addEventListener('click', () => { $('batchFile').click(); warmPdf(); });
+  $('batchEmptyAdd').addEventListener('click', () => $('batchAdd').click());
   $('batchFile').addEventListener('change', (e) => { const fs = Array.from(e.target.files || []); e.target.value = ''; batchAddFiles(fs); });
   $('batchStop').addEventListener('click', () => { batch.stop = true; toast('Đã dừng sau chữ ký đang xử lý.'); });
   $('batchApplyNames').addEventListener('click', () => {
@@ -8793,11 +8894,17 @@ self.onmessage = async (e) => {
   });
   $('batchNames').addEventListener('input', () => { if ($('formNames').value !== $('batchNames').value) $('formNames').value = $('batchNames').value; });
   $('batchConsent').addEventListener('change', syncBatch);
-  $('batchTurn').addEventListener('change', (e) => {
-    batch.autoTurn = e.target.checked;
-    let n = 0;
-    batch.items.forEach((it) => { if (!it.list0) return; turnBatchItem(it); if (it.turn) n++; renderCard(it); batchThumb(it); });
-    if (batch.items.some((it) => it.list0)) toast(batch.autoTurn ? (n ? 'AI đã xoay thẳng ' + n + ' chữ ký (số độ ghi trên từng thẻ). Bỏ dấu để giữ như bản scan.' : 'Các chữ ký đều đã thẳng, không cần xoay.') : 'Đã giữ các chữ ký như bản scan, không xoay.');
+  $('batchTurn').addEventListener('change', async (e) => {
+    const box = e.target; batch.autoTurn = box.checked; box.disabled = true;
+    let n = 0, i = 0;
+    const list = batch.items.filter((it) => it.list0), t0 = performance.now();
+    for (const it of list) {
+      turnBatchItem(it); if (it.turn) n++; renderCard(it); batchThumb(it);
+      // a long list: let the page breathe and show how far it has got
+      if (++i % 8 === 0 && i < list.length) { if (performance.now() - t0 > 400) toast('AI đang xoay thẳng ' + i + '/' + list.length + ' chữ ký…'); await new Promise((r) => setTimeout(r, 0)); }
+    }
+    box.disabled = false;
+    if (list.length) toast(batch.autoTurn ? (n ? 'AI đã xoay thẳng ' + n + ' chữ ký (số độ ghi trên từng thẻ). Bỏ dấu để giữ như bản scan.' : 'Các chữ ký đều đã thẳng, không cần xoay.') : 'Đã giữ các chữ ký như bản scan, không xoay.');
   });
   // picking an ink colour in the batch tab means using it (not the colour of the scan)
   const batchInkPick = () => { if (!batch.keepColor) return; batch.keepColor = false; setPressed('batchInkCfg', true); setPressed('batchInkKeep', false); syncBatch(); batch.items.forEach(batchThumb); };
@@ -8948,7 +9055,7 @@ self.onmessage = async (e) => {
     }
     ctx.font = font(10, false, true); ctx.fillStyle = '#333';
     ctx.fillText('Ký bằng bút bi mực xanh, nét rõ, mỗi ô ký một lần, ký gọn trong ô và không chạm khung.', m(25), m(281));
-    ctx.fillText('Scan màu 300 dpi, đặt giấy thẳng, scan cả xấp đúng thứ tự danh sách.', m(25), m(286.5));
+    ctx.fillText('Scan màu 300 – 1200 dpi, đặt giấy thẳng, scan cả xấp đúng thứ tự danh sách.', m(25), m(286.5));
     ctx.font = font(8); ctx.fillStyle = '#888'; ctx.textAlign = 'right';
     ctx.fillText('Phần mềm số hóa chữ ký & tách nền con dấu', m(190), m(292));
   }
@@ -8988,20 +9095,22 @@ self.onmessage = async (e) => {
 
   /* ---------- toast ---------- */
   let toastTimer = 0;
-  function toast(msg, undoFn) {
+  function toast(msg, undoFn, opt) {
     const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer);
     const host = document.querySelector('dialog[open]') || document.body;   // above an open dialog, not hidden behind it
     if (t.parentNode !== host) host.append(t);
     if (undoFn) {
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'toast-btn'; b.textContent = 'Hoàn tác';
+      b.type = 'button'; b.className = 'toast-btn'; b.textContent = (opt && opt.label) || 'Hoàn tác';
       b.addEventListener('click', () => { t.hidden = true; undoFn(); });
       t.append(' ', b);
     }
-    toastTimer = setTimeout(() => { t.hidden = true; }, undoFn ? 6000 : 3800);
+    toastTimer = setTimeout(() => { t.hidden = true; }, (opt && opt.ms) || (undoFn ? 6000 : 3800));
   }
+  // the web copy found a newer version (its service worker took over): offer to reload into it
+  window.__bangKyUpdate = () => toast('Đã có phiên bản mới của phần mềm. Lưu việc đang làm (nếu có) rồi bấm Tải lại để dùng bản mới.', () => location.reload(), { label: 'Tải lại', ms: 60000 });
 
-  window.__bangKy = { makePNG, buildJSON, parseSignature, openJsonFile, get strokes() { return strokes; }, sigLevelAngle, setTurn, turnNow: () => turnNow(),
+  window.__bangKy = { makePNG, buildJSON, parseSignature, openJsonFile, get strokes() { return strokes; }, sigLevelAngle, setTurn, turnNow: () => turnNow(), nat,
     get scanSel() { return scan.sel; }, get scanSrc() { return scan.src; }, scanEngine: () => (wks.main ? 'worker' : wkBroken ? 'page' : 'idle'),
     get seal() { return seal; }, get scanMode() { return scan.mode; }, get scanRes() { return scan.res; }, makeSealPNG, get timings() { return Object.assign({}, T); },
     get takes() { saveTake(); return takes.map((t) => t.strokes.length); }, get takeIdx() { return takeIdx; }, get tab() { return tab; },
@@ -9021,6 +9130,8 @@ self.onmessage = async (e) => {
     setTab(t0);
     syncBatch();
     if ('ResizeObserver' in window) new ResizeObserver(() => layoutPad()).observe(stageBox);
+    if (!document.documentElement.lang) document.documentElement.lang = 'vi';
+    $('guideVer').textContent = '· Phiên bản ' + APP_VERSION + ' (' + APP_DATE + ')';   // Vietnamese, for screen readers and spelling
     // Toàn màn hình: the whole program fills the screen (no browser bars); shown only where the browser allows it
     const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement || null;
     const fsOK = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
@@ -25218,7 +25329,18 @@ k+/8/wC0Q9swbXMZAA==</script>
 <script>
 /* works offline once opened: the page and its icons are kept on this device (nothing else is stored or sent) */
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-  addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  var hadSW = !!navigator.serviceWorker.controller;
+  addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').then(function (reg) {
+      /* look for a newer version whenever the app comes back to the screen (a home-screen app is rarely reloaded) */
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') reg.update().catch(function () {}); });
+    }).catch(function () {});
+  });
+  /* a newer version has taken over: say so, with a button to reload into it (not on the very first visit) */
+  navigator.serviceWorker.addEventListener('controllerchange', function () {
+    if (!hadSW) { hadSW = true; return; }
+    if (window.__bangKyUpdate) window.__bangKyUpdate();
+  });
 }
 </script>
 </body></html>
