@@ -1678,9 +1678,13 @@ html,body{height:auto}
           <span class="small">Tăng nếu nét mảnh bị mất; giảm nếu còn vệt nền xám.</span>
         </div>
         <div class="field" id="fSealSens" hidden>
-          <span class="field-head"><label for="scanSealSens">Độ nhạy tách con dấu</label><output id="scanSealSensOut" for="scanSealSens">50%</output></span>
-          <input type="range" id="scanSealSens" min="0" max="100" step="5" value="50">
-          <span class="small">Tăng nếu dấu mờ, đứt nét; giảm nếu còn vệt hồng quanh dấu.</span>
+          <span class="field-head"><label for="scanSealSens">Độ nhạy tách con dấu</label><output id="scanSealSensOut" for="scanSealSens">AI tự động</output></span>
+          <div class="seg" role="group" aria-label="Cách chọn độ nhạy tách con dấu">
+            <button type="button" id="scanSealAutoOn" aria-pressed="true">AI tự chọn</button>
+            <button type="button" id="scanSealAutoOff" aria-pressed="false">Chỉnh tay</button>
+          </div>
+          <input type="range" id="scanSealSens" min="0" max="100" step="5" value="50" disabled>
+          <span class="small">AI đo mực của chính con dấu để chọn độ nhạy phù hợp. Chọn Chỉnh tay rồi kéo thanh trượt nếu muốn tự điều chỉnh: tăng nếu dấu mờ, đứt nét; giảm nếu còn vệt hồng quanh dấu.</span>
         </div>
         <div class="field" id="fSealAI" hidden>
           <span class="field-head">Xử lý nét con dấu</span>
@@ -1688,7 +1692,7 @@ html,body{height:auto}
             <button type="button" id="scanSealAI" aria-pressed="true">AI làm đều nét</button>
             <button type="button" id="scanSealRaw" aria-pressed="false">Giữ như bản scan</button>
           </div>
-          <span class="small">AI tự cân chỗ mực đậm, chỗ mực nhạt, giữ nét mảnh, nối nét đứt, lấp lỗ mực và làm viền gọn, mực đều màu.</span>
+          <span class="small">AI tự cân chỗ mực đậm, chỗ mực nhạt, giữ nét mảnh, nối nét đứt, lấp kín các lỗ mực trong nét chữ (kể cả lỗ to do dấu khô mực) nhưng giữ nguyên lòng chữ O, A, Đ, rồi làm viền gọn, mực đều màu.</span>
         </div>
         <div class="field" id="fFlat" hidden>
           <span class="field-head">Tờ giấy chụp nghiêng</span>
@@ -1927,7 +1931,7 @@ html,body{height:auto}
 (() => {
   'use strict';
   // the version shown in Hướng dẫn and written into the HUONG-DAN.txt of every pack (raise it with each release)
-  const APP_VERSION = '38', APP_DATE = '27/10/2026';
+  const APP_VERSION = '40', APP_DATE = '28/10/2026';
   // Logical drawing space = the 3:2 paper. 1500 units wide, so 1.5 units = 1 px of a 1000 px export.
   const LW = 1500, LH = 1000, TAU = Math.PI * 2;
   const SP = 1.2;                                   // resample spacing along a stroke (logical units)
@@ -4999,7 +5003,7 @@ self.onmessage = async (e) => {
   const scanDlg = $('scanDlg'), scanCv = $('scanPage'), scanStage = $('scanStage'), scanSelEl = $('scanSel');
   // mode: what to extract — 'sig' the signature or 'seal' the red seal; one part at a time, never both together
   const scan = { src: null, sel: null, res: null, crop: null, gen: 0, pgen: 0, busy: false, mode: 'sig', modeManual: false, wantMode: null };
-  const scanOpts = { sens: 50, sealSens: 50, speck: 30, smooth: 50, keepColor: false, sealAI: true, unslant: true, flatten: true };
+  const scanOpts = { sens: 50, sealSens: 50, sealAuto: true, speck: 30, smooth: 50, keepColor: false, sealAI: true, unslant: true, flatten: true };
   const PREV_W = 1400, PREV_H = 1800, CROP_W = 3000, CROP_AREA = 5e6, PREVIEW_AREA = 1.5e6;
   const SEAL_TARGET = 2450, SEAL_AREA = 6.2e6;   // the seal is cut again at about the 2400 px export size
   let fileSeq = 0;
@@ -5790,9 +5794,25 @@ self.onmessage = async (e) => {
           P[i] = db[i] / (c > fl ? c : fl);
         }
       }
-      N = { sig, dn: P, seedT, level: L.G };
+      // automatic cut: the normalised ink has two crowds, paper (low) and stamp (near 1); the cut goes to the
+      // gap between them (Otsu), pulled a little towards the paper so faint stroke edges stay whole
+      const NB2 = 256, H2 = new Float64Array(NB2); let cnt = 0;
+      for (let i = 0; i < n; i++) { const v = P[i]; if (v < 0.02) continue; H2[Math.min(NB2 - 1, (v * NB2) | 0)]++; cnt++; }
+      let autoT = 0.4;
+      if (cnt > 200) {
+        let sumAll = 0; for (let b = 0; b < NB2; b++) sumAll += H2[b] * (b + 0.5) / NB2;
+        let w0 = 0, s0 = 0, best = -1, bt = 0.4;
+        for (let b = 0; b < NB2; b++) {
+          w0 += H2[b]; s0 += H2[b] * (b + 0.5) / NB2;
+          const w1 = cnt - w0; if (!w0 || !w1) continue;
+          const m0 = s0 / w0, m1 = (sumAll - s0) / w1, v = w0 * w1 * (m0 - m1) * (m0 - m1);
+          if (v > best) { best = v; bt = (b + 1) / NB2; }
+        }
+        autoT = Math.min(0.5, Math.max(0.28, 0.85 * bt));
+      }
+      N = { sig, dn: P, seedT, level: L.G, autoT };
     }
-    const t = 0.55 - (o.sealSens / 100) * 0.3, band = 0.06 + (o.smooth / 100) * 0.08, dn = N.dn;
+    const t = o.sealAuto !== false ? N.autoT : 0.55 - (o.sealSens / 100) * 0.3, band = 0.06 + (o.smooth / 100) * 0.08, dn = N.dn;
     const A = new Uint8ClampedArray(n);
     for (let i = 0; i < n; i++) {
       const v = (dn[i] - (t - band)) / (2 * band);
@@ -5800,12 +5820,107 @@ self.onmessage = async (e) => {
     }
     return { A, dn, N };
   }
-  // AI seal ink, step 3: dry cracks across a stroke are bridged (only where some ink is still there),
-  // pinholes inside strokes are filled, then the edges are polished so the ink comes out solid and even
+  // AI seal ink, step 3a: every enclosed paper island is judged — pinhole (fill) or counter (keep).
+  // A true counter (inside of O, A, Đ, B, 8) is clean paper ringed by whole strokes; a pinhole sits INSIDE one
+  // stroke. Each island is judged by its own place in the ink: rays are cast from its centre through the
+  // surrounding ink until paper. A hole in a stroke finds the stroke's own width in one direction (short) and
+  // the stroke's length in the other (long); a counter is boxed in by whole strokes on every side, so all its
+  // rays come out long and about equal. So the shape of the island itself, not its size, decides — large
+  // dry-pad holes in bold lettering are filled while the counter of an A or D stays, whatever the typeface.
+  // Returns { fill, keep }: per-pixel masks of islands to fill and of counters to protect.
+  function judgeHoles(B, dn, w, h, L, up, thick) {
+    const n = w * h, T = new Uint8Array(n);
+    for (let i = 0; i < n; i++) T[i] = B[i] ? 0 : 1;
+    const C = labelComponents(T, w, h), fillPx = new Uint8Array(n), keepPx = new Uint8Array(n);
+    if (C.count < 2) return { fill: fillPx, keep: keepPx };
+    const sum = new Float64Array(C.count + 1), th = new Uint32Array(C.count + 1);
+    const sx = new Float64Array(C.count + 1), sy = new Float64Array(C.count + 1);
+    for (let i = 0; i < n; i++) { const id = C.lab[i]; if (id) { sum[id] += dn[i]; if (thick) th[id] += thick[i]; sx[id] += i % w; sy[id] += (i / w) | 0; } }
+    const big = Math.pow(L / 160, 2), big2 = Math.pow(L / 95, 2), tiny = Math.pow(1.3 * Math.max(1, up || 1), 2);
+    const maxHole = Math.pow(L / 14, 2), maxRun = Math.ceil(L / 3);
+    const ND = 12, dirs = [];
+    for (let k = 0; k < ND; k++) { const t = Math.PI * k / ND; dirs.push([Math.cos(t), Math.sin(t)]); }
+    // only paper that is the outside (or a large open area) ends a run; other holes beside it count as ink,
+    // so a hole next to another hole still sees the whole stroke it sits in
+    const open = new Uint8Array(C.count + 1);
+    for (let id = 1; id <= C.count; id++) if (C.area[id] > maxHole || C.bx0[id] === 0 || C.by0[id] === 0 || C.bx1[id] === w - 1 || C.by1[id] === h - 1) open[id] = 1;
+    // stopAt: 0 = only open paper ends a run; else a paper island at least stopAt times larger than the judged one does too
+    let stopAt = 0;
+    const seen = new Uint8Array(C.count + 1);
+    const run = (id, cx, cy, dx, dy) => {
+      let x = cx, y = cy, len = 0, inHole = true;
+      const a = C.area[id];
+      for (let s = 0; s < maxRun; s++) {
+        x += dx; y += dy;
+        const xi = Math.round(x), yi = Math.round(y);
+        if (xi < 0 || yi < 0 || xi >= w || yi >= h) return -1;
+        const i = yi * w + xi;
+        if (inHole) { if (C.lab[i] === id) continue; inHole = false; }
+        if (!B[i]) { const q = C.lab[i]; if (open[q] || (stopAt && seen[q] && C.area[q] >= stopAt * a)) return len; }
+        len++;
+      }
+      return -1;
+    };
+    const fill = new Uint8Array(C.count + 1);
+    const judge = (id) => {
+      const a = C.area[id], m = sum[id] / a, inThick = thick && th[id] >= 0.9 * a;
+      if (a < tiny || (a < big && m >= 0.3) || (inThick && a < big2 && m >= 0.15)) return 1;
+      if (a > maxHole) return 0;
+      // centre of the island: its centroid, or (for a crescent-shaped hole) the island pixel nearest it
+      let cx = sx[id] / a, cy = sy[id] / a;
+      if (C.lab[Math.round(cy) * w + Math.round(cx)] !== id) {
+        let best = Infinity, bx = cx, by = cy;
+        for (let y = C.by0[id]; y <= C.by1[id]; y++) for (let x = C.bx0[id]; x <= C.bx1[id]; x++) {
+          if (C.lab[y * w + x] !== id) continue;
+          const dd = (x - cx) * (x - cx) + (y - cy) * (y - cy); if (dd < best) { best = dd; bx = x; by = y; }
+        }
+        cx = bx; cy = by;
+      }
+      // chord of the island + ink on both sides, per direction (short = the stroke the hole sits in, measured across)
+      let sMin = Infinity, sMax = 0, chordAtMin = 0;
+      for (const [dx, dy] of dirs) {
+        let x = cx, y = cy, chord = 1;
+        while (true) { x += dx; y += dy; const xi = Math.round(x), yi = Math.round(y); if (xi < 0 || yi < 0 || xi >= w || yi >= h || C.lab[yi * w + xi] !== id) break; chord++; }
+        x = cx; y = cy;
+        while (true) { x -= dx; y -= dy; const xi = Math.round(x), yi = Math.round(y); if (xi < 0 || yi < 0 || xi >= w || yi >= h || C.lab[yi * w + xi] !== id) break; chord++; }
+        const r1 = run(id, cx, cy, dx, dy), r2 = run(id, cx, cy, -dx, -dy);
+        if (r1 < 0 || r2 < 0) { sMax = Infinity; continue; }     // a long run: certainly not boxed in on this side
+        const S = r1 + r2 + chord;
+        if (S < sMin) { sMin = S; chordAtMin = chord; }
+        if (S > sMax) sMax = S;
+      }
+      if (sMin === Infinity) return 0;
+      // across the stroke the island is a small part of the width; along the stroke the ink runs on far longer
+      const holeR = Math.sqrt(a / Math.PI);
+      if (chordAtMin <= 0.75 * sMin && sMin <= 0.42 * sMax && holeR <= 0.6 * sMin && a <= 4 * sMin * sMin) return 1;
+      // a speck of paper lost in a wide junction of strokes (where stem meets bar) sees more ink around it
+      if (holeR <= 0.1 * sMin && sMin <= 0.55 * sMax) return 1;
+      // a faint shadow of ink in a hole that is clearly narrower than its stroke: a dry pad, not a counter
+      if (chordAtMin <= 0.6 * sMin && sMin <= 0.7 * sMax && m >= 0.12 && holeR <= 0.5 * sMin) return 1;
+      return 0;
+    };
+    // two passes: islands the first pass leaves alone include the counters; in the second pass a run also
+    // stops at such an island when it is far larger than the hole being judged, so a pinhole lying right
+    // beside a counter is measured against its own stroke, while the counter still looks past the pinholes
+    for (let id = 1; id <= C.count; id++) if (!open[id] && judge(id)) fill[id] = 1;
+    for (let id = 1; id <= C.count; id++) if (!open[id] && !fill[id]) seen[id] = 1;
+    stopAt = 4;
+    for (let id = 1; id <= C.count; id++) if (seen[id] && judge(id)) fill[id] = 1;
+    for (let i = 0; i < n; i++) { const id = C.lab[i]; if (!id || open[id]) continue; if (fill[id]) fillPx[i] = 1; else keepPx[i] = 1; }
+    return { fill: fillPx, keep: keepPx };
+  }
+  // AI seal ink, step 3b: the counters are settled first and then shielded; then dry cracks across a stroke are
+  // bridged (only where some ink is still there), pinholes inside strokes are filled, and the edges are polished
+  // so the ink comes out solid and even — the shielded counters (lòng chữ) never close, however small they are
   function sealRepair(A, dn, w, h, r, up, smooth) {
-    const n = w * h, B = new Uint8Array(n), T = new Uint8Array(n), L = Math.max(w, h);
-    for (let i = 0; i < n; i++) { B[i] = A[i] >= 128 ? 1 : 0; T[i] = 1 - B[i]; }
-    // thick strokes (ring, large lettering) may be repaired more boldly than fine print, whose small gaps are real.
+    const n = w * h, B = new Uint8Array(n), L = Math.max(w, h);
+    for (let i = 0; i < n; i++) B[i] = A[i] >= 128 ? 1 : 0;
+    // 1. judge the raw cut: pinholes go, counters are shielded from everything that follows
+    const J0 = judgeHoles(B, dn, w, h, L, up, null);
+    for (let i = 0; i < n; i++) if (J0.fill[i]) { A[i] = 255; B[i] = 1; }
+    // shield = the counter plus a rim one step wide, so closing and polishing cannot eat into it either
+    const shield = dilate(J0.keep, w, h, 1);
+    // 2. thick strokes (ring, large lettering) may be repaired more boldly than fine print, whose small gaps are real.
     // The rough shapes are worked out at half size (4 x faster); every change is still gated by the ink itself.
     const e = Math.max(2, Math.round(L / 330)), rc = Math.max(1, Math.round(L / 700)), rc2 = Math.max(rc, Math.round(L / 330));
     const W = (w + 1) >> 1, H = (h + 1) >> 1, any = new Uint8Array(W * H), hole = new Uint8Array(W * H);
@@ -5819,28 +5934,25 @@ self.onmessage = async (e) => {
     const thick = new Uint8Array(n);
     for (let y = 0; y < h; y++) for (let x = 0, i = y * w, k = (y >> 1) * W; x < w; x++, i++) {
       const kk = k + (x >> 1); thick[i] = thick2[kk];
-      if (!B[i] && thick2[kk] && !E2[kk] && dn[i] >= 0.2) { A[i] = 255; B[i] = 1; }
+      if (!B[i] && !shield[i] && thick2[kk] && !E2[kk] && dn[i] >= 0.2) { A[i] = 255; B[i] = 1; }
     }
     const D = dilate(B, w, h, rc);
     for (let i = 0; i < n; i++) D[i] = D[i] ? 0 : 1;
     const E = dilate(D, w, h, rc);
-    for (let i = 0; i < n; i++) if (!E[i] && !B[i] && dn[i] >= 0.3) { A[i] = 255; B[i] = 1; }
-    // pinholes: small enclosed paper islands. A true counter (inside of o, a, 0) is clean paper; a pinhole still holds some ink
-    for (let i = 0; i < n; i++) T[i] = B[i] ? 0 : 1;
-    const C = labelComponents(T, w, h);
-    if (C.count > 1) {
-      const sum = new Float64Array(C.count + 1), th = new Uint32Array(C.count + 1);
-      for (let i = 0; i < n; i++) { const id = C.lab[i]; if (id) { sum[id] += dn[i]; th[id] += thick[i]; } }
-      const big = Math.pow(L / 160, 2), big2 = Math.pow(L / 95, 2), tiny = Math.pow(1.3 * Math.max(1, up || 1), 2);
-      const fill = new Uint8Array(C.count + 1);
-      for (let id = 1; id <= C.count; id++) {
-        if (C.bx0[id] === 0 || C.by0[id] === 0 || C.bx1[id] === w - 1 || C.by1[id] === h - 1) continue;
-        const a = C.area[id], m = sum[id] / a, inThick = th[id] >= 0.9 * a;
-        if (a < tiny || (a < big && m >= 0.3) || (inThick && a < big2 && m >= 0.15)) fill[id] = 1;
+    for (let i = 0; i < n; i++) if (!E[i] && !B[i] && !shield[i] && dn[i] >= 0.3) { A[i] = 255; B[i] = 1; }
+    // 3. the bridging may have closed a crack into a new enclosed island: judge once more (shielded counters stay)
+    const J1 = judgeHoles(B, dn, w, h, L, up, thick);
+    for (let i = 0; i < n; i++) if (J1.fill[i] && !shield[i]) { A[i] = 255; B[i] = 1; }
+    // 3b. specks of ink floating inside a counter (paper grain, a touch of the pad) are not lettering: gone
+    {
+      const kd = dilate(J0.keep, w, h, 2), CB = labelComponents(B, w, h);
+      if (CB.count) {
+        const inK = new Uint8Array(CB.count + 1).fill(1), small = Math.max(Math.pow(2.5 * Math.max(1, up || 1), 2), Math.pow(L / 250, 2));
+        for (let i = 0; i < n; i++) { const id = CB.lab[i]; if (id && !kd[i]) inK[id] = 0; }
+        for (let i = 0; i < n; i++) { const id = CB.lab[i]; if (id && inK[id] && CB.area[id] <= small) { A[i] = 0; B[i] = 0; } }
       }
-      for (let i = 0; i < n; i++) if (fill[C.lab[i]] && C.lab[i]) A[i] = 255;
     }
-    // polish: soften the ragged rim, then a steep curve makes the inside solid ink and the edge a clean anti-aliased line
+    // 4. polish: soften the ragged rim, then a steep curve makes the inside solid ink and the edge a clean anti-aliased line
     const rp = Math.max(1, Math.round((0.35 + 0.5 * smooth / 100) * Math.max(1.6 * r, 0.8 * (up || 1))));
     const F = new Float32Array(n);
     for (let i = 0; i < n; i++) F[i] = A[i] / 255;
@@ -5848,6 +5960,7 @@ self.onmessage = async (e) => {
     for (let i = 0; i < n; i++) {
       const v = (S[i] - 0.3) / 0.4;
       A[i] = v <= 0 ? 0 : v >= 1 ? 255 : v * v * (3 - 2 * v) * 255;
+      if (J0.keep[i]) A[i] = 0;        // the counter itself stays open paper
     }
   }
   // AI seal ink, step 4: a round seal's printed circles (outer ring, inner ring) are perfect circles by design;
@@ -7006,10 +7119,15 @@ self.onmessage = async (e) => {
       const sw = w, sh = h, sn = n, SR = split.r, SB = split.b, SK = split.k, spx = px;
       const rr = Math.max(sw, sh) / 2000;
       const d = new Float32Array(sn), pure = new Uint8Array(sn);
-      for (let i = 0; i < sn; i++) {
+      for (let i = 0, j = 0; i < sn; i++, j += 4) {
         const cr = SR[i], ck = SK[i];
-        // under heavy black print the red share is unreliable (colour fringes of the text): fade it out
-        const f = cr > 0 ? Math.min(1, Math.max(0, (2.2 - ck / cr) / 0.8)) : 0;
+        // under heavy black print the red share is unreliable (colour fringes of the text): fade it out.
+        // Not where the pixel itself is plainly red: a heavily inked stamp saturates the scanner (green and blue
+        // read 0), which the colour split mistakes for black and would punch holes all over solid lettering
+        const rd = spx[j] - (spx[j + 1] > spx[j + 2] ? spx[j + 1] : spx[j + 2]);
+        const fr = rd >= 110 ? 1 : rd <= 50 ? 0 : (rd - 50) / 60;
+        const fk = cr > 0 ? Math.min(1, Math.max(0, (2.2 - ck / cr) / 0.8)) : 0;
+        const f = fk > fr ? fk : fr;
         d[i] = (1 - Math.exp(-0.6 * cr)) * f;
         pure[i] = SB[i] + ck < 0.25 * cr ? 1 : 0;
       }
@@ -7039,7 +7157,7 @@ self.onmessage = async (e) => {
   }
   // The heavy pixel work runs in a background worker so the page stays smooth while it computes.
   const WORKER_SRC = [paperLevels, expandGrid, darkness, inv3, inkSplit, boxBlur, dilate, labelComponents, removeSpecks,
-    inkAlpha, dropPrint, dropTiny, inkLevel, maxFilter, sealAlpha, sealRepair, ringRepair, sealSpecks, edt, thin, capsule, sealFix, circleFit, circleFitRobust, ellipseFit, ringNormalize, smoothLoops, loopArea, resampleLoop, evenLoop, evenRun, loopCorners, evenLoopCorners, fillLoops, sealSmooth, sealCircle, cropMask, extractCore].map(String).join('\n') +
+    inkAlpha, dropPrint, dropTiny, inkLevel, maxFilter, sealAlpha, judgeHoles, sealRepair, ringRepair, sealSpecks, edt, thin, capsule, sealFix, circleFit, circleFitRobust, ellipseFit, ringNormalize, smoothLoops, loopArea, resampleLoop, evenLoop, evenRun, loopCorners, evenLoopCorners, fillLoops, sealSmooth, sealCircle, cropMask, extractCore].map(String).join('\n') +
     '\nvar CACHE = {};\nonmessage = function (e) { var m = e.data; if (m.smooth) { try { var A = new Uint8ClampedArray(m.buf); var r = sealSmooth(A, m.w, m.h, m.up, m.R); postMessage({ id: m.id, r: { A: A, st: r.st, loops: r.loops } }, [A.buffer].concat(r.loops.map(function (l) { return l.buffer; }))); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } if (m.ring) { try { var A = new Uint8ClampedArray(m.buf); var st = ringNormalize(A, m.w, m.h, m.circle); postMessage({ id: m.id, r: { A: A, st: st } }, [A.buffer]); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } if (m.fix) { try { var A = new Uint8ClampedArray(m.buf); var st = sealFix(A, m.ev ? new Uint8ClampedArray(m.ev) : null, m.w, m.h, m.circle); postMessage({ id: m.id, r: { A: A, st: st } }, [A.buffer]); } catch (err) { postMessage({ id: m.id, error: String(err) }); } return; } try { var r = extractCore(new Uint8ClampedArray(m.buf), m.w, m.h, m.o, CACHE); var t = [];' +
     ' if (r.sig) t.push(r.sig.rgba.buffer); if (r.seal) t.push(r.seal.rgba.buffer); if (r.seal && r.seal.ev) t.push(r.seal.ev.buffer); postMessage({ id: m.id, r: r }, t); } catch (err) { CACHE = {}; postMessage({ id: m.id, error: String(err) }); } };';
   const mainCache = {};
@@ -7109,7 +7227,7 @@ self.onmessage = async (e) => {
   function extractAsync(c, o, which = 'main') {
     const w = c.width, h = c.height;
     const read = () => c.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h).data;
-    const opts = { sens: o.sens, sealSens: o.sealSens, speck: o.speck, smooth: o.smooth, sealAI: o.sealAI !== false, wantEv: !!o.wantEv, mode: o.mode, key: o.key, up: o.up || 1, full: !!o.full };
+    const opts = { sens: o.sens, sealSens: o.sealSens, sealAuto: o.sealAuto !== false, speck: o.speck, smooth: o.smooth, sealAI: o.sealAI !== false, wantEv: !!o.wantEv, mode: o.mode, key: o.key, up: o.up || 1, full: !!o.full };
     const cache = which === 'main' ? mainCache : which === 'seal' ? sealCache : which === 'batch' ? batchCache : bgCache;
     const worker = getWorker(which);
     if (!worker) return Promise.resolve(extractCore(read(), w, h, opts, cache));
@@ -8456,6 +8574,15 @@ self.onmessage = async (e) => {
   };
   $('scanInkCfg').addEventListener('click', () => setInk(false));
   $('scanInkKeep').addEventListener('click', () => setInk(true));
+  const setSealAuto = (on) => {
+    scanOpts.sealAuto = on;
+    setPressed('scanSealAutoOn', on); setPressed('scanSealAutoOff', !on);
+    $('scanSealSens').disabled = on;
+    $('scanSealSensOut').textContent = on ? 'AI tự động' : scanOpts.sealSens + '%';
+    scheduleProcess();
+  };
+  $('scanSealAutoOn').addEventListener('click', () => setSealAuto(true));
+  $('scanSealAutoOff').addEventListener('click', () => setSealAuto(false));
   const setSealAI = (on) => {
     scanOpts.sealAI = on;
     setPressed('scanSealAI', on); setPressed('scanSealRaw', !on);
