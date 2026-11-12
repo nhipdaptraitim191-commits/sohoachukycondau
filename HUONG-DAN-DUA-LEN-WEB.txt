@@ -1,6 +1,13 @@
 PHẦN MỀM SỐ HÓA CHỮ KÝ & TÁCH NỀN CON DẤU - GÓI ĐƯA LÊN WEB
 Phần mềm được viết bởi Võ Hữu Ngợi - 0917010170
 
+PHIÊN BẢN 41 (12/11/2026) - CẬP NHẬT TRANG ĐANG CHẠY TRÊN GITHUB
+  1. Mở kho của phần mềm trên github.com, bấm Add file > Upload files.
+  2. Kéo thả đủ 8 file của gói này vào, bấm Commit changes (ghi đè file cũ).
+  3. Đợi 1-2 phút rồi mở trang, bấm Hướng dẫn: đầu bảng ghi "Phiên bản 41 (12/11/2026)" là xong.
+  Máy đã mở bản cũ: mở phần mềm khi có mạng, phần mềm tự lấy bản mới và báo để tải lại;
+  nếu chưa thấy, đóng hẳn phần mềm rồi mở lại. Đường link và mã QR giữ nguyên.
+
 Vì sao cần gói này: iPad, iPhone không chạy được file .html mở từ ứng dụng Tệp, Zalo hay email
 (chỉ xem trước). Phải mở phần mềm bằng một đường link https trong Safari.
 
@@ -33,3 +40,5 @@ DÙNG TRÊN IPAD / IPHONE
 AN TOÀN DỮ LIỆU
   Máy chủ chỉ phát file phần mềm. Chữ ký, con dấu, bản scan đều được xử lý ngay trên máy người dùng,
   không gửi lên máy chủ.
+  Từ bản 41: phông chữ nằm sẵn trong trang (không còn tải từ Google Fonts), và trang có chính sách
+  Content-Security-Policy để trình duyệt chặn mọi kết nối ra ngoài trang.
