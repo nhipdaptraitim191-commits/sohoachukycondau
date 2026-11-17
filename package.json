@@ -1,0 +1,65 @@
+{
+  "name": "tao-ma-qr-chuyen-nghiep",
+  "version": "2.8.0",
+  "description": "Phần mềm tạo mã quét QR chuyên nghiệp: miễn phí, chạy hoàn toàn trên máy.",
+  "main": "desktop/main.js",
+  "private": true,
+  "author": "Võ Hữu Ngợi",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.3.2",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "vn.taomaqr.app",
+    "productName": "Phần mềm tạo mã quét QR chuyên nghiệp",
+    "copyright": "Phần mềm được viết bởi Võ Hữu Ngợi - 0917010170",
+    "files": [
+      "index.html",
+      "desktop/**",
+      "LICENSE",
+      "THIRD-PARTY-NOTICES.md",
+      "licenses/**",
+      "icons/icon-512.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "electronLanguages": [
+      "vi",
+      "en-US"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "executableName": "TaoMaQR"
+    },
+    "portable": {
+      "artifactName": "Tao-ma-QR-chuyen-nghiep-${version}-portable.exe"
+    },
+    "nsis": {
+      "artifactName": "Tao-ma-QR-chuyen-nghiep-${version}-setup.exe",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Tạo mã QR chuyên nghiệp"
+    }
+  }
+}
